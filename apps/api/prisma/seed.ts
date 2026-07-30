@@ -72,7 +72,10 @@ const LANGUAGE_CLIPS: LanguageClip[] = (() => {
   return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf8")) : [];
 })();
 
-interface MysteryItem { file: string; label: string; group: string; source: string }
+interface MysteryItem {
+  file: string; label: string; group: string; source: string;
+  license: string; licenseUrl: string | null; author: string | null;
+}
 const MYSTERY: MysteryItem[] = (() => {
   const p = path.join(__dirname, "mystery-manifest.json");
   return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf8")) : [];
@@ -634,19 +637,32 @@ async function main() {
     })) generated++;
   }
 
-  // 7) FOTO MISTERIOSA (image_guess amb revelat progressiu). Imatges del manifest de Wikipedia.
-  // ATENCIÓ: la llicència de cada imatge s'ha de verificar abans de publicar (veure decisions.md).
+  // 7) FOTO MISTERIOSA (image_guess amb revelat progressiu). Les imatges del manifest ja
+  // vénen amb la llicència comprovada contra Commons (download-mystery.mjs en descarta les
+  // que no són lliures), i el crèdit viatja fins a la pantalla: la majoria són CC BY-SA i
+  // acreditar l'autor no és opcional.
   let mystery = 0;
+  // Preguntes d'una execució anterior que apunten a imatges que ja no passen el filtre:
+  // s'han de retirar, no esborrar (n'hi pot haver de jugades i trencaria l'històric).
+  const keepTags = MYSTERY.map((m) => `mystery:${m.file}`);
+  const dropped = await prisma.question.updateMany({
+    where: { typeSlug: "image_guess", tags: { has: "mystery" }, status: "published", NOT: { tags: { hasSome: keepTags } } },
+    data: { status: "retired" },
+  });
+  if (dropped.count) console.log(`Fotos misterioses retirades (llicència no lliure): ${dropped.count}`);
   for (const item of MYSTERY) {
     // Registra l'actiu amb la font per a l'atribució (disciplina de drets).
     const mediaId = stableMediaId(item.file);
+    const credit = [item.author, item.license].filter(Boolean).join(" · ");
     const asset = await prisma.mediaAsset.upsert({
       where: { id: mediaId },
-      update: {},
+      // També a `update`: els actius sembrats abans de verificar les llicències portaven
+      // "wikimedia-lead (verificar)" i s'hi haurien quedat.
+      update: { license: item.license, attribution: credit, sourceUrl: item.source },
       create: {
         id: mediaId,
         kind: "image", storagePath: item.file,
-        license: "wikimedia-lead (verificar)", attribution: item.label, sourceUrl: item.source,
+        license: item.license, attribution: credit, sourceUrl: item.source,
       },
     });
     const sameGroup = MYSTERY.filter((m) => m.group === item.group && m.label !== item.label);
@@ -654,13 +670,19 @@ async function main() {
     const cat = item.group === "animals" ? catNat.id : catCul.id;
     // Dedup per tag únic (el prompt és igual per a totes per no revelar la resposta).
     const tag = `mystery:${item.file}`;
-    const exists = await prisma.question.findFirst({ where: { typeSlug: "image_guess", tags: { has: tag } }, select: { id: true } });
-    if (!exists) {
+    const exists = await prisma.question.findFirst({ where: { typeSlug: "image_guess", tags: { has: tag } }, select: { id: true, payload: true } });
+    if (exists) {
+      // Les preguntes ja sembrades no portaven crèdit al payload: cal posar-l'hi.
+      await prisma.question.update({
+        where: { id: exists.id },
+        data: { status: "published", payload: { ...(exists.payload as object), credit, creditUrl: item.source } },
+      });
+    } else {
       await prisma.question.create({
         data: {
           typeSlug: "image_guess", categoryId: cat, locale: "ca",
           prompt: "Quina és la foto misteriosa?",
-          payload: { imageUrl: item.file, options, reveal: "blur", mediaId: asset.id },
+          payload: { imageUrl: item.file, options, reveal: "blur", mediaId: asset.id, credit, creditUrl: item.source },
           answer: { correctId },
           difficulty: 2, status: "published", tags: ["mystery", item.group, tag],
         },

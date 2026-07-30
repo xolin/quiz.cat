@@ -252,6 +252,7 @@ button:not(:disabled) { cursor: pointer; }
 /* El comptador és un OBJECTE amb marc propi, no una xifra perduda dins la metadada:
    el contracte el vol com un dels elements més visibles de la pantalla. */
 .qc-counter {
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -265,7 +266,25 @@ button:not(:disabled) { cursor: pointer; }
 }
 .qc-counter__value { font-size: var(--qc-t-score); line-height: 1.05; }
 .qc-counter__unit { font-size: var(--qc-t-label); color: var(--qc-ink-dim); }
-.qc-counter--low { border-color: var(--qc-live); background: color-mix(in srgb, var(--qc-live) 14%, var(--qc-stage-2)); }
+/* El comptador canviava NOMÉS de color en entrar als últims segons. Ara també de gruix
+   de vora i amb la mateixa textura de ratlles que la barra: el senyal es llegeix sense
+   distingir colors i sense dependre de cap animació. */
+.qc-counter--low {
+  border-color: var(--qc-live);
+  border-width: 2px;
+  padding: 0 calc(var(--qc-3) - 1px);
+  background: color-mix(in srgb, var(--qc-live) 14%, var(--qc-stage-2));
+}
+.qc-counter--low::after {
+  content: "";
+  position: absolute;
+  inset: auto 3px 3px 3px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--qc-live) repeating-linear-gradient(
+    45deg, rgba(0, 0, 0, 0.38) 0 6px, rgba(0, 0, 0, 0) 6px 12px
+  );
+}
 .qc-counter--low .qc-counter__value { color: var(--qc-live-text); }
 /* Barra de temps: una sola línia sota la tira. És el senyal perifèric — la xifra del
    comptador és la que mires; això només ha de fer que sentis que s'escurça. */
@@ -410,7 +429,8 @@ button:not(:disabled) { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--qc-3);
+  flex-wrap: wrap;
+  gap: 2px var(--qc-3);
   padding: var(--qc-2) var(--qc-3);
   border-top: 1px solid var(--qc-hairline);
   background: var(--qc-stage);
@@ -420,6 +440,18 @@ button:not(:disabled) { cursor: pointer; }
   text-transform: uppercase;
   font-stretch: 74%;
   font-weight: 700;
+}
+
+/* L'atribució és un nom propi: ni majúscules ni lletra espaiada com la resta del peu.
+   És crèdit d'autoria, no retolació. */
+.qc-media__credit {
+  text-transform: none;
+  letter-spacing: normal;
+  font-stretch: 100%;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 400;
 }
 
 /* ── Marcador ─────────────────────────────────────────────────────────────── */
@@ -605,8 +637,10 @@ input[type="range"] {
 /* ── Toast de resposta ────────────────────────────────────────────────────── */
 
 .qc-toast {
-  position: fixed;
-  top: var(--qc-5);
+  /* Absolut dins de `.qc-stagelight` i no fix a la finestra: així tapa la pregunta —
+     que en aquell moment ja no has de llegir — i deixa veure el rètol i el comptador. */
+  position: absolute;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--qc-z-toast);
@@ -620,6 +654,24 @@ input[type="range"] {
 }
 .qc-toast--good { background: var(--qc-good); color: var(--qc-ink-on-light); }
 .qc-toast--bad { background: var(--qc-live); color: #fff; }
+
+/* Escombrada de canvi de ronda. Creua la pantalla sencera, com un canvi de càmera: és
+   l'única cosa que passa per damunt de tot excepte el resultat, i no és clicable. */
+.qc-sweep {
+  position: fixed;
+  inset: 0;
+  z-index: var(--qc-z-overlay);
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    color-mix(in srgb, var(--qc-section, var(--qc-stage-3)) 55%, transparent) 38%,
+    var(--qc-section, var(--qc-stage-3)) 50%,
+    color-mix(in srgb, var(--qc-section, var(--qc-stage-3)) 55%, transparent) 62%,
+    transparent 100%
+  );
+  animation: qc-sweep 520ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
 /* ── Moviment: la motricitat nativa de la retransmissió és l'escombrada ───── */
 
@@ -635,6 +687,10 @@ input[type="range"] {
 @keyframes qc-light-up {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
+}
+@keyframes qc-sweep {
+  from { transform: translateX(-105%); }
+  to { transform: translateX(105%); }
 }
 @keyframes qc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 @keyframes qc-bump { from { transform: scale(1.22); } to { transform: scale(1); } }
@@ -689,4 +745,6 @@ input[type="range"] {
 
 @media (prefers-reduced-motion: reduce) {
   *, .qc-memory-inner { animation: none !important; transition: none !important; }
+  /* Sense animació, l'escombrada es quedaria quieta tapant la pantalla. */
+  .qc-sweep { display: none; }
 }

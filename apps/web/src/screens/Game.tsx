@@ -233,43 +233,11 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
 
   return (
     <div className="qc-screen">
-      {/* TOAST de resultat: apareix a dalt, no bloqueja, auto-avança (clica per saltar). */}
-      {feedback && (
-        <div
-          className={`qc-toast ${feedback.isCorrect ? "qc-toast--good" : "qc-toast--bad"}`}
-          onClick={advance}
-          role="status"
-          aria-live="polite"
-          /* L'auto-avanç s'atura mentre hi ets a sobre, per si vols llegir la resposta
-             correcta amb calma. No és el camí per a la valoració de la pregunta: al mòbil
-             no hi ha `mouseenter` i el dit no arriba a temps. Això viu al resum. */
-          onMouseEnter={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
-          onFocus={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
-          style={{ cursor: "pointer", textAlign: "center" }}
-        >
-          <div style={{ display: "flex", gap: "var(--qc-4)", alignItems: "center", justifyContent: "center" }}>
-            {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}
-            <Mascot size={56} mood={feedback.isCorrect ? "content" : survival ? "ko" : "trist"} />
-            <b className="qc-num" style={{ fontSize: "2rem", lineHeight: 1 }}>
-              {feedback.expired ? "Temps esgotat" : feedback.isCorrect ? `+${feedback.points.total}` : "Incorrecte"}
-            </b>
-          </div>
-          {feedback.isCorrect && (feedback.points.speedBonus > 0 || feedback.points.streakBonus > 0) && (
-            <div style={{ fontSize: "var(--qc-t-small)", marginTop: "var(--qc-2)", opacity: 0.9 }}>
-              rapidesa +{feedback.points.speedBonus} · ratxa +{feedback.points.streakBonus}
-            </div>
-          )}
-          {!feedback.isCorrect && !!correctAnswerText(feedback) && (
-            <div style={{ marginTop: "var(--qc-2)" }}>Era: <b>{correctAnswerText(feedback)}</b></div>
-          )}
-          {/* Survival: un error acaba la tirada, i s'ha de veure que ha estat aquí. */}
-          {survival && !feedback.isCorrect && (
-            <div style={{ marginTop: "var(--qc-2)", fontWeight: 700 }}>
-              Fi de la tirada · has arribat a {feedback.streak ?? round.index}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Escombrada de canvi de ronda: la transició natiu d'una retransmissió. Creua la
+          pantalla amb el color de la categoria que entra. `key` per ronda perquè React el
+          recreï i l'animació torni a començar; sota `prefers-reduced-motion` no es dibuixa. */}
+      <span key={`sweep-${round.index}`} className="qc-sweep" aria-hidden="true"
+        style={{ ["--qc-section" as string]: CATEGORY_COLOR[catSlug] ?? "var(--qc-stage-3)" }} />
 
       {/* ── Tira de control: rètol de secció + comptador ── */}
       <div className="qc-strip">
@@ -301,6 +269,45 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       </div>
 
       <div className="qc-stagelight">
+        {/* TOAST de resultat: no bloqueja i auto-avança (clica per saltar). Va DINS de la
+            columna de la pregunta i no sobre la pantalla: quan era `fixed` a dalt tapava el
+            rètol de categoria i el comptador, que són la identitat de la ronda. */}
+        {feedback && (
+          <div
+            className={`qc-toast ${feedback.isCorrect ? "qc-toast--good" : "qc-toast--bad"}`}
+            onClick={advance}
+            role="status"
+            aria-live="polite"
+            /* L'auto-avanç s'atura mentre hi ets a sobre, per si vols llegir la resposta
+               correcta amb calma. No és el camí per a la valoració de la pregunta: al mòbil
+               no hi ha `mouseenter` i el dit no arriba a temps. Això viu al resum. */
+            onMouseEnter={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
+            onFocus={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
+            style={{ cursor: "pointer", textAlign: "center" }}
+          >
+            <div style={{ display: "flex", gap: "var(--qc-4)", alignItems: "center", justifyContent: "center" }}>
+              {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}
+              <Mascot size={56} mood={feedback.isCorrect ? "content" : survival ? "ko" : "trist"} />
+              <b className="qc-num" style={{ fontSize: "2rem", lineHeight: 1 }}>
+                {feedback.expired ? "Temps esgotat" : feedback.isCorrect ? `+${feedback.points.total}` : "Incorrecte"}
+              </b>
+            </div>
+            {feedback.isCorrect && (feedback.points.speedBonus > 0 || feedback.points.streakBonus > 0) && (
+              <div style={{ fontSize: "var(--qc-t-small)", marginTop: "var(--qc-2)", opacity: 0.9 }}>
+                rapidesa +{feedback.points.speedBonus} · ratxa +{feedback.points.streakBonus}
+              </div>
+            )}
+            {!feedback.isCorrect && !!correctAnswerText(feedback) && (
+              <div style={{ marginTop: "var(--qc-2)" }}>Era: <b>{correctAnswerText(feedback)}</b></div>
+            )}
+            {/* Survival: un error acaba la tirada, i s'ha de veure que ha estat aquí. */}
+            {survival && !feedback.isCorrect && (
+              <div style={{ marginTop: "var(--qc-2)", fontWeight: 700 }}>
+                Fi de la tirada · has arribat a {feedback.streak ?? round.index}
+              </div>
+            )}
+          </div>
+        )}
         <h1 className="qc-question">{round.prompt}</h1>
       </div>
 
@@ -322,7 +329,17 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {/* ── Foto misteriosa: imatge amb blur que es revela amb el temps ── */}
       {round.typeSlug === "image_guess" && (
         <>
-          <Media instruction="La imatge es va aclarint">
+          {/* El crèdit surt en revelar-se la foto, no abans: mentre penses no ha de competir
+              amb res, però la majoria d'imatges són CC BY-SA i acreditar l'autor no és opcional. */}
+          <Media
+            instruction="La imatge es va aclarint"
+            right={feedback && round.payload.credit ? (
+              <a className="qc-media__credit" href={round.payload.creditUrl}
+                target="_blank" rel="noreferrer noopener">
+                {round.payload.credit}
+              </a>
+            ) : undefined}
+          >
             <div style={{ overflow: "hidden", aspectRatio: "4 / 3", width: "100%", display: "flex", background: "#000" }}>
               <img
                 src={round.payload.imageUrl}

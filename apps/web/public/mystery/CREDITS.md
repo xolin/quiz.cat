@@ -1,28 +1,30 @@
-# Crèdits de les imatges de "Foto misteriosa"
+# Crèdits de les imatges de «Foto misteriosa»
 
-⚠️ Imatges obtingudes de la imatge principal de la Viquipèdia (en). **La llicència concreta
-de cada fitxer NO està verificada** i s'ha de comprovar (i afegir l'atribució exacta) abans
-de qualsevol publicació. Moltes són CC-BY (requereixen crèdit a l'autor). Veure decisions.md.
+Generat per `node apps/api/prisma/download-mystery.mjs`. Les imatges **no es versionen**;
+es tornen a baixar amb el mateix ordre. La llicència de cada fitxer es comprova contra
+Commons i només hi entren llicències lliures; l'autoria surt també dins del joc quan es
+revela la foto, que és el que demanen les CC BY i CC BY-SA.
 
-Aquestes imatges no es versionen (git); es regeneren amb `node apps/api/prisma/download-mystery.mjs`.
+- **Tigre** (animals) — CC BY-SA 4.0 — Charles J. Sharp — [fitxer](https://commons.wikimedia.org/wiki/File:Bengal_tiger_(Panthera_tigris_tigris)_female_3_crop.jpg)
+- **Elefant** (animals) — CC BY-SA 4.0 — Giles Laurent — [fitxer](https://commons.wikimedia.org/wiki/File:178_Male_African_bush_elephant_in_Etosha_National_Park_Photo_by_Giles_Laurent.jpg)
+- **Pingüí** (animals) — CC BY 2.0 — Ian Duffy from UK — [fitxer](https://commons.wikimedia.org/wiki/File:Aptenodytes_forsteri_-Snow_Hill_Island%2C_Antarctica_-adults_and_juvenile-8.jpg)
+- **Ós polar** (animals) — CC BY-SA 3.0 — Alan Wilson — [fitxer](https://commons.wikimedia.org/wiki/File:Polar_Bear_-_Alaska_(cropped).jpg)
+- **Zebra** (animals) — CC BY-SA 3.0 — Yathin S Krishnappa — [fitxer](https://commons.wikimedia.org/wiki/File:Equus_quagga_burchellii_-_Etosha%2C_2014.jpg)
+- **Lleó** (animals) — CC BY-SA 4.0 — Giles Laurent — [fitxer](https://commons.wikimedia.org/wiki/File:020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg)
+- **Ós panda** (animals) — CC BY-SA 3.0 — J. Patrick Fischer — [fitxer](https://commons.wikimedia.org/wiki/File:Grosser_Panda.JPG)
+- **Flamenc** (animals) — CC BY 2.0 — Valdiney Pimenta — [fitxer](https://commons.wikimedia.org/wiki/File:Flamingos_Laguna_Colorada.jpg)
+- **Coliseu** (monuments) — CC BY-SA 4.0 — FeaturedPics — [fitxer](https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg) — restriccions: ita-mibac
+- **Taj Mahal** (monuments) — CC BY-SA 4.0 — Yann ; edited by Jim Carter — [fitxer](https://commons.wikimedia.org/wiki/File:Taj_Mahal_(Edited).jpeg)
+- **Estàtua de la Llibertat** (monuments) — CC0 — AskALotl — [fitxer](https://commons.wikimedia.org/wiki/File:Front_view_of_Statue_of_Liberty_(cropped).jpg)
+- **Sagrada Família** (monuments) — CC BY-SA 4.0 — Canaan — [fitxer](https://commons.wikimedia.org/wiki/File:SF_maig_2_cropped.jpg)
+- **Big Ben** (monuments) — CC BY-SA 2.0 — Dave Bezaire — [fitxer](https://commons.wikimedia.org/wiki/File:Elizabeth_Tower%2C_June_2022.jpg)
+- **Piràmides de Gizeh** (monuments) — CC BY-SA 4.0 — Douwe C. van der Zee — [fitxer](https://commons.wikimedia.org/wiki/File:Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg)
+- **Machu Picchu** (monuments) — CC BY-SA 4.0 — Draceane — [fitxer](https://commons.wikimedia.org/wiki/File:Machu_Picchu%2C_2023_(012).jpg)
+- **Òpera de Sydney** (monuments) — CC0 — Bernard Spragg. NZ from Christchurch, New Zealand — [fitxer](https://commons.wikimedia.org/wiki/File:Sydney_Australia._(21339175489).jpg)
+- **Porta de Brandenburg** (monuments) — CC BY-SA 3.0 — Thomas Wolf , www.foto-tw.de — [fitxer](https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_abends.jpg)
 
-- **Tigre** (animals) — /mystery/tiger.jpg — font: https://en.wikipedia.org/wiki/Tiger
-- **Elefant** (animals) — /mystery/african_bush_elephant.jpg — font: https://en.wikipedia.org/wiki/African_bush_elephant
-- **Girafa** (animals) — /mystery/giraffe.jpg — font: https://en.wikipedia.org/wiki/Giraffe
-- **Pingüí** (animals) — /mystery/emperor_penguin.jpg — font: https://en.wikipedia.org/wiki/Emperor_penguin
-- **Cangur** (animals) — /mystery/red_kangaroo.jpg — font: https://en.wikipedia.org/wiki/Red_kangaroo
-- **Ós polar** (animals) — /mystery/polar_bear.jpg — font: https://en.wikipedia.org/wiki/Polar_bear
-- **Zebra** (animals) — /mystery/plains_zebra.jpg — font: https://en.wikipedia.org/wiki/Plains_zebra
-- **Lleó** (animals) — /mystery/lion.jpg — font: https://en.wikipedia.org/wiki/Lion
-- **Ós panda** (animals) — /mystery/giant_panda.jpg — font: https://en.wikipedia.org/wiki/Giant_panda
-- **Flamenc** (animals) — /mystery/flamingo.jpg — font: https://en.wikipedia.org/wiki/Flamingo
-- **Torre Eiffel** (monuments) — /mystery/eiffel_tower.jpg — font: https://en.wikipedia.org/wiki/Eiffel_Tower
-- **Coliseu** (monuments) — /mystery/colosseum.jpg — font: https://en.wikipedia.org/wiki/Colosseum
-- **Taj Mahal** (monuments) — /mystery/taj_mahal.jpg — font: https://en.wikipedia.org/wiki/Taj_Mahal
-- **Estàtua de la Llibertat** (monuments) — /mystery/statue_of_liberty.jpg — font: https://en.wikipedia.org/wiki/Statue_of_Liberty
-- **Sagrada Família** (monuments) — /mystery/sagrada_família.jpg — font: https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia
-- **Big Ben** (monuments) — /mystery/big_ben.jpg — font: https://en.wikipedia.org/wiki/Big_Ben
-- **Piràmides de Gizeh** (monuments) — /mystery/great_pyramid_of_giza.jpg — font: https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza
-- **Machu Picchu** (monuments) — /mystery/machu_picchu.jpg — font: https://en.wikipedia.org/wiki/Machu_Picchu
-- **Òpera de Sydney** (monuments) — /mystery/sydney_opera_house.jpg — font: https://en.wikipedia.org/wiki/Sydney_Opera_House
-- **Porta de Brandenburg** (monuments) — /mystery/brandenburg_gate.jpg — font: https://en.wikipedia.org/wiki/Brandenburg_Gate
+## Descartades
+
+- Giraffe — llicència no lliure o desconeguda: GFDL 1.2
+- Red_kangaroo — llicència no lliure o desconeguda: GFDL 1.2
+- Eiffel_Tower — la imatge no és a Commons (pot ser local de la Viquipèdia)

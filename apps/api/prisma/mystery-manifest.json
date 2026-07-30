@@ -3,120 +3,170 @@
     "file": "/mystery/tiger.jpg",
     "label": "Tigre",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Tiger"
+    "source": "https://commons.wikimedia.org/wiki/File:Bengal_tiger_(Panthera_tigris_tigris)_female_3_crop.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Charles J. Sharp",
+    "restrictions": null
   },
   {
     "file": "/mystery/african_bush_elephant.jpg",
     "label": "Elefant",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/African_bush_elephant"
-  },
-  {
-    "file": "/mystery/giraffe.jpg",
-    "label": "Girafa",
-    "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Giraffe"
+    "source": "https://commons.wikimedia.org/wiki/File:178_Male_African_bush_elephant_in_Etosha_National_Park_Photo_by_Giles_Laurent.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Giles Laurent",
+    "restrictions": null
   },
   {
     "file": "/mystery/emperor_penguin.jpg",
     "label": "Pingüí",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Emperor_penguin"
-  },
-  {
-    "file": "/mystery/red_kangaroo.jpg",
-    "label": "Cangur",
-    "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Red_kangaroo"
+    "source": "https://commons.wikimedia.org/wiki/File:Aptenodytes_forsteri_-Snow_Hill_Island%2C_Antarctica_-adults_and_juvenile-8.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "author": "Ian Duffy from UK",
+    "restrictions": null
   },
   {
     "file": "/mystery/polar_bear.jpg",
     "label": "Ós polar",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Polar_bear"
+    "source": "https://commons.wikimedia.org/wiki/File:Polar_Bear_-_Alaska_(cropped).jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "author": "Alan Wilson",
+    "restrictions": null
   },
   {
     "file": "/mystery/plains_zebra.jpg",
     "label": "Zebra",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Plains_zebra"
+    "source": "https://commons.wikimedia.org/wiki/File:Equus_quagga_burchellii_-_Etosha%2C_2014.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "author": "Yathin S Krishnappa",
+    "restrictions": null
   },
   {
     "file": "/mystery/lion.jpg",
     "label": "Lleó",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Lion"
+    "source": "https://commons.wikimedia.org/wiki/File:020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Giles Laurent",
+    "restrictions": null
   },
   {
     "file": "/mystery/giant_panda.jpg",
     "label": "Ós panda",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Giant_panda"
+    "source": "https://commons.wikimedia.org/wiki/File:Grosser_Panda.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "author": "J. Patrick Fischer",
+    "restrictions": null
   },
   {
     "file": "/mystery/flamingo.jpg",
     "label": "Flamenc",
     "group": "animals",
-    "source": "https://en.wikipedia.org/wiki/Flamingo"
-  },
-  {
-    "file": "/mystery/eiffel_tower.jpg",
-    "label": "Torre Eiffel",
-    "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Eiffel_Tower"
+    "source": "https://commons.wikimedia.org/wiki/File:Flamingos_Laguna_Colorada.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "author": "Valdiney Pimenta",
+    "restrictions": null
   },
   {
     "file": "/mystery/colosseum.jpg",
     "label": "Coliseu",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Colosseum"
+    "source": "https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "FeaturedPics",
+    "restrictions": "ita-mibac"
   },
   {
     "file": "/mystery/taj_mahal.jpg",
     "label": "Taj Mahal",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Taj_Mahal"
+    "source": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_(Edited).jpeg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Yann ; edited by Jim Carter",
+    "restrictions": null
   },
   {
     "file": "/mystery/statue_of_liberty.jpg",
     "label": "Estàtua de la Llibertat",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty"
+    "source": "https://commons.wikimedia.org/wiki/File:Front_view_of_Statue_of_Liberty_(cropped).jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "author": "AskALotl",
+    "restrictions": null
   },
   {
     "file": "/mystery/sagrada_família.jpg",
     "label": "Sagrada Família",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia"
+    "source": "https://commons.wikimedia.org/wiki/File:SF_maig_2_cropped.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Canaan",
+    "restrictions": null
   },
   {
     "file": "/mystery/big_ben.jpg",
     "label": "Big Ben",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Big_Ben"
+    "source": "https://commons.wikimedia.org/wiki/File:Elizabeth_Tower%2C_June_2022.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "author": "Dave Bezaire",
+    "restrictions": null
   },
   {
     "file": "/mystery/great_pyramid_of_giza.jpg",
     "label": "Piràmides de Gizeh",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"
+    "source": "https://commons.wikimedia.org/wiki/File:Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Douwe C. van der Zee",
+    "restrictions": null
   },
   {
     "file": "/mystery/machu_picchu.jpg",
     "label": "Machu Picchu",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Machu_Picchu"
+    "source": "https://commons.wikimedia.org/wiki/File:Machu_Picchu%2C_2023_(012).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "author": "Draceane",
+    "restrictions": null
   },
   {
     "file": "/mystery/sydney_opera_house.jpg",
     "label": "Òpera de Sydney",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House"
+    "source": "https://commons.wikimedia.org/wiki/File:Sydney_Australia._(21339175489).jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "author": "Bernard Spragg. NZ from Christchurch, New Zealand",
+    "restrictions": null
   },
   {
     "file": "/mystery/brandenburg_gate.jpg",
     "label": "Porta de Brandenburg",
     "group": "monuments",
-    "source": "https://en.wikipedia.org/wiki/Brandenburg_Gate"
+    "source": "https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_abends.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "author": "Thomas Wolf , www.foto-tw.de",
+    "restrictions": null
   }
 ]
