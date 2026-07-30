@@ -53,7 +53,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       # API S3: és l'origen de les URL firmades, o sigui que el navegador hi va.
-      - "traefik.http.routers.quizcat-minio.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.quizcat-minio.rule=Host(`${STORAGE_DOMAIN:?STORAGE_DOMAIN és obligatori}`)"
       - "traefik.http.routers.quizcat-minio.entrypoints=websecure"
       - "traefik.http.routers.quizcat-minio.tls.certresolver=letsencrypt"
       - "traefik.http.routers.quizcat-minio.service=quizcat-minio"
@@ -104,7 +104,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       # HTTPS
-      - "traefik.http.routers.quizcat.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.quizcat.rule=Host(`${DOMAIN:?DOMAIN és obligatori}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.quizcat.entrypoints=websecure"
       - "traefik.http.routers.quizcat.tls.certresolver=letsencrypt"
       - "traefik.http.services.quizcat.loadbalancer.server.port=80"
