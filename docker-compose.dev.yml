@@ -1,0 +1,32 @@
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: quizcat-db
+    environment:
+      POSTGRES_USER: quizcat
+      POSTGRES_PASSWORD: quizcat
+      POSTGRES_DB: quizcat
+    ports:
+      - "5444:5432"
+    volumes:
+      - quizcat_pgdata:/var/lib/postgresql/data
+
+  # Storage S3-compatible per a mèdia (imatges de foto misteriosa i, més endavant, àudios).
+  # Ports desplaçats (9010/9011) perquè el 9000 sol estar ocupat per altres projectes.
+  minio:
+    image: minio/minio:latest
+    container_name: quizcat-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: quizcat
+      MINIO_ROOT_PASSWORD: quizcat-dev-2026
+    ports:
+      - "9010:9000" # API S3
+      - "9011:9001" # consola web
+    volumes:
+      - quizcat_minio:/data
+
+volumes:
+  quizcat_pgdata:
+  quizcat_minio:

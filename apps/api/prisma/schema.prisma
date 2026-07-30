@@ -1,0 +1,371 @@
+// Esquema del motor de preguntes de Quizcat.
+// Font de veritat del disseny: ~/Developer/projectes-docs/quizcat/esquema-dades.md
+// Tres blocs: CONTINGUT (el motor) · JUGADORS/PROGRESSIÓ · PARTIDES (pont a live).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================== CONTINGUT (el motor) =====================
+
+model QuestionType {
+  slug          String     @id
+  name          String
+  description   String?
+  answerSchema  Json?      @map("answer_schema")
+  payloadSchema Json?      @map("payload_schema")
+  isActive      Boolean    @default(true) @map("is_active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  questions     Question[]
+
+  @@map("question_types")
+}
+
+model Category {
+  id        String     @id @default(uuid()) @db.Uuid
+  slug      String     @unique
+  name      String
+  parentId  String?    @map("parent_id") @db.Uuid
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Category[] @relation("CategoryTree")
+  icon      String?
+  sortOrder Int        @default(0) @map("sort_order")
+  questions Question[]
+  matches   Match[]
+
+  @@map("categories")
+}
+
+model MediaAsset {
+  id            String          @id @default(uuid()) @db.Uuid
+  kind          String // 'audio' | 'image' | 'video'
+  storagePath   String          @map("storage_path")
+  durationMs    Int?            @map("duration_ms")
+  license       String? // 'owned' | 'royalty-free' | 'cc-by' | 'licensed'...
+  attribution   String?
+  sourceUrl     String?         @map("source_url")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  questionMedia QuestionMedia[]
+  datasetItems  DatasetItem[]
+
+  @@map("media_assets")
+}
+
+model Question {
+  id         String                @id @default(uuid()) @db.Uuid
+  typeSlug   String                @map("type_slug")
+  type       QuestionType          @relation(fields: [typeSlug], references: [slug])
+  categoryId String?               @map("category_id") @db.Uuid
+  category   Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  locale     String                @default("ca")
+  prompt     String?
+  payload    Json                  @default("{}") // dades per RENDERITZAR
+  answer     Json // VERITAT — mai s'envia al client
+  difficulty Int                   @default(3) @db.SmallInt
+  status     String                @default("draft") // draft | review | published | retired
+  premiumPack String?              @map("premium_pack") // null = gratuït; si no, cal desbloquejar el pack
+  topicSlug  String?               @map("topic_slug") // temàtica (per al filtre de temes); null = general
+  source     String                @default("official") // official | community
+  authorId   String?               @map("author_id") @db.Uuid // qui l'ha proposada (community)
+  author     Profile?              @relation("AuthoredQuestions", fields: [authorId], references: [id], onDelete: SetNull)
+  likes      Int                   @default(0)
+  dislikes   Int                   @default(0)
+  tags       String[]              @default([])
+  createdAt  DateTime              @default(now()) @map("created_at")
+  updatedAt  DateTime              @updatedAt @map("updated_at")
+  media      QuestionMedia[]
+  rounds     MatchRound[]
+  stats      QuestionStats?
+  history    UserQuestionHistory[]
+  votes      QuestionVote[]
+
+  @@index([typeSlug])
+  @@index([categoryId])
+  @@index([status, locale])
+  @@index([topicSlug])
+  @@map("questions")
+}
+
+model QuestionMedia {
+  questionId String     @map("question_id") @db.Uuid
+  mediaId    String     @map("media_id") @db.Uuid
+  role       String     @default("primary") // primary | option | hint
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  media      MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([questionId, mediaId, role])
+  @@map("question_media")
+}
+
+// ===================== JUGADORS I PROGRESSIÓ =====================
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  role         String   @default("user") // 'user' | 'admin'
+  createdAt    DateTime @default(now()) @map("created_at")
+  profile      Profile?
+
+  @@map("users")
+}
+
+model Profile {
+  id              String                @id @db.Uuid
+  user            User                  @relation(fields: [id], references: [id], onDelete: Cascade)
+  displayName     String?               @map("display_name")
+  avatarUrl       String?               @map("avatar_url")
+  xp              BigInt                @default(0)
+  level           Int                   @default(1)
+  coins           Int                   @default(0)
+  lives           Int                   @default(5)
+  livesUpdatedAt  DateTime              @default(now()) @map("lives_updated_at")
+  energy          Int                   @default(60) // mesurador (0-100): es carrega jugant i amb el temps
+  energyUpdatedAt DateTime              @default(now()) @map("energy_updated_at") // àncora de regeneració
+  credits         Int                   @default(0) // moneda: es guanya als mini-jocs, es gasta en premium
+  skill           Float                 @default(2.5) // habilitat estimada (escala 1-5), estil Elo
+  skillAnswers    Int                   @default(0) @map("skill_answers") // per a l'escalfament del rating
+  region          String?               // regió deduïda/triada (per suggerir temàtiques): 'catalunya','espanya','mon'
+  topics          String[]              @default([]) // temàtiques on l'usuari es vol centrar (buit = totes)
+  currentStreak   Int                   @default(0) @map("current_streak")
+  minigames       MinigameSession[]
+  unlocks         UserUnlock[]
+  longestStreak   Int                   @default(0) @map("longest_streak")
+  lastPlayedOn    DateTime?             @map("last_played_on") @db.Date
+  createdAt       DateTime              @default(now()) @map("created_at")
+  participants       MatchParticipant[]
+  achievements       UserAchievement[]
+  questionHistory    UserQuestionHistory[]
+  authoredQuestions  Question[]            @relation("AuthoredQuestions")
+  questionVotes      QuestionVote[]
+
+  @@map("profiles")
+}
+
+model LevelThreshold {
+  level    Int    @id
+  xpNeeded BigInt @map("xp_needed")
+
+  @@map("level_thresholds")
+}
+
+model Achievement {
+  slug        String            @id
+  name        String
+  description String?
+  icon        String?
+  criteria    Json? // regla avaluada al servidor
+  users       UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  userId          String      @map("user_id") @db.Uuid
+  achievementSlug String      @map("achievement_slug")
+  unlockedAt      DateTime    @default(now()) @map("unlocked_at")
+  user            Profile     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement     Achievement @relation(fields: [achievementSlug], references: [slug], onDelete: Cascade)
+
+  @@id([userId, achievementSlug])
+  @@map("user_achievements")
+}
+
+// ===================== PARTIDES (solitari ara; pont a live) =====================
+
+model Game {
+  slug     String  @id
+  name     String
+  isActive Boolean @default(true) @map("is_active")
+  matches  Match[]
+
+  @@map("games")
+}
+
+model Match {
+  id           String             @id @default(uuid()) @db.Uuid
+  gameSlug     String             @default("quiz") @map("game_slug")
+  game         Game               @relation(fields: [gameSlug], references: [slug])
+  mode         String             @default("solo") // solo | daily | duel | challenge
+  categoryId   String?            @map("category_id") @db.Uuid
+  category     Category?          @relation(fields: [categoryId], references: [id])
+  status       String             @default("active") // active | finished | abandoned
+  seed         String? // reproduïble: repte diari = mateix set per a tothom
+  createdAt    DateTime           @default(now()) @map("created_at")
+  startedAt    DateTime?          @map("started_at")
+  endedAt      DateTime?          @map("ended_at")
+  participants MatchParticipant[]
+  rounds       MatchRound[]
+
+  @@map("matches")
+}
+
+model MatchParticipant {
+  id        String        @id @default(uuid()) @db.Uuid
+  matchId   String        @map("match_id") @db.Uuid
+  match     Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  userId    String        @map("user_id") @db.Uuid
+  user      Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score     Int           @default(0)
+  placement Int?          @db.SmallInt // 1 = guanyador (duels)
+  answers   RoundAnswer[]
+
+  @@unique([matchId, userId])
+  @@map("match_participants")
+}
+
+model MatchRound {
+  id          String        @id @default(uuid()) @db.Uuid
+  matchId     String        @map("match_id") @db.Uuid
+  match       Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  roundIndex  Int           @map("round_index") @db.SmallInt
+  questionId  String        @map("question_id") @db.Uuid
+  question    Question      @relation(fields: [questionId], references: [id])
+  timeLimitMs Int           @default(15000) @map("time_limit_ms")
+  startedAt   DateTime?     @map("started_at")
+  answers     RoundAnswer[]
+
+  @@unique([matchId, roundIndex])
+  @@map("match_rounds")
+}
+
+// Registre AUTORITATIU de puntuació: is_correct/response_ms/points els posa el SERVIDOR.
+model RoundAnswer {
+  id            String           @id @default(uuid()) @db.Uuid
+  roundId       String           @map("round_id") @db.Uuid
+  round         MatchRound       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participantId String           @map("participant_id") @db.Uuid
+  participant   MatchParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  givenAnswer   Json?            @map("given_answer")
+  isCorrect     Boolean?         @map("is_correct")
+  responseMs    Int?             @map("response_ms")
+  pointsAwarded Int              @default(0) @map("points_awarded")
+  answeredAt    DateTime         @default(now()) @map("answered_at")
+
+  @@unique([roundId, participantId])
+  @@map("round_answers")
+}
+
+// ===================== ESTADÍSTIQUES =====================
+
+model QuestionStats {
+  questionId    String   @id @map("question_id") @db.Uuid
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  timesServed   Int      @default(0) @map("times_served")
+  timesCorrect  Int      @default(0) @map("times_correct")
+  avgResponseMs Int?     @map("avg_response_ms")
+
+  @@map("question_stats")
+}
+
+model UserQuestionHistory {
+  userId     String   @map("user_id") @db.Uuid
+  user       Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String   @map("question_id") @db.Uuid
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  seenCount  Int      @default(1) @map("seen_count")
+
+  @@id([userId, questionId])
+  @@map("user_question_history")
+}
+
+// ===================== DATASETS (contingut reutilitzable) =====================
+
+model Dataset {
+  slug  String        @id
+  name  String
+  items DatasetItem[]
+
+  @@map("datasets")
+}
+
+model DatasetItem {
+  id          String      @id @default(uuid()) @db.Uuid
+  datasetSlug String      @map("dataset_slug")
+  dataset     Dataset     @relation(fields: [datasetSlug], references: [slug], onDelete: Cascade)
+  label       String
+  attributes  Json        @default("{}") // {"capital":"Madrid","flagMediaId":"..."} / {"symbol":"H","number":1}
+  mediaId     String?     @map("media_id") @db.Uuid
+  media       MediaAsset? @relation(fields: [mediaId], references: [id])
+
+  @@map("dataset_items")
+}
+
+// ===================== ECONOMIA (energia · crèdits · premium) =====================
+
+// Sessió de mini-joc (memory). El servidor guarda el deck (veritat) i és l'àrbitre dels crèdits.
+model MinigameSession {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  user           Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind           String    @default("memory")
+  deck           Json // valors ocults de cada carta (server-only)
+  labels         Json // etiqueta a mostrar per valor
+  matchedIndices Int[]     @map("matched_indices")
+  firstFlip      Int?      @map("first_flip") // carta pendent del torn actual
+  moves          Int       @default(0)
+  pairs          Int
+  status         String    @default("active") // active | won | abandoned
+  energySpent    Int       @map("energy_spent")
+  creditsAwarded Int       @default(0) @map("credits_awarded")
+  startedAt      DateTime  @default(now()) @map("started_at")
+  endedAt        DateTime? @map("ended_at")
+
+  @@map("minigame_sessions")
+}
+
+model PremiumPack {
+  slug         String       @id
+  name         String
+  description  String?
+  icon         String?
+  priceCredits Int          @map("price_credits")
+  unlocks      UserUnlock[]
+
+  @@map("premium_packs")
+}
+
+model UserUnlock {
+  userId     String      @map("user_id") @db.Uuid
+  packSlug   String      @map("pack_slug")
+  unlockedAt DateTime    @default(now()) @map("unlocked_at")
+  user       Profile     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack       PremiumPack @relation(fields: [packSlug], references: [slug], onDelete: Cascade)
+
+  @@id([userId, packSlug])
+  @@map("user_unlocks")
+}
+
+// Vot d'un usuari sobre una pregunta (👍/👎). Modera el contingut de la comunitat.
+model QuestionVote {
+  userId     String   @map("user_id") @db.Uuid
+  questionId String   @map("question_id") @db.Uuid
+  user       Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  vote       Int // +1 m'agrada · -1 no m'agrada
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@id([userId, questionId])
+  @@map("question_votes")
+}
+
+// Temàtica seleccionable (Món, Catalunya, Espanya, Història…). Es suggereix segons la regió de l'usuari.
+model Topic {
+  slug      String   @id
+  name      String
+  icon      String?
+  kind      String   @default("general") // general | region
+  regions   String[] @default([]) // regions a qui es suggereix (buit = a tothom)
+  sortOrder Int      @default(0) @map("sort_order")
+
+  @@map("topics")
+}
+
+// NOTA: el rànquing (leaderboard_global) és una VISTA MATERIALITZADA, no un model Prisma.
+// Es crea amb SQL: apps/api/prisma/sql/leaderboard.sql

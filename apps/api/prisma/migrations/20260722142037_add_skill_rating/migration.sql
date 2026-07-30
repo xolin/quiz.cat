@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "profiles" ADD COLUMN     "skill" DOUBLE PRECISION NOT NULL DEFAULT 2.5,
+ADD COLUMN     "skill_answers" INTEGER NOT NULL DEFAULT 0;

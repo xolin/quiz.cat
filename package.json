@@ -1,0 +1,21 @@
+{
+  "name": "quizcat",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:rapid": "node scripts/dev.mjs --rapid",
+    "dev:api": "pnpm --filter @quizcat/api dev",
+    "dev:web": "pnpm --filter @quizcat/web dev",
+    "services:up": "docker compose -f docker-compose.dev.yml up -d",
+    "services:down": "docker compose -f docker-compose.dev.yml down",
+    "db:migrate": "pnpm --filter @quizcat/api exec prisma migrate dev",
+    "db:seed": "pnpm --filter @quizcat/api seed",
+    "media:upload": "pnpm --filter @quizcat/api media:upload",
+    "typecheck": "pnpm --filter @quizcat/api typecheck && pnpm --filter @quizcat/web exec tsc --noEmit",
+    "design:sheet": "pnpm --filter @quizcat/api exec tsx ../../scripts/design-sheet.mts"
+  }
+}

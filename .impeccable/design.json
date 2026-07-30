@@ -1,0 +1,551 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-30T12:41:14.077Z",
+  "title": "Design System: quiz.cat",
+  "extensions": {
+    "colorMeta": {
+      "stage": {
+        "role": "neutral",
+        "displayName": "Blau pissarra d'estudi",
+        "canonical": "#0e1520",
+        "tonalRamp": [
+          "#040508",
+          "#070b10",
+          "#0b1018",
+          "#0e1520",
+          "#3e444d",
+          "#6e7379",
+          "#9fa1a6",
+          "#cfd0d2"
+        ]
+      },
+      "stage-2": {
+        "role": "neutral",
+        "displayName": "Panell d'estudi",
+        "canonical": "#182231",
+        "tonalRamp": [
+          "#06090c",
+          "#0c1119",
+          "#121a25",
+          "#182231",
+          "#464e5a",
+          "#747a83",
+          "#a3a7ad",
+          "#d1d3d6"
+        ]
+      },
+      "stage-3": {
+        "role": "neutral",
+        "displayName": "Pestanya d'estudi",
+        "canonical": "#223046",
+        "tonalRamp": [
+          "#090c12",
+          "#111823",
+          "#1a2435",
+          "#223046",
+          "#4e596b",
+          "#7a8390",
+          "#a7acb5",
+          "#d3d6da"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Fil de cantell",
+        "canonical": "#2c3c54",
+        "tonalRamp": [
+          "#0b0f15",
+          "#161e2a",
+          "#212d3f",
+          "#2c3c54",
+          "#566376",
+          "#808a98",
+          "#abb1bb",
+          "#d5d8dd"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta clara",
+        "canonical": "#f4f7fb",
+        "tonalRamp": [
+          "#3d3e3f",
+          "#7a7c7e",
+          "#b7b9bc",
+          "#f4f7fb",
+          "#f6f9fc",
+          "#f8fafd",
+          "#fbfcfd",
+          "#fdfdfe"
+        ]
+      },
+      "ink-dim": {
+        "role": "neutral",
+        "displayName": "Tinta apagada",
+        "canonical": "#a9b6c7",
+        "tonalRamp": [
+          "#2a2e32",
+          "#555b64",
+          "#7f8995",
+          "#a9b6c7",
+          "#bac5d2",
+          "#cbd3dd",
+          "#dde2e9",
+          "#eef0f4"
+        ]
+      },
+      "ink-on-light": {
+        "role": "neutral",
+        "displayName": "Tinta sobre clar",
+        "canonical": "#17202c",
+        "tonalRamp": [
+          "#06080b",
+          "#0c1016",
+          "#111821",
+          "#17202c",
+          "#454d56",
+          "#747980",
+          "#a2a6ab",
+          "#d1d2d5"
+        ]
+      },
+      "amber": {
+        "role": "primary",
+        "displayName": "Ambre d'antena",
+        "canonical": "#f0a044",
+        "tonalRamp": [
+          "#3c2811",
+          "#785022",
+          "#b47833",
+          "#f0a044",
+          "#f3b369",
+          "#f6c68f",
+          "#f9d9b4",
+          "#fcecda"
+        ]
+      },
+      "amber-deep": {
+        "role": "primary",
+        "displayName": "Ambre profund",
+        "canonical": "#d9822b",
+        "tonalRamp": [
+          "#36210b",
+          "#6d4116",
+          "#a36220",
+          "#d9822b",
+          "#e19b55",
+          "#e8b480",
+          "#f0cdaa",
+          "#f7e6d5"
+        ]
+      },
+      "live": {
+        "role": "secondary",
+        "displayName": "Roig d'emissió",
+        "canonical": "#ce3a2f",
+        "tonalRamp": [
+          "#340f0c",
+          "#671d18",
+          "#9b2c23",
+          "#ce3a2f",
+          "#d86159",
+          "#e28982",
+          "#ebb0ac",
+          "#f5d8d5"
+        ]
+      },
+      "live-text": {
+        "role": "secondary",
+        "displayName": "Roig de text",
+        "canonical": "#f08279",
+        "tonalRamp": [
+          "#3c211e",
+          "#78413d",
+          "#b4625b",
+          "#f08279",
+          "#f39b94",
+          "#f6b4af",
+          "#f9cdc9",
+          "#fce6e4"
+        ]
+      },
+      "good": {
+        "role": "secondary",
+        "displayName": "Verd d'encert",
+        "canonical": "#3fbf7f",
+        "tonalRamp": [
+          "#103020",
+          "#206040",
+          "#2f8f5f",
+          "#3fbf7f",
+          "#65cc99",
+          "#8cd9b2",
+          "#b2e5cc",
+          "#d9f2e5"
+        ]
+      },
+      "geo": {
+        "role": "tertiary",
+        "displayName": "Blau de geografia",
+        "canonical": "#2e8fe0",
+        "tonalRamp": [
+          "#0c2438",
+          "#174870",
+          "#236ba8",
+          "#2e8fe0",
+          "#58a5e6",
+          "#82bcec",
+          "#abd2f3",
+          "#d5e9f9"
+        ]
+      },
+      "hist": {
+        "role": "tertiary",
+        "displayName": "Terra d'història",
+        "canonical": "#c9803a",
+        "tonalRamp": [
+          "#32200f",
+          "#65401d",
+          "#97602c",
+          "#c9803a",
+          "#d49961",
+          "#dfb389",
+          "#e9ccb0",
+          "#f4e6d8"
+        ]
+      },
+      "sci": {
+        "role": "tertiary",
+        "displayName": "Turquesa de ciència",
+        "canonical": "#34b8a8",
+        "tonalRamp": [
+          "#0d2e2a",
+          "#1a5c54",
+          "#278a7e",
+          "#34b8a8",
+          "#5dc6b9",
+          "#85d4cb",
+          "#aee3dc",
+          "#d6f1ee"
+        ]
+      },
+      "cult": {
+        "role": "tertiary",
+        "displayName": "Malva de cultura",
+        "canonical": "#b96fdc",
+        "tonalRamp": [
+          "#2e1c37",
+          "#5d386e",
+          "#8b53a5",
+          "#b96fdc",
+          "#c78ce3",
+          "#d5a9ea",
+          "#e3c5f1",
+          "#f1e2f8"
+        ]
+      },
+      "nat": {
+        "role": "tertiary",
+        "displayName": "Verd de natura",
+        "canonical": "#6fbf4a",
+        "tonalRamp": [
+          "#1c3013",
+          "#386025",
+          "#538f38",
+          "#6fbf4a",
+          "#8ccc6e",
+          "#a9d992",
+          "#c5e5b7",
+          "#e2f2db"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "La pregunta de la partida, sempre dins el bany de llum. Condensada al 78%."
+      },
+      "score": {
+        "displayName": "Score",
+        "purpose": "Comptador de segons, xifra de resultat i valor de l'slider. Condensada al 66% i tabular."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títols de mode i capçaleres de pantalla. Condensada al 74%."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Únicament el text del panell de resposta: el que has de llegir ràpid."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Text general i camps de formulari."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Metadada del rètol, files de llista, enllaços secundaris."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetes en majúscula estreta: pestanya del rètol, marcador, peu del marc de mèdia. La caixa alta viu només aquí."
+      }
+    },
+    "shadows": [
+      {
+        "name": "toast",
+        "value": "0 18px 40px -12px rgba(0, 0, 0, 0.7)",
+        "purpose": "L'única ombra del sistema: només el toast de resultat, l'únic element que sura sobre la pantalla."
+      },
+      {
+        "name": "hairline-inset",
+        "value": "inset 0 0 0 1px var(--qc-hairline)",
+        "purpose": "Cantell intern quan un `border` desquadraria la caixa (dors de la carta del Memory)."
+      },
+      {
+        "name": "stagelight",
+        "value": "radial-gradient(52% 62% at 50% 50%, #24374f 0%, rgba(36, 55, 79, 0) 68%)",
+        "purpose": "Bany de llum d'estudi darrere la pregunta, a sang i amb z-index negatiu. No és una ombra: és l'única profunditat atmosfèrica del món."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Entrades: escombrada del toast i encesa dels panells."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Canvis d'estat de botons i panells (fons, color, contorn)."
+      },
+      {
+        "name": "duration-timer",
+        "value": "100ms linear",
+        "purpose": "Emplenat de la barra de temps. Mai més llarg que el tic del compte enrere, o la barra queda endarrerida respecte de la xifra."
+      },
+      {
+        "name": "wipe-in",
+        "value": "qc-wipe-in 0.24s — clip-path: inset(0 0 100% 0) → inset(0)",
+        "purpose": "El gest natiu del món: escombrada. Ara mateix només al toast."
+      },
+      {
+        "name": "light-up",
+        "value": "qc-light-up 0.26s, cascada de 40ms (.qc-lit)",
+        "purpose": "Els panells de resposta s'encenen com un plató que puja llums."
+      },
+      {
+        "name": "pulse",
+        "value": "qc-pulse 900ms ease-in-out infinite",
+        "purpose": "Barra de temps als últims segons. Desapareix sota prefers-reduced-motion: per això hi ha també les ratlles."
+      },
+      {
+        "name": "bump",
+        "value": "qc-bump 0.25s — scale(1.22) → scale(1)",
+        "purpose": "Xifra que puja al marcador o a l'slider."
+      },
+      {
+        "name": "shake",
+        "value": "qc-shake 0.4s",
+        "purpose": "Panell de resposta erroni."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "@media (prefers-reduced-motion: reduce) { *, .qc-memory-inner { animation: none !important; transition: none !important; } }",
+        "purpose": "Desactivació global. Cap senyal pot dependre d'una animació."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "meta-inline",
+        "value": "480px"
+      },
+      {
+        "name": "options-split",
+        "value": "560px"
+      },
+      {
+        "name": "screen-max",
+        "value": "680px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Panell de resposta",
+      "kind": "custom",
+      "refersTo": "option",
+      "description": "El component signatura: pestanya de lletra + camp de text. En revelar-se s'inunda de color i la pestanya passa a glif.",
+      "html": "<div class=\"ds-options\"><button class=\"ds-option\"><span class=\"ds-option-tab\">A</span><span class=\"ds-option-label\">Castella-la Manxa</span></button><button class=\"ds-option ds-option-picked\"><span class=\"ds-option-tab\">B</span><span class=\"ds-option-label\">Extremadura</span></button><button class=\"ds-option ds-option-good\"><span class=\"ds-option-tab\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12.5l4.5 4.5L19 7\"/></svg></span><span class=\"ds-option-label\">Aragó</span></button><button class=\"ds-option ds-option-bad\"><span class=\"ds-option-tab\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></span><span class=\"ds-option-label\">Navarra</span></button></div>",
+      "css": ".ds-options { display: grid; gap: 8px; font-family: Archivo, system-ui, sans-serif; } .ds-option { display: flex; align-items: stretch; gap: 0; min-height: 56px; padding: 0; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; background: var(--qc-stage-2, #182231); color: var(--qc-ink, #f4f7fb); text-align: left; overflow: hidden; cursor: pointer; transition: background .15s ease, border-color .15s ease; } .ds-option:hover { background: var(--qc-stage-3, #223046); border-color: var(--qc-stage-3, #223046); } .ds-option:focus-visible { outline: 2px solid var(--qc-amber, #f0a044); outline-offset: 2px; } .ds-option-tab { display: flex; align-items: center; justify-content: center; width: 46px; flex: 0 0 46px; background: var(--qc-stage-3, #223046); color: var(--qc-ink-dim, #a9b6c7); font-stretch: 70%; font-weight: 700; font-size: .875rem; letter-spacing: .04em; } .ds-option-label { display: flex; align-items: center; padding: 12px 16px; font-size: 1.0625rem; line-height: 1.25; min-width: 0; overflow-wrap: anywhere; hyphens: auto; } .ds-option-picked { border-color: var(--qc-amber, #f0a044); background: color-mix(in srgb, var(--qc-amber, #f0a044) 16%, var(--qc-stage-2, #182231)); } .ds-option-picked .ds-option-tab { background: var(--qc-amber, #f0a044); color: var(--qc-ink-on-light, #17202c); } .ds-option-good { background: var(--qc-good, #3fbf7f); border-color: var(--qc-good, #3fbf7f); color: var(--qc-ink-on-light, #17202c); } .ds-option-good .ds-option-tab { background: color-mix(in srgb, #000 18%, var(--qc-good, #3fbf7f)); color: var(--qc-ink-on-light, #17202c); } .ds-option-bad { background: var(--qc-live, #ce3a2f); border-color: var(--qc-live, #ce3a2f); color: #fff; } .ds-option-bad .ds-option-tab { background: color-mix(in srgb, #000 20%, var(--qc-live, #ce3a2f)); color: #fff; }"
+    },
+    {
+      "name": "Tira de control: rètol + comptador",
+      "kind": "custom",
+      "refersTo": "lower-third",
+      "description": "Rètol de secció amb el color de categoria a tota la banda, i el comptador com a objecte amb marc propi. La barra de temps va just a sota.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-lower-third\"><span class=\"ds-lt-section\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M3.5 12h17M12 3.5c2.6 2.6 2.6 14.4 0 17M12 3.5c-2.6 2.6-2.6 14.4 0 17\"/></svg>Geografia</span><span class=\"ds-lt-meta\"><span>Ronda <b class=\"ds-num\">3</b>/8</span><span>Clica al mapa</span></span></div><div class=\"ds-counter\"><b class=\"ds-num ds-counter-value\">07</b><span class=\"ds-counter-unit\">s</span></div></div><div class=\"ds-timer\"><div class=\"ds-timer-fill\"></div></div>",
+      "css": ".ds-strip { display: flex; align-items: stretch; gap: 8px; margin-bottom: 8px; font-family: Archivo, system-ui, sans-serif; } .ds-num { font-stretch: 66%; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0; } .ds-lower-third { display: flex; align-items: stretch; flex: 1; min-width: 0; border-radius: 3px; overflow: hidden; background: var(--qc-geo, #2e8fe0); color: var(--qc-ink-on-light, #17202c); } .ds-lt-section { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: color-mix(in srgb, #fff 22%, var(--qc-geo, #2e8fe0)); font-stretch: 70%; font-weight: 700; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; } .ds-lt-meta { display: flex; flex-direction: column; justify-content: center; gap: 1px; flex: 1; padding: 8px 12px; font-size: .875rem; line-height: 1.15; min-width: 0; } .ds-lt-meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } @media (min-width: 480px) { .ds-lt-meta { flex-direction: row; align-items: center; gap: 12px; } } .ds-counter { display: flex; align-items: baseline; justify-content: center; gap: 2px; flex: 0 0 auto; min-width: 92px; padding: 0 12px; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; background: var(--qc-stage-2, #182231); color: var(--qc-ink, #f4f7fb); } .ds-counter-value { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.05; } .ds-counter-unit { font-size: .75rem; color: var(--qc-ink-dim, #a9b6c7); } .ds-timer { height: 6px; border-radius: 3px; background: var(--qc-stage-2, #182231); overflow: hidden; } .ds-timer-fill { height: 100%; width: 100%; transform-origin: left center; transform: scaleX(.47); background: var(--qc-amber, #f0a044); }"
+    },
+    {
+      "name": "Comptador en temps baix",
+      "kind": "custom",
+      "refersTo": "counter-low",
+      "description": "Estat d'últims segons: camp roig a la barra, marc i tint rojos al comptador, i ratlles a 45° sobre l'emplenat perquè el senyal no depengui del color ni del moviment.",
+      "html": "<div class=\"ds-strip-low\"><div class=\"ds-counter-low\"><b class=\"ds-num2 ds-cl-value\">03</b><span class=\"ds-cl-unit\">s</span></div><div class=\"ds-timer-low\"><div class=\"ds-timer-low-fill\"></div></div></div>",
+      "css": ".ds-strip-low { display: grid; gap: 8px; font-family: Archivo, system-ui, sans-serif; } .ds-num2 { font-stretch: 66%; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-counter-low { display: inline-flex; align-items: baseline; justify-content: center; gap: 2px; min-width: 92px; padding: 0 12px; border: 1px solid var(--qc-live, #ce3a2f); border-radius: 3px; background: color-mix(in srgb, var(--qc-live, #ce3a2f) 14%, var(--qc-stage-2, #182231)); } .ds-cl-value { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.05; color: var(--qc-live-text, #f08279); } .ds-cl-unit { font-size: .75rem; color: var(--qc-ink-dim, #a9b6c7); } .ds-timer-low { height: 6px; border-radius: 3px; background: var(--qc-stage-2, #182231); overflow: hidden; } .ds-timer-low-fill { height: 100%; width: 100%; transform-origin: left center; transform: scaleX(.2); background: var(--qc-live, #ce3a2f); background-image: repeating-linear-gradient(45deg, rgba(0,0,0,.38) 0 6px, rgba(0,0,0,0) 6px 12px); animation: ds-pulse 900ms ease-in-out infinite; } @keyframes ds-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } } @media (prefers-reduced-motion: reduce) { .ds-timer-low-fill { animation: none !important; } }"
+    },
+    {
+      "name": "Botó",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Botó de retransmissió: cantell viu, contorn de fil, condensat al 82%. El primari desactivat passa a neutre en comptes d'esvair-se.",
+      "html": "<div class=\"ds-btnrow\"><button class=\"ds-btn ds-btn-primary\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 12a8 8 0 1 0-3 6.2\"/><path d=\"M20 6v6h-6\"/></svg>Torna a jugar</button><button class=\"ds-btn\">Inici</button><button class=\"ds-btn ds-btn-primary\" disabled>Confirma</button></div>",
+      "css": ".ds-btnrow { display: flex; gap: 8px; flex-wrap: wrap; font-family: Archivo, system-ui, sans-serif; } .ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 12px 24px; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; background: var(--qc-stage-2, #182231); color: var(--qc-ink, #f4f7fb); font-family: inherit; font-size: 1rem; font-stretch: 82%; font-weight: 700; cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; } .ds-btn:hover { background: var(--qc-stage-3, #223046); border-color: var(--qc-stage-3, #223046); } .ds-btn:focus-visible { outline: 2px solid var(--qc-amber, #f0a044); outline-offset: 2px; } .ds-btn-primary { background: var(--qc-amber, #f0a044); border-color: var(--qc-amber, #f0a044); color: var(--qc-ink-on-light, #17202c); } .ds-btn-primary:hover { background: var(--qc-amber-deep, #d9822b); border-color: var(--qc-amber-deep, #d9822b); } .ds-btn-primary:disabled { background: var(--qc-stage-2, #182231); border-color: var(--qc-hairline, #2c3c54); color: var(--qc-ink-dim, #a9b6c7); cursor: not-allowed; opacity: 1; }"
+    },
+    {
+      "name": "Camp de mode",
+      "kind": "card",
+      "refersTo": "mode",
+      "description": "Bloc de color que ocupa regió (no una targeta): és la graella d'emissió de l'inici. L'hover és brillantor, com una llum que puja.",
+      "html": "<div class=\"ds-modes\"><button class=\"ds-mode ds-mode-amber\"><span class=\"ds-mode-head\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8.5 5.5l10 6.5-10 6.5Z\" fill=\"currentColor\" stroke=\"none\"/></svg><span class=\"ds-mode-title\">Partida ràpida</span></span><span class=\"ds-mode-line\">8 rondes · Adaptatiu</span></button><button class=\"ds-mode ds-mode-live\"><span class=\"ds-mode-head\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3a7.5 7.5 0 0 0-7.5 7.5v2.8L6.5 16v3.5h11V16l2-2.7v-2.8A7.5 7.5 0 0 0 12 3Z\"/><circle cx=\"9.2\" cy=\"11\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"14.8\" cy=\"11\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\"/></svg><span class=\"ds-mode-title\">Survival</span></span><span class=\"ds-mode-line ds-mode-line-dark\">Fins que falles</span></button></div>",
+      "css": ".ds-modes { display: grid; gap: 8px; font-family: Archivo, system-ui, sans-serif; } .ds-mode { display: block; width: 100%; text-align: left; border: 0; border-radius: 6px; padding: 24px 16px; cursor: pointer; transition: filter .15s ease; } .ds-mode:hover { filter: brightness(1.08); } .ds-mode:focus-visible { outline: 2px solid var(--qc-amber, #f0a044); outline-offset: 2px; } .ds-mode-amber { background: var(--qc-amber, #f0a044); color: var(--qc-ink-on-light, #17202c); } .ds-mode-live { background: var(--qc-live, #ce3a2f); color: var(--qc-ink, #f4f7fb); } .ds-mode-head { display: flex; align-items: center; gap: 8px; } .ds-mode-title { display: block; font-size: 1.5rem; font-stretch: 74%; font-weight: 700; line-height: 1.05; letter-spacing: -.01em; } .ds-mode-line { display: block; margin-top: 4px; font-size: .875rem; opacity: .8; } .ds-mode-line-dark { opacity: 1; }"
+    },
+    {
+      "name": "Marc de mèdia",
+      "kind": "card",
+      "refersTo": "media",
+      "description": "La gramàtica comuna de les nou mecàniques: cos centrat i peu d'instrucció en etiqueta majúscula estreta. Tota mecànica nova hereta aquest marc.",
+      "html": "<div class=\"ds-media\"><div class=\"ds-media-body\"><div class=\"ds-media-demo\">contingut de la mecànica</div></div><div class=\"ds-media-caption\"><span>El contorn es va descobrint</span><span>real: 1.240</span></div></div>",
+      "css": ".ds-media { border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; background: var(--qc-stage-2, #182231); overflow: hidden; font-family: Archivo, system-ui, sans-serif; color: var(--qc-ink, #f4f7fb); } .ds-media-body { position: relative; display: flex; justify-content: center; } .ds-media-demo { padding: 40px 16px; color: var(--qc-ink-dim, #a9b6c7); font-size: .875rem; } .ds-media-caption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-top: 1px solid var(--qc-hairline, #2c3c54); background: var(--qc-stage, #0e1520); color: var(--qc-ink-dim, #a9b6c7); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; font-stretch: 74%; font-weight: 700; }"
+    },
+    {
+      "name": "Marcador",
+      "kind": "custom",
+      "refersTo": "scoreboard",
+      "description": "La forma nativa del món per a qualsevol conjunt de xifres d'estat: cel·les iguals separades per fil, etiqueta en majúscula i xifra tabular.",
+      "html": "<div class=\"ds-scoreboard\"><div class=\"ds-sb-cell\"><span class=\"ds-sb-label\">Punts</span><span class=\"ds-sb-value\">1.240</span></div><div class=\"ds-sb-cell\"><span class=\"ds-sb-label\">Ratxa</span><span class=\"ds-sb-value ds-sb-live\">3</span></div><div class=\"ds-sb-cell\"><span class=\"ds-sb-label\">Encert</span><span class=\"ds-sb-value\">72%</span></div></div>",
+      "css": ".ds-scoreboard { display: flex; align-items: stretch; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; background: var(--qc-stage-2, #182231); overflow: hidden; font-family: Archivo, system-ui, sans-serif; color: var(--qc-ink, #f4f7fb); } .ds-sb-cell { flex: 1; padding: 8px 12px; min-width: 0; } .ds-sb-cell + .ds-sb-cell { border-left: 1px solid var(--qc-hairline, #2c3c54); } .ds-sb-label { display: block; color: var(--qc-ink-dim, #a9b6c7); font-size: .75rem; letter-spacing: .07em; text-transform: uppercase; font-stretch: 74%; font-weight: 700; } .ds-sb-value { display: block; font-size: 1.375rem; line-height: 1.2; font-stretch: 66%; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-sb-live { color: var(--qc-amber, #f0a044); }"
+    },
+    {
+      "name": "Toast de resultat",
+      "kind": "custom",
+      "refersTo": "toast-good",
+      "description": "L'únic element que sura sobre la pantalla, i l'únic amb ombra. Entra amb escombrada, porta el gat i la xifra, i es tanca sol.",
+      "html": "<div class=\"ds-toast\"><div class=\"ds-toast-row\"><svg viewBox=\"0 0 100 100\" width=\"56\" height=\"56\"><path d=\"M20 38 L25 8 L47 27 Z\" fill=\"#F0A044\" stroke=\"#2E2A27\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M80 38 L75 8 L53 27 Z\" fill=\"#F0A044\" stroke=\"#2E2A27\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M27 30 L29 16 L39 26 Z\" fill=\"#F2B0AC\"/><path d=\"M73 30 L71 16 L61 26 Z\" fill=\"#F2B0AC\"/><ellipse cx=\"50\" cy=\"57\" rx=\"34\" ry=\"30\" fill=\"#F0A044\" stroke=\"#2E2A27\" stroke-width=\"3\"/><path d=\"M43 33 q4 -7 7 -1 M57 33 q-4 -7 -7 -1\" fill=\"none\" stroke=\"#D9822B\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M30 52 q7 -9 14 0 M56 52 q7 -9 14 0\" fill=\"none\" stroke=\"#2E2A27\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><path d=\"M50 64 l-5 -5 h10 Z\" fill=\"#F2B0AC\" stroke=\"#2E2A27\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M41 67 q9 11 18 0\" fill=\"none\" stroke=\"#2E2A27\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M30 62 H12 M30 68 H13 M70 62 H88 M70 68 H87\" stroke=\"#2E2A27\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".75\"/></svg><b class=\"ds-toast-num\">+240</b></div><div class=\"ds-toast-sub\">rapidesa +60 · ratxa +30</div></div>",
+      "css": ".ds-toast { min-width: min(340px, calc(100vw - 32px)); max-width: 92vw; padding: 16px 24px; border-radius: 6px; border: 1px solid rgba(0,0,0,.25); box-shadow: 0 18px 40px -12px rgba(0,0,0,.7); background: var(--qc-good, #3fbf7f); color: var(--qc-ink-on-light, #17202c); text-align: center; font-family: Archivo, system-ui, sans-serif; cursor: pointer; animation: ds-wipe-in .24s cubic-bezier(.2,.8,.2,1); } .ds-toast-row { display: flex; gap: 16px; align-items: center; justify-content: center; } .ds-toast-num { font-size: 2rem; line-height: 1; font-stretch: 66%; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-toast-sub { font-size: .875rem; margin-top: 8px; opacity: .9; } @keyframes ds-wipe-in { from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(-6px); } to { opacity: 1; clip-path: inset(0); transform: none; } } @media (prefers-reduced-motion: reduce) { .ds-toast { animation: none !important; } }"
+    },
+    {
+      "name": "Camp de formulari",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Camp més fosc que el panell que el conté, amb fil i cantell viu. El focus és l'anell ambre global.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Nom que es veurà</span><input class=\"ds-input\" type=\"text\" placeholder=\"jugador/a\" /></label>",
+      "css": ".ds-field { display: grid; gap: 8px; font-family: Archivo, system-ui, sans-serif; } .ds-field-label { color: var(--qc-ink-dim, #a9b6c7); font-size: .75rem; letter-spacing: .07em; text-transform: uppercase; font-stretch: 74%; font-weight: 700; } .ds-input { font-family: inherit; font-size: 1rem; color: var(--qc-ink, #f4f7fb); background: var(--qc-stage, #0e1520); border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 3px; padding: 12px; } .ds-input::placeholder { color: var(--qc-ink-dim, #a9b6c7); } .ds-input:focus-visible { outline: 2px solid var(--qc-amber, #f0a044); outline-offset: 2px; }"
+    },
+    {
+      "name": "Selector de taula (canvi de canal)",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Navegació del rànquing: botons enganxats sense radi, l'actiu en ambre. Es llegeix com un canvi de canal, no com tres botons solts.",
+      "html": "<nav class=\"ds-tabs\"><button class=\"ds-tab ds-tab-on\">Global</button><button class=\"ds-tab\">Repte d'avui</button><button class=\"ds-tab\">Survival</button></nav>",
+      "css": ".ds-tabs { display: flex; gap: 1px; font-family: Archivo, system-ui, sans-serif; } .ds-tab { flex: 1; min-height: 42px; padding: 0 12px; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 0; background: var(--qc-stage-2, #182231); color: var(--qc-ink, #f4f7fb); font-family: inherit; font-size: .875rem; font-stretch: 82%; font-weight: 700; cursor: pointer; transition: background .15s ease; } .ds-tab:hover { background: var(--qc-stage-3, #223046); } .ds-tab-on { background: var(--qc-amber, #f0a044); border-color: var(--qc-amber, #f0a044); color: var(--qc-ink-on-light, #17202c); } .ds-tab:focus-visible { outline: 2px solid var(--qc-amber, #f0a044); outline-offset: 2px; }"
+    },
+    {
+      "name": "Insígnia d'assoliment",
+      "kind": "chip",
+      "refersTo": "panel",
+      "description": "Un dels dos únics llocs amb forma de pastilla: contorn de fil, text apagat, icona a 14 px.",
+      "html": "<span class=\"ds-chip\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 4l2.4 5.2 5.6.7-4.1 3.9 1 5.6-4.9-2.8-4.9 2.8 1-5.6L4 9.9l5.6-.7Z\"/></svg> Primera partida</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border: 1px solid var(--qc-hairline, #2c3c54); border-radius: 999px; font-family: Archivo, system-ui, sans-serif; font-size: .875rem; color: var(--qc-ink-dim, #a9b6c7); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El paquet de grafisme de retransmissió",
+    "overview": "El món no és el plató: és el grafisme que s'hi sobreimprimeix. Rètol de secció, panells que s'encenen, comptador amb marc propi, marcador de xifres condensades. Tot viu sobre un fons d'estudi blau pissarra amb un únic bany de llum radial darrere la pregunta. Res de plató físic: cap bisell, cap daurat, cap purpurina, cap scanline. El kitsch retro és l'anti-referència confirmada.\n\nLa densitat és de mòbil primer, columna única de 680 px màxim, centrada, amb ritme d'espaiat de 4 px. La jerarquia de la pantalla de partida està fixada pel contracte i respectada pel codi: rètol + comptador, barra de temps, pregunta gran en condensada, panells de resposta, marcador a baix. La mascota (el gat) no apareix mentre penses: entra al toast del resultat i a les pantalles d'inici i de resum.\n\nEl color de secció és estructural, no decoratiu: cada categoria té el seu to i el rètol de la partida s'hi pinta sencer. L'ambre és el color d'antena (pelatge del gat), i per això mai omple un camp fora d'un mode d'inici: marca acció primària, focus i xifra viva.",
+    "keyCharacteristics": [
+      "Fons d'estudi fosc únic (color-scheme: dark), sense mode clar.",
+      "Cantell viu: 3 px de radi per defecte, 6 px per als blocs grans.",
+      "Una sola família tipogràfica, amb l'eix d'amplada fent de segona veu.",
+      "Xifres sempre condensades i tabulars.",
+      "Cap senyal important que depengui només del color.",
+      "Contrast verificat per script, no a ull."
+    ],
+    "rules": [
+      {
+        "name": "La Regla de la Porta de Contrast",
+        "section": "colors",
+        "body": "Cap color entra a la paleta sense passar per `pnpm design:sheet`. L'script calcula el ratio WCAG de les 22 parelles que el disseny fa servir de debò, exigeix 4,5:1 (3:1 per a xifra gran) i surt amb codi d'error si alguna falla."
+      },
+      {
+        "name": "La Regla del Camp de Secció",
+        "section": "colors",
+        "body": "El color de secció ocupa tota la banda del rètol només a la partida. A la resta de pantalles (--plain) el camp es queda neutre i el color va només a la pestanya: pintar la banda sencera d'ambre convertiria el color d'antena en un camp."
+      },
+      {
+        "name": "La Regla dels Tres Canals",
+        "section": "colors",
+        "body": "Els últims segons es diuen per tres vies alhora: camp roig a la barra, marc i tint rojos al comptador, i ratlles a 45° sobre l'emplenat. La textura hi és perquè sota prefers-reduced-motion el pols desapareix; i és textura, no un rètol de text, perquè a 390 px el rètol es menjava el nom de la mecànica."
+      },
+      {
+        "name": "La Regla del Color Acompanyat",
+        "section": "colors",
+        "body": "Cap estat es comunica només amb color: la pestanya de l'opció passa a ✓ o ✗, el resum posa glif a cada fila, i les icones sempre duen text o aria-label."
+      },
+      {
+        "name": "La Regla de l'Hex Literal",
+        "section": "colors",
+        "body": "El valor literal en hexadecimal només és admissible on la variable CSS no arriba: dades de dibuix SVG (mascotArt.ts) i marcadors de Leaflet. Quan hi apareix, ha de ser el mateix valor que el token."
+      },
+      {
+        "name": "La Regla d'una Sola Família",
+        "section": "typography",
+        "body": "Una família per a tot; si et cal una altra veu, mou l'eix d'amplada, no la família. I res de CDN: la tipografia s'allotja al projecte."
+      },
+      {
+        "name": "La Regla de la Xifra Tabular",
+        "section": "typography",
+        "body": "Tota xifra que canvia sola porta .qc-num (amplada 66%, pes 700, tabular). Sense això, un comptador que baixa de 10 a 9 fa saltar el layout."
+      },
+      {
+        "name": "La Regla dels 390",
+        "section": "layout",
+        "body": "Cap decisió de layout es pren mirant una finestra d'escriptori. Si una regla no aguanta a 390 px d'amplada, la regla és falsa. El pas a dues columnes es guanya amb amplada de viewport, no amb suposicions sobre el contingut."
+      },
+      {
+        "name": "La Regla del Fil, no l'Ombra",
+        "section": "elevation",
+        "body": "Les superfícies estan planes en repòs i se separen per to i per fil. Si et cal una ombra per fer entendre un objecte, l'objecte està al nivell tonal equivocat. L'excepció és el toast."
+      }
+    ],
+    "dos": [
+      "Do passar `pnpm design:sheet` sempre que toquis un color, i afegir-hi la parella nova a PAIRS si has introduït una combinació text/fons que abans no existia.",
+      "Do fer servir els tokens --qc-* per a tot: els valors literals dins de style={{}} han de ser referències var(--qc-…).",
+      "Do posar .qc-num a qualsevol xifra que canviï sola.",
+      "Do encaixar tota mecànica nova dins .qc-media amb el peu d'instrucció.",
+      "Do donar un segon canal (glif, textura, text per a lector de pantalla) a qualsevol senyal que ara mateix es digui amb color.",
+      "Do animar amb transform (scaleX, translate) i no amb width, sobretot al que es repinta cada 100 ms.",
+      "Do posar min-width: 0 i, si el text pot ser llarg, overflow-wrap: anywhere, a tota cel·la de flex amb text.",
+      "Do provar a 390 px abans de qualsevol altra amplada.",
+      "Do registrar la icona (i el color, si és categoria) quan afegeixis un slug nou a la base de dades."
+    ],
+    "donts": [
+      "Don't pintar la banda sencera del rètol d'ambre ni de cap color que no sigui el de la categoria de la pregunta.",
+      "Don't fer servir --qc-live com a color de text sobre fons fosc; per a això hi ha --qc-live-text.",
+      "Don't esvair amb opacity res que hagi de continuar llegible: el primari desactivat passa a neutre i les opcions descartades conserven contorn i opacitat plena.",
+      "Don't confiar cap informació a una animació ni a un color sols: sota prefers-reduced-motion el moviment desapareix sencer.",
+      "Don't afegir una segona família tipogràfica ni carregar la tipografia des d'un CDN.",
+      "Don't afegir ombres, bisells, daurats, purpurina ni scanlines: l'única ombra del sistema és la del toast.",
+      "Don't ficar cap element nou dins la banda del rètol a l'amplada de mòbil.",
+      "Don't posar el gat a la pantalla mentre l'usuari pensa la resposta.",
+      "Don't decidir el nombre de columnes de les respostes per la llargada del text sense passar també pel punt de ruptura de 560 px.",
+      "Don't fer servir emojis com a icona a la interfície, encara que la base de dades en tingui."
+    ],
+    "openItems": [
+      "L'escombrada entre rondes no està implementada: qc-wipe-in només s'aplica al toast i el qc-fade-in de .qc-screen corre un únic cop en muntar-se, així que les rondes es canvien sense transició.",
+      "El toast tapa el rètol i el comptador en revelar-se.",
+      "L'estat de temps baix del comptador encara es diu només amb color: les ratlles són a la barra, no al comptador.",
+      "Sostre no construït: banda a sang a escriptori i el marcador com a tercer objecte de retransmissió.",
+      "Les imatges de «foto misteriosa» tenen la llicència sense verificar."
+    ]
+  }
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "file": "/mystery/tiger.jpg",
+    "label": "Tigre",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Tiger"
+  },
+  {
+    "file": "/mystery/african_bush_elephant.jpg",
+    "label": "Elefant",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/African_bush_elephant"
+  },
+  {
+    "file": "/mystery/giraffe.jpg",
+    "label": "Girafa",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Giraffe"
+  },
+  {
+    "file": "/mystery/emperor_penguin.jpg",
+    "label": "Pingüí",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Emperor_penguin"
+  },
+  {
+    "file": "/mystery/red_kangaroo.jpg",
+    "label": "Cangur",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Red_kangaroo"
+  },
+  {
+    "file": "/mystery/polar_bear.jpg",
+    "label": "Ós polar",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Polar_bear"
+  },
+  {
+    "file": "/mystery/plains_zebra.jpg",
+    "label": "Zebra",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Plains_zebra"
+  },
+  {
+    "file": "/mystery/lion.jpg",
+    "label": "Lleó",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Lion"
+  },
+  {
+    "file": "/mystery/giant_panda.jpg",
+    "label": "Ós panda",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Giant_panda"
+  },
+  {
+    "file": "/mystery/flamingo.jpg",
+    "label": "Flamenc",
+    "group": "animals",
+    "source": "https://en.wikipedia.org/wiki/Flamingo"
+  },
+  {
+    "file": "/mystery/eiffel_tower.jpg",
+    "label": "Torre Eiffel",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Eiffel_Tower"
+  },
+  {
+    "file": "/mystery/colosseum.jpg",
+    "label": "Coliseu",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Colosseum"
+  },
+  {
+    "file": "/mystery/taj_mahal.jpg",
+    "label": "Taj Mahal",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Taj_Mahal"
+  },
+  {
+    "file": "/mystery/statue_of_liberty.jpg",
+    "label": "Estàtua de la Llibertat",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty"
+  },
+  {
+    "file": "/mystery/sagrada_família.jpg",
+    "label": "Sagrada Família",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia"
+  },
+  {
+    "file": "/mystery/big_ben.jpg",
+    "label": "Big Ben",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Big_Ben"
+  },
+  {
+    "file": "/mystery/great_pyramid_of_giza.jpg",
+    "label": "Piràmides de Gizeh",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"
+  },
+  {
+    "file": "/mystery/machu_picchu.jpg",
+    "label": "Machu Picchu",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Machu_Picchu"
+  },
+  {
+    "file": "/mystery/sydney_opera_house.jpg",
+    "label": "Òpera de Sydney",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House"
+  },
+  {
+    "file": "/mystery/brandenburg_gate.jpg",
+    "label": "Porta de Brandenburg",
+    "group": "monuments",
+    "source": "https://en.wikipedia.org/wiki/Brandenburg_Gate"
+  }
+]

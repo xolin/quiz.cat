@@ -1,0 +1,482 @@
+[
+  {
+    "file": "/languages/common_voice_es_18307009.mp3",
+    "locale": "es",
+    "label": "Castellà",
+    "group": "romànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/es/datasets"
+  },
+  {
+    "file": "/languages/common_voice_es_18307010.mp3",
+    "locale": "es",
+    "label": "Castellà",
+    "group": "romànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/es/datasets"
+  },
+  {
+    "file": "/languages/common_voice_es_18307011.mp3",
+    "locale": "es",
+    "label": "Castellà",
+    "group": "romànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/es/datasets"
+  },
+  {
+    "file": "/languages/common_voice_en_100538.mp3",
+    "locale": "en",
+    "label": "Anglès",
+    "group": "germànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/en/datasets"
+  },
+  {
+    "file": "/languages/common_voice_en_100738.mp3",
+    "locale": "en",
+    "label": "Anglès",
+    "group": "germànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/en/datasets"
+  },
+  {
+    "file": "/languages/common_voice_en_100739.mp3",
+    "locale": "en",
+    "label": "Anglès",
+    "group": "germànica",
+    "difficulty": 1,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/en/datasets"
+  },
+  {
+    "file": "/languages/common_voice_fr_17301936.mp3",
+    "locale": "fr",
+    "label": "Francès",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/fr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_fr_17301937.mp3",
+    "locale": "fr",
+    "label": "Francès",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/fr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_fr_17305869.mp3",
+    "locale": "fr",
+    "label": "Francès",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/fr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_it_17415796.mp3",
+    "locale": "it",
+    "label": "Italià",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/it/datasets"
+  },
+  {
+    "file": "/languages/common_voice_it_17415799.mp3",
+    "locale": "it",
+    "label": "Italià",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/it/datasets"
+  },
+  {
+    "file": "/languages/common_voice_it_17415800.mp3",
+    "locale": "it",
+    "label": "Italià",
+    "group": "romànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/it/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pt_19288262.mp3",
+    "locale": "pt",
+    "label": "Portuguès",
+    "group": "romànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pt/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pt_19288263.mp3",
+    "locale": "pt",
+    "label": "Portuguès",
+    "group": "romànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pt/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pt_19288264.mp3",
+    "locale": "pt",
+    "label": "Portuguès",
+    "group": "romànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pt/datasets"
+  },
+  {
+    "file": "/languages/common_voice_gl_25517369.mp3",
+    "locale": "gl",
+    "label": "Gallec",
+    "group": "romànica",
+    "difficulty": 4,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/gl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_gl_25517375.mp3",
+    "locale": "gl",
+    "label": "Gallec",
+    "group": "romànica",
+    "difficulty": 4,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/gl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_gl_25517376.mp3",
+    "locale": "gl",
+    "label": "Gallec",
+    "group": "romànica",
+    "difficulty": 4,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/gl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_de_17300432.mp3",
+    "locale": "de",
+    "label": "Alemany",
+    "group": "germànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/de/datasets"
+  },
+  {
+    "file": "/languages/common_voice_de_17300433.mp3",
+    "locale": "de",
+    "label": "Alemany",
+    "group": "germànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/de/datasets"
+  },
+  {
+    "file": "/languages/common_voice_de_17300434.mp3",
+    "locale": "de",
+    "label": "Alemany",
+    "group": "germànica",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/de/datasets"
+  },
+  {
+    "file": "/languages/common_voice_nl_17691569.mp3",
+    "locale": "nl",
+    "label": "Neerlandès",
+    "group": "germànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/nl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_nl_17694155.mp3",
+    "locale": "nl",
+    "label": "Neerlandès",
+    "group": "germànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/nl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_nl_17694172.mp3",
+    "locale": "nl",
+    "label": "Neerlandès",
+    "group": "germànica",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/nl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ru_18862824.mp3",
+    "locale": "ru",
+    "label": "Rus",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ru/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ru_18862825.mp3",
+    "locale": "ru",
+    "label": "Rus",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ru/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ru_18862830.mp3",
+    "locale": "ru",
+    "label": "Rus",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ru/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pl_20589472.mp3",
+    "locale": "pl",
+    "label": "Polonès",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pl_20603168.mp3",
+    "locale": "pl",
+    "label": "Polonès",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_pl_20603171.mp3",
+    "locale": "pl",
+    "label": "Polonès",
+    "group": "eslava",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/pl/datasets"
+  },
+  {
+    "file": "/languages/common_voice_eu_18251890.mp3",
+    "locale": "eu",
+    "label": "Èuscar",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/eu/datasets"
+  },
+  {
+    "file": "/languages/common_voice_eu_18251891.mp3",
+    "locale": "eu",
+    "label": "Èuscar",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/eu/datasets"
+  },
+  {
+    "file": "/languages/common_voice_eu_18251894.mp3",
+    "locale": "eu",
+    "label": "Èuscar",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/eu/datasets"
+  },
+  {
+    "file": "/languages/common_voice_el_20516472.mp3",
+    "locale": "el",
+    "label": "Grec",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/el/datasets"
+  },
+  {
+    "file": "/languages/common_voice_el_20516576.mp3",
+    "locale": "el",
+    "label": "Grec",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/el/datasets"
+  },
+  {
+    "file": "/languages/common_voice_el_20516577.mp3",
+    "locale": "el",
+    "label": "Grec",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/el/datasets"
+  },
+  {
+    "file": "/languages/common_voice_tr_17346626.mp3",
+    "locale": "tr",
+    "label": "Turc",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/tr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_tr_17346667.mp3",
+    "locale": "tr",
+    "label": "Turc",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/tr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_tr_17346753.mp3",
+    "locale": "tr",
+    "label": "Turc",
+    "group": "altres",
+    "difficulty": 3,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/tr/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ar_19058345.mp3",
+    "locale": "ar",
+    "label": "Àrab",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ar/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ar_19058377.mp3",
+    "locale": "ar",
+    "label": "Àrab",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ar/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ar_19058386.mp3",
+    "locale": "ar",
+    "label": "Àrab",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ar/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ja_19485544.mp3",
+    "locale": "ja",
+    "label": "Japonès",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ja/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ja_19485552.mp3",
+    "locale": "ja",
+    "label": "Japonès",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ja/datasets"
+  },
+  {
+    "file": "/languages/common_voice_ja_19485578.mp3",
+    "locale": "ja",
+    "label": "Japonès",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/ja/datasets"
+  },
+  {
+    "file": "/languages/common_voice_zh-CN_18551061.mp3",
+    "locale": "zh-CN",
+    "label": "Xinès (mandarí)",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/zh-CN/datasets"
+  },
+  {
+    "file": "/languages/common_voice_zh-CN_18551064.mp3",
+    "locale": "zh-CN",
+    "label": "Xinès (mandarí)",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/zh-CN/datasets"
+  },
+  {
+    "file": "/languages/common_voice_zh-CN_18551065.mp3",
+    "locale": "zh-CN",
+    "label": "Xinès (mandarí)",
+    "group": "altres",
+    "difficulty": 2,
+    "license": "cc0",
+    "attribution": "Mozilla Common Voice 17 (CC0)",
+    "source": "https://commonvoice.mozilla.org/zh-CN/datasets"
+  }
+]

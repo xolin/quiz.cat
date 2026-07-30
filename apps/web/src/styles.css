@@ -1,0 +1,692 @@
+/*!
+ * ── CONTRACTE DE DIRECCIÓ ──────────────────────────────────────────────────
+ * THESIS: Un concurs de televisió, no un test. Fora el que la categoria sempre envia
+ *   (fons lila amb quatre caselles de colors i confeti). Això és el PAQUET DE GRAFISME
+ *   DE RETRANSMISSIÓ — rètols, panells il·luminats, marcador — no el plató físic: res de
+ *   bisells, daurats, purpurina ni scanlines. El kitsch retro és l'anti-referència.
+ * OWN-WORLD: Fons d'estudi blau pissarra profund amb un bany de llum darrere la pregunta.
+ *   Panells de resposta plans amb pestanya de lletra que s'encenen. Rètol amb color de
+ *   secció ocupant tota la regió. Xifres de marcador condensades i tabulars. Ambre (el
+ *   pelatge del gat) com a color d'antena.
+ * STORY: Entres, veus què fan avui, tries mode, respons contra rellotge i el gat
+ *   reacciona. Surts sabent fins on has arribat.
+ * FIRST VIEWPORT (partida): rètol de categoria i ronda; compte enrere com a element més
+ *   visible; pregunta gran en condensada; panells de resposta; marcador a baix. El gat NO
+ *   hi és mentre penses.
+ * FORM: Món fixat per l'usuari sobre set candidats derivats del seu món quotidià (quiosc,
+ *   plató, senyalística, cromos, rajola, joc de taula, quadern). Sense daus: la tria de
+ *   l'usuari els guanya.
+ * FINISH: unreviewed and undocumented is unfinished; this build ends with the finish
+ *   review, the verdict, and DESIGN.md
+ * ───────────────────────────────────────────────────────────────────────────
+ */
+
+/* Archivo (OFL, Omnibus-Type), variable amb eix d'amplada: la mateixa família dona la
+   condensada del marcador i la normal del text. Auto-allotjada: cap CDN. */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url("/fonts/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url("/fonts/archivo-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* Escenari */
+  --qc-stage: #0e1520;
+  --qc-stage-2: #182231;
+  --qc-stage-3: #223046;
+  --qc-hairline: #2c3c54;
+
+  /* Text */
+  --qc-ink: #f4f7fb;
+  --qc-ink-dim: #a9b6c7;
+  --qc-ink-on-light: #17202c;
+
+  /* Antena i estats */
+  --qc-amber: #f0a044;
+  --qc-amber-deep: #d9822b;
+  --qc-live: #ce3a2f;
+  --qc-live-text: #f08279; /* el roig de fons no arriba a 4,5:1 com a text sobre l'escenari */
+  --qc-good: #3fbf7f;
+
+  /* Colors de secció (categories) */
+  --qc-geo: #2e8fe0;
+  --qc-hist: #c9803a;
+  --qc-sci: #34b8a8;
+  --qc-cult: #b96fdc;
+  --qc-nat: #6fbf4a;
+
+  /* Espai */
+  --qc-1: 4px;
+  --qc-2: 8px;
+  --qc-3: 12px;
+  --qc-4: 16px;
+  --qc-5: 24px;
+  --qc-6: 32px;
+  --qc-7: 48px;
+
+  /* Radi: la retransmissió és de cantell viu, no de pastilla */
+  --qc-r: 3px;
+  --qc-r-2: 6px;
+
+  /* Tipografia */
+  --qc-font: "Archivo", system-ui, -apple-system, sans-serif;
+  --qc-t-display: clamp(1.5rem, 7vw, 2.4rem);
+  --qc-t-score: clamp(2rem, 8vw, 3rem);
+  --qc-t-lead: 1.0625rem;
+  --qc-t-body: 1rem;
+  --qc-t-small: 0.875rem;
+  --qc-t-label: 0.75rem;
+
+  /* Capes */
+  --qc-z-sticky: 10;
+  --qc-z-overlay: 20;
+  --qc-z-toast: 30;
+  --qc-z-modal: 50;
+
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--qc-stage);
+  color: var(--qc-ink);
+  font-family: var(--qc-font);
+  font-size: var(--qc-t-body);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Bany de llum d'estudi DARRERE LA PREGUNTA: és el dispositiu que diu el contracte, i
+   posat al body quedava darrere el rètol i no es veia enlloc. Va a sang: la llum d'un
+   plató no s'atura a la columna de text. */
+.qc-stagelight { position: relative; isolation: isolate; }
+.qc-stagelight::before {
+  content: "";
+  position: absolute;
+  /* Caixa alta i degradat curt: amb `120%` de radi vertical el traç transparent queia
+     FORA de la caixa i es veia una costura recta a dalt i a baix de la pregunta. */
+  inset: -88px -50vw -76px;
+  background: radial-gradient(52% 62% at 50% 50%, #24374f 0%, rgba(36, 55, 79, 0) 68%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+h1, h2, h3 {
+  font-stretch: 78%;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+a { color: var(--qc-amber); }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, opacity 0.15s ease;
+}
+button:not(:disabled) { cursor: pointer; }
+
+/* Focus visible sempre, i sobre fosc l'ambre és el que més es veu. */
+:focus-visible {
+  outline: 2px solid var(--qc-amber);
+  outline-offset: 2px;
+}
+
+.qc-screen {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--qc-5) var(--qc-4) var(--qc-7);
+  animation: qc-fade-in 0.2s ease;
+}
+
+/* Xifres de marcador: condensades, tabulars i sense confusió possible. */
+.qc-num {
+  font-stretch: 66%;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0;
+}
+
+/* ── Rètol (lower third): color de secció + metadada ──────────────────────── */
+
+/* El color de secció ocupa TOTA la banda, no només la pestanya: era el que deia el
+   contracte i el que separa un rètol de retransmissió d'una insígnia en un formulari. */
+.qc-lower-third {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--qc-r);
+  overflow: hidden;
+  background: var(--qc-section, var(--qc-stage-3));
+  color: var(--qc-ink-on-light);
+}
+.qc-lower-third__section {
+  display: flex;
+  align-items: center;
+  gap: var(--qc-2);
+  padding: var(--qc-2) var(--qc-3);
+  background: color-mix(in srgb, #fff 22%, var(--qc-section, var(--qc-stage-3)));
+  color: var(--qc-ink-on-light);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: var(--qc-t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Rètol NEUTRE: a les pantalles que no són de categoria (resultat, rànquing, botiga…)
+   el color només va a la pestanya. Pintar la banda sencera d'ambre convertia el color
+   d'antena en un camp, que és justament el que el contracte no vol. */
+.qc-lower-third--plain {
+  background: var(--qc-stage-2);
+  color: var(--qc-ink-dim);
+}
+.qc-lower-third--plain .qc-lower-third__meta { color: var(--qc-ink-dim); }
+
+/* A 390 px la ronda i el nom de la mecànica no hi caben en una línia: el resultat era
+   «Ronda 1» partit en dues i «Foto misteri…» escapçat alhora. Apilats hi caben tots dos
+   sencers i la banda creix; el comptador s'estira amb ella, que no fa cap mal perquè
+   justament ha de ser gran. A partir de 480 px tornen a la mateixa línia. */
+.qc-lower-third__meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  flex: 1;
+  padding: var(--qc-2) var(--qc-3);
+  color: var(--qc-ink-on-light);
+  font-size: var(--qc-t-small);
+  line-height: 1.15;
+  min-width: 0;
+}
+.qc-lower-third__meta > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .qc-lower-third__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--qc-3);
+  }
+}
+
+/* ── Compte enrere: l'element més visible de la pantalla ──────────────────── */
+
+/* Tira de control: rètol + comptador, com el conjunt de grafismes d'una retransmissió. */
+.qc-strip { display: flex; align-items: stretch; gap: var(--qc-2); margin-bottom: var(--qc-2); }
+
+/* El comptador és un OBJECTE amb marc propi, no una xifra perduda dins la metadada:
+   el contracte el vol com un dels elements més visibles de la pantalla. */
+.qc-counter {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  min-width: 92px;
+  padding: 0 var(--qc-3);
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+}
+.qc-counter__value { font-size: var(--qc-t-score); line-height: 1.05; }
+.qc-counter__unit { font-size: var(--qc-t-label); color: var(--qc-ink-dim); }
+.qc-counter--low { border-color: var(--qc-live); background: color-mix(in srgb, var(--qc-live) 14%, var(--qc-stage-2)); }
+.qc-counter--low .qc-counter__value { color: var(--qc-live-text); }
+/* Barra de temps: una sola línia sota la tira. És el senyal perifèric — la xifra del
+   comptador és la que mires; això només ha de fer que sentis que s'escurça. */
+.qc-timer {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--qc-stage-2);
+  overflow: hidden;
+  margin-bottom: var(--qc-5);
+}
+.qc-timer__fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: var(--qc-amber);
+  /* Mai més llarga que el tic del compte enrere (100 ms): amb 120 ms la barra anava
+     sempre un pèl endarrerida respecte de la xifra, i després d'un salt del rellotge
+     (pestanya en segon pla) es podia veure clarament discrepant-hi. */
+  transition: transform 100ms linear;
+}
+.qc-timer--low .qc-timer__fill { background: var(--qc-live); animation: qc-pulse 900ms ease-in-out infinite; }
+
+/* ── Avís d'últims segons ───────────────────────────────────────────────────
+   Sota `prefers-reduced-motion` el pols desapareix i el color es quedaria sol com a
+   únic indicador. La primera solució va ser un rètol de text dins la banda, però a
+   390 px es menjava el nom de la mecànica — i en un joc on la gràcia és no saber quina
+   ve, això és pitjor que el problema. Ara el senyal és TEXTURA a la barra: no ocupa
+   espai, es veu sense color i no competeix amb res. El text queda per als lectors de
+   pantalla. */
+.qc-timer--low .qc-timer__fill {
+  background-image: repeating-linear-gradient(
+    45deg, rgba(0, 0, 0, 0.38) 0 6px, rgba(0, 0, 0, 0) 6px 12px
+  );
+}
+
+/* ── Pregunta ─────────────────────────────────────────────────────────────── */
+
+.qc-question {
+  font-size: var(--qc-t-display);
+  font-stretch: 78%;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 0 0 var(--qc-5);
+}
+
+/* ── Panells de resposta ──────────────────────────────────────────────────── */
+
+.qc-options { display: grid; gap: var(--qc-2); }
+/* Dues portes en sèrie, i l'ordre importa: l'AMPLADA decideix si dues columnes són
+   possibles (aquí), i la LLARGADA de les opcions, si val la pena fer-les servir
+   (`split` a Game.tsx). Abans només hi havia la segona, i a 390 px «Castella-la Manxa»
+   partia en tres línies dins de mitja pantalla. Si toques una de les dues, mira l'altra. */
+@media (min-width: 560px) {
+  .qc-options--split { grid-template-columns: 1fr 1fr; }
+}
+
+.qc-option {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-height: 56px;
+  padding: 0;
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+  color: var(--qc-ink);
+  text-align: left;
+  overflow: hidden;
+}
+.qc-option__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  flex: 0 0 46px;
+  background: var(--qc-stage-3);
+  color: var(--qc-ink-dim);
+  font-stretch: 70%;
+  font-weight: 700;
+  font-size: var(--qc-t-small);
+  letter-spacing: 0.04em;
+}
+.qc-option__label {
+  display: flex;
+  align-items: center;
+  padding: var(--qc-3) var(--qc-4);
+  font-size: var(--qc-t-lead);
+  line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.qc-option:not(:disabled):hover {
+  background: var(--qc-stage-3);
+  border-color: var(--qc-stage-3);
+}
+.qc-option[data-state="picked"] {
+  border-color: var(--qc-amber);
+  background: color-mix(in srgb, var(--qc-amber) 16%, var(--qc-stage-2));
+}
+.qc-option[data-state="picked"] .qc-option__tab { background: var(--qc-amber); color: var(--qc-ink-on-light); }
+/* En revelar: el panell s'inunda de color i la pestanya porta el glif, perquè el color
+   no sigui l'únic indicador. */
+.qc-option[data-state="good"] {
+  background: var(--qc-good);
+  border-color: var(--qc-good);
+  color: var(--qc-ink-on-light);
+}
+.qc-option[data-state="good"] .qc-option__tab {
+  background: color-mix(in srgb, #000 18%, var(--qc-good));
+  color: var(--qc-ink-on-light);
+}
+.qc-option[data-state="bad"] {
+  background: var(--qc-live);
+  border-color: var(--qc-live);
+  color: #fff;
+}
+.qc-option[data-state="bad"] .qc-option__tab {
+  background: color-mix(in srgb, #000 20%, var(--qc-live));
+  color: #fff;
+}
+.qc-option:disabled { opacity: 1; }
+/* Abans era `opacity: .45`, que deixava el text a 4,26:1 — i s'activava també durant
+   l'enviament, així que la graella parpellejava a cada resposta. */
+/* El contorn es manté: amb `--qc-stage-2` (el mateix fons) els dos panells descartats
+   es dissolien al camp justament quan has de comparar les quatre opcions. */
+.qc-option[data-state="dim"] { color: var(--qc-ink-dim); border-color: var(--qc-hairline); }
+
+/* ── Marc de mèdia: la gramàtica que unifica les nou mecàniques ───────────── */
+
+.qc-media {
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+  overflow: hidden;
+  margin-bottom: var(--qc-4);
+}
+.qc-media__body { position: relative; display: flex; justify-content: center; }
+.qc-media__caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qc-3);
+  padding: var(--qc-2) var(--qc-3);
+  border-top: 1px solid var(--qc-hairline);
+  background: var(--qc-stage);
+  color: var(--qc-ink-dim);
+  font-size: var(--qc-t-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-stretch: 74%;
+  font-weight: 700;
+}
+
+/* ── Marcador ─────────────────────────────────────────────────────────────── */
+
+.qc-scoreboard {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+  overflow: hidden;
+}
+.qc-scoreboard__cell {
+  flex: 1;
+  padding: var(--qc-2) var(--qc-3);
+  min-width: 0;
+}
+.qc-scoreboard__cell + .qc-scoreboard__cell { border-left: 1px solid var(--qc-hairline); }
+.qc-scoreboard__label {
+  display: block;
+  color: var(--qc-ink-dim);
+  font-size: var(--qc-t-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-stretch: 74%;
+  font-weight: 700;
+}
+.qc-scoreboard__value { display: block; font-size: 1.375rem; line-height: 1.2; }
+
+/* ── Botons ───────────────────────────────────────────────────────────────── */
+
+.qc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--qc-2);
+  min-height: 46px;
+  padding: var(--qc-3) var(--qc-5);
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+  color: var(--qc-ink);
+  font-size: var(--qc-t-body);
+  font-stretch: 82%;
+  font-weight: 700;
+}
+.qc-btn:not(:disabled):hover { background: var(--qc-stage-3); border-color: var(--qc-stage-3); }
+.qc-btn--primary {
+  background: var(--qc-amber);
+  border-color: var(--qc-amber);
+  color: var(--qc-ink-on-light);
+}
+.qc-btn--primary:not(:disabled):hover {
+  background: var(--qc-amber-deep);
+  border-color: var(--qc-amber-deep);
+}
+.qc-btn--ghost { background: transparent; }
+.qc-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* Un ambre al 45% sobre l'escenari es llegeix com un marró trencat: el primari
+   desactivat passa a neutre, que és el que comunica "encara no". */
+.qc-btn--primary:disabled {
+  opacity: 1;
+  background: var(--qc-stage-2);
+  border-color: var(--qc-hairline);
+  color: var(--qc-ink-dim);
+}
+/* Acció d'una sola icona: quadrat de 44 px, la mida mínima que un dit encerta. */
+.qc-btn--icon {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+
+.qc-btn--block { width: 100%; }
+
+/* ── Camps de mode (graella d'emissió de l'inici) ─────────────────────────── */
+
+.qc-mode {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: var(--qc-r-2);
+  padding: var(--qc-5) var(--qc-4);
+  background: var(--qc-field, var(--qc-stage-2));
+  color: var(--qc-ink-on-light);
+}
+.qc-mode__title {
+  display: block;
+  font-size: 1.5rem;
+  font-stretch: 74%;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+/* Sense opacitat sobre els camps foscos: el blanc al 82% sobre el roig es quedava per
+   sota del 4,5:1 que necessita el text petit. */
+.qc-mode__line { display: block; margin-top: var(--qc-1); font-size: var(--qc-t-small); opacity: 0.8; }
+.qc-mode--dark .qc-mode__line { opacity: 1; color: var(--qc-ink); }
+.qc-mode:not(:disabled):hover { filter: brightness(1.08); }
+.qc-mode--dark { color: var(--qc-ink); }
+.qc-mode:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Superfícies i llistes ────────────────────────────────────────────────── */
+
+.qc-panel {
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  background: var(--qc-stage-2);
+  padding: var(--qc-4);
+}
+.qc-row {
+  display: flex;
+  align-items: center;
+  gap: var(--qc-3);
+  padding: var(--qc-3) 0;
+  border-bottom: 1px solid var(--qc-hairline);
+}
+.qc-row:last-child { border-bottom: 0; }
+.qc-label {
+  color: var(--qc-ink-dim);
+  font-size: var(--qc-t-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-stretch: 74%;
+  font-weight: 700;
+}
+.qc-meter { height: 8px; background: var(--qc-stage-3); border-radius: 999px; overflow: hidden; }
+.qc-meter__fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  background: var(--qc-amber);
+  transition: transform 0.3s ease;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: var(--qc-t-body);
+  color: var(--qc-ink);
+  background: var(--qc-stage);
+  border: 1px solid var(--qc-hairline);
+  border-radius: var(--qc-r);
+  padding: var(--qc-3);
+}
+input::placeholder, textarea::placeholder { color: var(--qc-ink-dim); }
+
+input[type="range"] {
+  accent-color: var(--qc-amber);
+  background: none;
+  border: 0;
+  padding: 0;
+  min-height: 44px; /* àrea de toc */
+}
+
+/* Leaflet dins del marc de mèdia: sense cantells propis ni fons blanc. */
+.leaflet-container { background: var(--qc-stage) !important; }
+/* Les tessel·les fosques de Carto deixen les costes gairebé negres, i en una pregunta
+   de mapa la geografia s'ha de reconèixer. Se'ls aixeca la brillantor. */
+.leaflet-tile-pane { filter: brightness(1.45) saturate(0.95); }
+.leaflet-control-attribution {
+  background: rgba(14, 21, 32, 0.75) !important;
+  color: var(--qc-ink-dim) !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: var(--qc-ink-dim) !important; }
+.leaflet-bar, .leaflet-bar a {
+  background: var(--qc-stage-2) !important;
+  color: var(--qc-ink) !important;
+  border-color: var(--qc-hairline) !important;
+}
+
+.qc-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Toast de resposta ────────────────────────────────────────────────────── */
+
+.qc-toast {
+  position: fixed;
+  top: var(--qc-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--qc-z-toast);
+  min-width: min(340px, calc(100vw - 32px));
+  max-width: 92vw;
+  padding: var(--qc-4) var(--qc-5);
+  border-radius: var(--qc-r-2);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.7);
+  animation: qc-wipe-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.qc-toast--good { background: var(--qc-good); color: var(--qc-ink-on-light); }
+.qc-toast--bad { background: var(--qc-live); color: #fff; }
+
+/* ── Moviment: la motricitat nativa de la retransmissió és l'escombrada ───── */
+
+@keyframes qc-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes qc-wipe-in {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateX(-50%) translateY(-6px); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); transform: translateX(-50%) translateY(0); }
+}
+/* Els panells s'encenen en cascada curta, com un plató que puja llums. */
+@keyframes qc-light-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes qc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes qc-bump { from { transform: scale(1.22); } to { transform: scale(1); } }
+@keyframes qc-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.qc-lit > * { animation: qc-light-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.qc-lit > *:nth-child(1) { animation-delay: 0.02s; }
+.qc-lit > *:nth-child(2) { animation-delay: 0.06s; }
+.qc-lit > *:nth-child(3) { animation-delay: 0.1s; }
+.qc-lit > *:nth-child(4) { animation-delay: 0.14s; }
+.qc-bump { display: inline-block; animation: qc-bump 0.25s ease; }
+.qc-wrong { animation: qc-shake 0.4s ease; }
+
+/* ── Memory: carta amb gir 3D ─────────────────────────────────────────────── */
+
+.qc-memory-card { perspective: 700px; aspect-ratio: 1; background: none; border: none; padding: 0; }
+.qc-memory-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.qc-memory-card.up .qc-memory-inner { transform: rotateY(180deg); }
+.qc-memory-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--qc-r);
+  font-size: 34px;
+}
+.qc-memory-back { background: var(--qc-stage-3); box-shadow: inset 0 0 0 1px var(--qc-hairline); }
+.qc-memory-front {
+  transform: rotateY(180deg);
+  background: var(--qc-stage-2);
+  border: 1px solid var(--qc-hairline);
+}
+.qc-memory-card.matched .qc-memory-front {
+  background: var(--qc-good);
+  border-color: var(--qc-good);
+  color: var(--qc-ink-on-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, .qc-memory-inner { animation: none !important; transition: none !important; }
+}

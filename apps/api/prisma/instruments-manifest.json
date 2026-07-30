@@ -1,0 +1,704 @@
+[
+  {
+    "file": "/instruments/piano-1.m4a",
+    "slug": "piano",
+    "label": "Piano",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/piano-2.m4a",
+    "slug": "piano",
+    "label": "Piano",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/piano-3.m4a",
+    "slug": "piano",
+    "label": "Piano",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/clavicembal-1.m4a",
+    "slug": "clavicembal",
+    "label": "Clavicèmbal",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/clavicembal-2.m4a",
+    "slug": "clavicembal",
+    "label": "Clavicèmbal",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/clavicembal-3.m4a",
+    "slug": "clavicembal",
+    "label": "Clavicèmbal",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/orgue-1.m4a",
+    "slug": "orgue",
+    "label": "Orgue",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/orgue-2.m4a",
+    "slug": "orgue",
+    "label": "Orgue",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/orgue-3.m4a",
+    "slug": "orgue",
+    "label": "Orgue",
+    "family": "teclat",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/arpa-1.m4a",
+    "slug": "arpa",
+    "label": "Arpa",
+    "family": "corda pinçada",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/arpa-2.m4a",
+    "slug": "arpa",
+    "label": "Arpa",
+    "family": "corda pinçada",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/arpa-3.m4a",
+    "slug": "arpa",
+    "label": "Arpa",
+    "family": "corda pinçada",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/harmonica-1.m4a",
+    "slug": "harmonica",
+    "label": "Harmònica",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/harmonica-2.m4a",
+    "slug": "harmonica",
+    "label": "Harmònica",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/harmonica-3.m4a",
+    "slug": "harmonica",
+    "label": "Harmònica",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/flauta-dolca-1.m4a",
+    "slug": "flauta-dolca",
+    "label": "Flauta dolça",
+    "family": "vent fusta",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/flauta-dolca-2.m4a",
+    "slug": "flauta-dolca",
+    "label": "Flauta dolça",
+    "family": "vent fusta",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/flauta-dolca-3.m4a",
+    "slug": "flauta-dolca",
+    "label": "Flauta dolça",
+    "family": "vent fusta",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/marimba-1.m4a",
+    "slug": "marimba",
+    "label": "Marimba",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/marimba-2.m4a",
+    "slug": "marimba",
+    "label": "Marimba",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/marimba-3.m4a",
+    "slug": "marimba",
+    "label": "Marimba",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/glockenspiel-1.m4a",
+    "slug": "glockenspiel",
+    "label": "Glockenspiel",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/glockenspiel-2.m4a",
+    "slug": "glockenspiel",
+    "label": "Glockenspiel",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/glockenspiel-3.m4a",
+    "slug": "glockenspiel",
+    "label": "Glockenspiel",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/timbals-1.m4a",
+    "slug": "timbals",
+    "label": "Timbals",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/timbals-2.m4a",
+    "slug": "timbals",
+    "label": "Timbals",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/timbals-3.m4a",
+    "slug": "timbals",
+    "label": "Timbals",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/congues-1.m4a",
+    "slug": "congues",
+    "label": "Congues",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/congues-2.m4a",
+    "slug": "congues",
+    "label": "Congues",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/congues-3.m4a",
+    "slug": "congues",
+    "label": "Congues",
+    "family": "percussió",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/kalimba-1.m4a",
+    "slug": "kalimba",
+    "label": "Kalimba",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/kalimba-2.m4a",
+    "slug": "kalimba",
+    "label": "Kalimba",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/kalimba-3.m4a",
+    "slug": "kalimba",
+    "label": "Kalimba",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/didgeridoo-1.m4a",
+    "slug": "didgeridoo",
+    "label": "Didgeridoo",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/didgeridoo-2.m4a",
+    "slug": "didgeridoo",
+    "label": "Didgeridoo",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/didgeridoo-3.m4a",
+    "slug": "didgeridoo",
+    "label": "Didgeridoo",
+    "family": "vent (altres)",
+    "license": "cc0",
+    "attribution": "Versilian Community Sample Library (VCSL) — CC0",
+    "source": "https://github.com/sgossner/VCSL"
+  },
+  {
+    "file": "/instruments/flauta-1.m4a",
+    "slug": "flauta",
+    "label": "Flauta travessera",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/flauta-2.m4a",
+    "slug": "flauta",
+    "label": "Flauta travessera",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/flauta-3.m4a",
+    "slug": "flauta",
+    "label": "Flauta travessera",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/clarinet-1.m4a",
+    "slug": "clarinet",
+    "label": "Clarinet",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/clarinet-2.m4a",
+    "slug": "clarinet",
+    "label": "Clarinet",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/clarinet-3.m4a",
+    "slug": "clarinet",
+    "label": "Clarinet",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/saxo-1.m4a",
+    "slug": "saxo",
+    "label": "Saxo alt",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/saxo-2.m4a",
+    "slug": "saxo",
+    "label": "Saxo alt",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/saxo-3.m4a",
+    "slug": "saxo",
+    "label": "Saxo alt",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/oboe-1.m4a",
+    "slug": "oboe",
+    "label": "Oboè",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/oboe-2.m4a",
+    "slug": "oboe",
+    "label": "Oboè",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/oboe-3.m4a",
+    "slug": "oboe",
+    "label": "Oboè",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/fagot-1.m4a",
+    "slug": "fagot",
+    "label": "Fagot",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/fagot-2.m4a",
+    "slug": "fagot",
+    "label": "Fagot",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/fagot-3.m4a",
+    "slug": "fagot",
+    "label": "Fagot",
+    "family": "vent fusta",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompa-1.m4a",
+    "slug": "trompa",
+    "label": "Trompa",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompa-2.m4a",
+    "slug": "trompa",
+    "label": "Trompa",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompa-3.m4a",
+    "slug": "trompa",
+    "label": "Trompa",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/tuba-1.m4a",
+    "slug": "tuba",
+    "label": "Tuba",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/tuba-2.m4a",
+    "slug": "tuba",
+    "label": "Tuba",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/tuba-3.m4a",
+    "slug": "tuba",
+    "label": "Tuba",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompeta-1.m4a",
+    "slug": "trompeta",
+    "label": "Trompeta",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompeta-2.m4a",
+    "slug": "trompeta",
+    "label": "Trompeta",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trompeta-3.m4a",
+    "slug": "trompeta",
+    "label": "Trompeta",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trombo-1.m4a",
+    "slug": "trombo",
+    "label": "Trombó",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trombo-2.m4a",
+    "slug": "trombo",
+    "label": "Trombó",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/trombo-3.m4a",
+    "slug": "trombo",
+    "label": "Trombó",
+    "family": "metall",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/acordio-1.m4a",
+    "slug": "acordio",
+    "label": "Acordió",
+    "family": "vent (altres)",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/acordio-2.m4a",
+    "slug": "acordio",
+    "label": "Acordió",
+    "family": "vent (altres)",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/acordio-3.m4a",
+    "slug": "acordio",
+    "label": "Acordió",
+    "family": "vent (altres)",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/viola-1.m4a",
+    "slug": "viola",
+    "label": "Viola",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/viola-2.m4a",
+    "slug": "viola",
+    "label": "Viola",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/viola-3.m4a",
+    "slug": "viola",
+    "label": "Viola",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/contrabaix-1.m4a",
+    "slug": "contrabaix",
+    "label": "Contrabaix",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/contrabaix-2.m4a",
+    "slug": "contrabaix",
+    "label": "Contrabaix",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/contrabaix-3.m4a",
+    "slug": "contrabaix",
+    "label": "Contrabaix",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violoncel-1.m4a",
+    "slug": "violoncel",
+    "label": "Violoncel",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violoncel-2.m4a",
+    "slug": "violoncel",
+    "label": "Violoncel",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violoncel-3.m4a",
+    "slug": "violoncel",
+    "label": "Violoncel",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violi-1.m4a",
+    "slug": "violi",
+    "label": "Violí",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violi-2.m4a",
+    "slug": "violi",
+    "label": "Violí",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  },
+  {
+    "file": "/instruments/violi-3.m4a",
+    "slug": "violi",
+    "label": "Violí",
+    "family": "corda fregada",
+    "license": "cc-by-4.0",
+    "attribution": "TinySOL, IRCAM (Cella et al.) — CC BY 4.0",
+    "source": "https://zenodo.org/records/3659365"
+  }
+]
