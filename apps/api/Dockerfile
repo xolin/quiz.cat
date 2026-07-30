@@ -27,12 +27,18 @@ ENV NODE_ENV=production
 ENV PORT=4400
 EXPOSE 4400
 
-HEALTHCHECK --interval=30s --timeout=3s --retries=5 --start-period=15s \
+HEALTHCHECK --interval=30s --timeout=3s --retries=5 --start-period=40s \
   CMD wget -qO- http://127.0.0.1:4400/health || exit 1
 
-# Les migracions s'apliquen sempre; el seed només si s'hi demana explícitament
-# (SEED_ON_BOOT=1). Tornar-lo a executar no trenca res, però NO és del tot idempotent:
-# les preguntes de "més alt o més baix" surten de parelles a l'atzar i cada passada
-# n'afegeix de noves (~35). Per això va a 0 per defecte: primer desplegament sí, cada
-# reinici no.
-CMD ["sh", "-c", "pnpm --filter @quizcat/api exec prisma migrate deploy && if [ \"$SEED_ON_BOOT\" = \"1\" ]; then pnpm --filter @quizcat/api seed; fi && pnpm --filter @quizcat/api exec tsx src/server.ts"]
+# Les migracions s'apliquen sempre i BLOQUEGEN: l'esquema ha d'existir abans de servir.
+#
+# El seed, en canvi, va en SEGON PLA. Encadenar-lo abans del servidor volia dir que
+# l'API no escoltava fins que acabava —i són uns quants minuts—, o sigui 502 a la cara
+# de qui entrés i el healthcheck donant el contenidor per mort mentre tot anava bé.
+# Ara el joc respon de seguida i el contingut hi va apareixent; el registre de la
+# sembra surt igualment als logs del contenidor.
+#
+# SEED_ON_BOOT=1 només al primer desplegament: tornar-lo a executar no trenca res,
+# però no és del tot idempotent (les preguntes de "més alt o més baix" surten de
+# parelles a l'atzar i cada passada n'afegeix ~35 de noves).
+CMD ["sh", "-c", "pnpm --filter @quizcat/api exec prisma migrate deploy && if [ \"$SEED_ON_BOOT\" = \"1\" ]; then pnpm --filter @quizcat/api seed & fi; exec pnpm --filter @quizcat/api exec tsx src/server.ts"]
