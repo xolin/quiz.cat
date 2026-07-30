@@ -1,0 +1,23 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.env
+**/.env
+*.log
+.DS_Store
+
+# Cau dels generadors de contingut: pesa molt i no fa falta per arrencar (els
+# manifests, que sí que calen, són al repositori).
+apps/api/prisma/.ne-cache
+apps/api/prisma/.cv-cache
+apps/api/prisma/.wikidata-cache
+apps/api/prisma/.instr-tmp
+apps/api/prisma/.vcsl-tree.json
+
+# Mèdia: va al MinIO, no a la imatge.
+apps/web/public/mystery/*.jpg
+apps/web/public/accents/*.mp3
+apps/web/public/languages/*.mp3
+apps/web/public/instruments/*
+apps/web/public/_design.html

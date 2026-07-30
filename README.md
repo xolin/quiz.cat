@@ -54,6 +54,43 @@ pnpm dev:web                                     # web a :5273 (proxy /api → :
 
 Obre `http://localhost:5273`, clica **Juga ara (convidat)** i tens una partida de 8 rondes.
 
+## Desplegament (Dokploy)
+
+`docker-compose.prod.yml` segueix el patró de la resta de projectes del VPS: Traefik a la
+xarxa `dokploy-network`, Postgres i MinIO amb volum propi, i **nginx com a única porta
+d'entrada** — serveix l'estàtic i passa `/api/` a l'API.
+
+```bash
+cp .env.prod.example .env      # i omple-hi els valors al panell de Dokploy
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Coses que cal saber abans del primer desplegament:
+
+1. **`quiz.cat` i `storage.quiz.cat`** han d'apuntar tots dos al VPS. El segon no és
+   opcional: l'API firma les URL del mèdia amb aquest nom i és el navegador qui les obre,
+   o sigui que firmar amb `http://minio:9000` les faria inservibles.
+2. **`SEED_ON_BOOT=1` només la primera vegada.** Tornar-lo a executar no trenca res, però
+   cada passada afegeix ~35 preguntes noves de "més alt o més baix" (surten de parelles a
+   l'atzar): no és del tot idempotent.
+3. **El mèdia no és al repositori** (fotos, clips d'àudio: ~100 MB de fitxers amb llicència
+   verificada però binaris). Es genera un cop a la màquina local i es puja al MinIO de
+   producció:
+
+   ```bash
+   node apps/api/prisma/download-mystery.mjs      # i els altres download-*.mjs
+   S3_ENDPOINT=https://storage.quiz.cat S3_ACCESS_KEY=… S3_SECRET_KEY=… pnpm media:upload
+   ```
+
+   Sense aquest pas el joc arrenca igual, però les 17 rondes de foto i les 124 d'àudio no
+   tindran fitxer: el codi degrada al camí local, que a la imatge no existeix.
+4. **`JWT_SECRET` no té valor per defecte**: en producció l'API no arrenca sense ell. I si
+   no dones `SEED_ADMIN_PASSWORD`, el seed **no crea cap administrador** — la contrasenya
+   de dev és pública en aquest repositori.
+
+La versió de **pnpm està fixada** a `package.json` (`packageManager`): sense això el build
+del servidor agafava pnpm 11 mentre la màquina de desenvolupament fa servir la 10.13.
+
 ## Proves manuals ràpides (API)
 
 ```bash

@@ -1,0 +1,125 @@
+# Desplegament a Dokploy (Traefik + xarxa `dokploy-network`), mateix patró que la resta
+# de projectes del VPS. Variables: veure `.env.prod.example`.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# El mèdia (fotos, àudios) NO és al repositori: es puja un cop al MinIO des de la màquina
+# local amb `pnpm media:upload` apuntant a S3_ENDPOINT de producció. Sense això el joc
+# arrenca igual, però les rondes de foto i d'àudio no tindran fitxer.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-quizcat}
+      POSTGRES_USER: ${POSTGRES_USER:-quizcat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD és obligatori}
+    ports:
+      # Només loopback: per fer pg_dump entrant per SSH, no obert a fora.
+      - "127.0.0.1:5445:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quizcat}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+
+  # Mèdia (fotos misterioses, clips d'accents, llengües i instruments). L'API en firma
+  # URL temporals d'1 h; el navegador les demana directament aquí, per això el servei
+  # ha de ser accessible des de fora amb el mateix nom amb què es firmen.
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?S3_ACCESS_KEY és obligatori}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?S3_SECRET_KEY és obligatori}
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # API S3: és l'origen de les URL firmades, o sigui que el navegador hi va.
+      - "traefik.http.routers.quizcat-minio.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.quizcat-minio.entrypoints=websecure"
+      - "traefik.http.routers.quizcat-minio.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.quizcat-minio.service=quizcat-minio"
+      - "traefik.http.services.quizcat-minio.loadbalancer.server.port=9000"
+
+  api:
+    build:
+      # Context = arrel del monorepo: calen el lockfile i packages/shared.
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quizcat}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-quizcat}
+      # Sense valor per defecte a propòsit: l'API no arrenca sense això en producció.
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET és obligatori}
+      NODE_ENV: production
+      PORT: 4400
+      # El MÀTEIX nom públic per a l'API i per al navegador: les URL firmades s'han de
+      # poder obrir des de fora, i firmar amb `http://minio:9000` les faria inservibles.
+      S3_ENDPOINT: https://${STORAGE_DOMAIN}
+      S3_BUCKET: ${S3_BUCKET:-quizcat-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      # Buit = no es crea cap admin (la contrasenya de dev és pública al repositori).
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      # Posa'l a 1 només per al primer desplegament o després d'afegir contingut.
+      SEED_ON_BOOT: ${SEED_ON_BOOT:-0}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: production
+    restart: always
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - internal
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # HTTPS
+      - "traefik.http.routers.quizcat.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.quizcat.entrypoints=websecure"
+      - "traefik.http.routers.quizcat.tls.certresolver=letsencrypt"
+      - "traefik.http.services.quizcat.loadbalancer.server.port=80"
+      # HTTP → HTTPS
+      - "traefik.http.routers.quizcat-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.quizcat-http.entrypoints=web"
+      - "traefik.http.routers.quizcat-http.middlewares=quizcat-redirect"
+      - "traefik.http.middlewares.quizcat-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.quizcat-redirect.redirectscheme.permanent=true"
+
+volumes:
+  pgdata:
+  miniodata:
+
+networks:
+  internal:
+  dokploy-network:
+    external: true
