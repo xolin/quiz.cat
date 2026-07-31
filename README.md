@@ -88,6 +88,12 @@ Coses que cal saber abans del primer desplegament:
    no dones `SEED_ADMIN_PASSWORD`, el seed **no crea cap administrador** — la contrasenya
    de dev és pública en aquest repositori.
 
+5. **Els serveis es diuen `quizcat-*`, no `api` o `db`.** El contenidor del web penja de
+   `dokploy-network`, que comparteixen tots els projectes del VPS. Amb un nom genèric, el
+   DNS de Docker li dona el contenidor d'un ALTRE projecte: resol sense queixar-se i el
+   que arriba és un «connection refused» amb la nostra API viva i sana. Si algun dia
+   afegeixes un servei aquí, posa-li àlies propi.
+
 La versió de **pnpm està fixada** a `package.json` (`packageManager`): sense això el build
 del servidor agafava pnpm 11 mentre la màquina de desenvolupament fa servir la 10.13.
 
