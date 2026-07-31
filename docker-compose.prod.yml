@@ -27,7 +27,9 @@ services:
       retries: 10
       start_period: 10s
     networks:
-      - internal
+      internal:
+        aliases:
+          - quizcat-db
 
   # Mèdia (fotos misterioses, clips d'accents, llengües i instruments). L'API en firma
   # URL temporals d'1 h; el navegador les demana directament aquí, per això el servei
@@ -47,8 +49,10 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - internal
-      - dokploy-network
+      internal:
+        aliases:
+          - quizcat-minio
+      dokploy-network:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
@@ -66,7 +70,7 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: always
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-quizcat}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-quizcat}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quizcat}:${POSTGRES_PASSWORD}@quizcat-db:5432/${POSTGRES_DB:-quizcat}
       # Sense valor per defecte a propòsit: l'API no arrenca sense això en producció.
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET és obligatori}
       NODE_ENV: production
@@ -86,7 +90,13 @@ services:
       db:
         condition: service_healthy
     networks:
-      - internal
+      internal:
+        # `quizcat-api`, no `api`: el contenidor web està a `dokploy-network`, que
+        # comparteixen tots els projectes del VPS, i allà un nom com `api` xoca amb
+        # el d'un altre projecte. El símptoma és cruel: nginx resol el nom sense
+        # queixar-se i acaba trucant a un contenidor aliè, que refusa la connexió.
+        aliases:
+          - quizcat-api
 
   web:
     build:
