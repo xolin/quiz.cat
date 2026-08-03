@@ -172,6 +172,66 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   }
 
   /**
+   * "Ordena-ho" per una xifra qualsevol. Mateixa idea que `timelineSets`, però amb el tipus
+   * `ordering` i sense que la xifra hagi de ser un any.
+   *
+   * Val la pena perquè `ordering` era la mecànica més desaprofitada del joc —seixanta
+   * preguntes en total— i és justament la que millor encaixa amb dades numèriques com
+   * aquestes: població, superfície, any de fundació.
+   *
+   * Compte amb els `spacings`: van en POSICIONS de la llista ordenada, no en unitats. Amb
+   * 480 discos repartits en 75 anys, agafar-ne de dos en dos vol dir ordenar quatre discos
+   * publicats gairebé alhora — cosa que és certa que és dificilíssima, i per això sortien
+   * totes a d5 i la família sencera era injugable. Han de ser prou amples perquè el grup
+   * abasti dècades.
+   *
+   * La dificultat surt de com de SEPARADES són les xifres del grup, no de la fama: ordenar
+   * quatre ciutats de mides molt diferents es dedueix sense saber-ne els números, i ordenar-ne
+   * quatre de semblants no hi ha manera si no ho saps.
+   */
+  /**
+   * Enunciats d'ordenació que aquesta passada SÍ que genera. El que quedi fora es retira al
+   * final: canviar les separacions o els percentils del generador no esborra res per si sol,
+   * i sense això la base es queda amb la unió de totes les versions que s'hagin provat mai
+   * —que és exactament com el pou s'omple de preguntes que ningú ha decidit tenir.
+   */
+  const orderingPrompts = new Set<string>();
+
+  async function orderingSets<T extends { label: string }>(
+    items: T[], value: (x: T) => number, criterion: string, promptFor: (names: string) => string,
+    categoryId: string, tag: string, spacings: number[],
+    scale: "proporcio" | "anys" = "proporcio", topicSlug?: string,
+  ) {
+    const sorted = [...items].filter((x) => value(x) > 0).sort((a, b) => value(a) - value(b));
+    for (const spacing of spacings) {
+      for (let i = 0; i + 3 * spacing < sorted.length; i += 2 * spacing) {
+        const group = [0, 1, 2, 3].map((k) => sorted[i + k * spacing]);
+        const values = group.map(value);
+        if (new Set(values).size < 4) continue; // xifres empatades: no hi ha ordre únic
+        const display = shuffled(group).map((g, idx) => ({ id: String.fromCharCode(97 + idx), text: g.label, v: value(g) }));
+        const order = [...display].sort((a, b) => a.v - b.v).map((d) => d.id);
+        const alpha = group.map((g) => g.label).sort().join(", ");
+        // Els ANYS no es poden mesurar per proporció: 1922 i 1939 en donen 1,008 i sortiria
+        // "dificilíssim" quan de fet són disset anys de diferència. El que compta és la
+        // distància, i per això hi ha `gapDifficulty`, que ja s'usa a les cronologies.
+        const gaps = values.slice(1).map((v, k) => v - values[k]);
+        const spread = values[3] / Math.max(1, values[0]);
+        orderingPrompts.add(promptFor(alpha));
+        if (await upsertQuestion({
+          typeSlug: "ordering", categoryId, locale: "ca",
+          prompt: promptFor(alpha),
+          payload: { items: display.map(({ id, text }) => ({ id, text })), criterion },
+          answer: { order },
+          difficulty: scale === "anys"
+            ? gapDifficulty(Math.min(...gaps), "anys")
+            : spread >= 8 ? 2 : spread >= 3 ? 3 : spread >= 1.6 ? 4 : 5,
+          status: "published", topicSlug, tags: tags(tag, "ordena"),
+        })) n++;
+      }
+    }
+  }
+
+  /**
    * "Qui va fer X?" — pel·lícules, quadres i llibres segueixen el mateix patró.
    *
    * És genèrica perquè la forma («una entitat, un atribut de text, distractors del mateix
@@ -303,6 +363,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       const order = [...display].sort((a, b) => a.number - b.number).map((d) => d.id);
       const alpha = group.map((g) => g.label).sort().join(", ");
       const gap = Math.min(...group.slice(1).map((g, k) => g.number - group[k].number));
+      orderingPrompts.add(`Ordena per nombre atòmic (de menor a major): ${alpha}`);
       if (await upsertQuestion({
         typeSlug: "ordering", categoryId: cats.ciencia, locale: "ca",
         prompt: `Ordena per nombre atòmic (de menor a major): ${alpha}`,
@@ -336,6 +397,13 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   await timelineSets(
     wd.scientists.map((s) => ({ label: s.label, year: s.birth, fame: s.fame })),
     cats.ciencia, "ciencia", "cientifics-timeline", [3, 12, 30],
+  );
+  // Els anys de vida ja es preguntaven dels personatges històrics i no dels científics, tot
+  // i ser exactament la mateixa dada i el mateix generador.
+  await comparisons(
+    wd.scientists.filter((s) => s.birth !== null && s.death !== null && s.death > s.birth)
+      .map((s) => ({ label: s.label, value: s.death! - s.birth!, fame: s.fame })),
+    "anys de vida", (v) => `${v} anys`, cats.ciencia, "cientifics", 60,
   );
 
   // ── HISTÒRIA ─────────────────────────────────────────────────────────────
@@ -380,6 +448,29 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     albums.map((a) => ({ label: a.label, year: a.year, fame: a.fame })),
     cats.cultura, "cultura", "musica-timeline", [4, 12],
   );
+  // Els músics no tenien cronologia, tot i ser el mateix material que els científics.
+  await timelineSets(
+    musicians.map((m) => ({ label: m.label, year: m.birth, fame: m.fame })),
+    cats.cultura, "cultura", "musics-timeline", [4, 15, 40],
+  );
+  await orderingSets(
+    topBy(albums, 0.5).filter((a) => a.year), (a) => a.year!,
+    "del més antic al més recent",
+    (names) => `Ordena aquests discos del més antic al més recent: ${names}`,
+    cats.cultura, "musica", [25, 50, 90, 150], "anys",
+  );
+  await orderingSets(
+    wd.films.filter((f) => f.year), (f) => f.year!,
+    "de la més antiga a la més recent",
+    (names) => `Ordena aquestes pel·lícules de la més antiga a la més recent: ${names}`,
+    cats.cultura, "cinema", [8, 18, 30], "anys",
+  );
+  await orderingSets(
+    printed(wd.books), (b) => b.year!,
+    "del més antic al més recent",
+    (names) => `Ordena aquests llibres del més antic al més recent: ${names}`,
+    cats.cultura, "llibres", [15, 35, 80], "anys",
+  );
 
   // ── ESPORT (cultura, etiquetat `esport`) ─────────────────────────────────
   // Va a Cultura perquè no hi ha categoria pròpia: crear-ne una demana color, icona i
@@ -401,6 +492,12 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     athletes.map((a) => ({ label: a.label, year: a.birth, fame: a.fame })),
     cats.cultura, "cultura", "esport-timeline", [8, 25],
   );
+  await orderingSets(
+    clubs.filter((c) => c.year), (c) => c.year!,
+    "del més antic al més nou",
+    (names) => `Ordena aquests clubs del més antic al més nou: ${names}`,
+    cats.cultura, "esport", [10, 25, 45], "anys",
+  );
 
   // ── CATALUNYA (geografia) ────────────────────────────────────────────────
   // El diferencial del joc: contingut que cap altre trivia genera.
@@ -412,9 +509,18 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   const byPop = [...municipis].sort((a, b) => b.pop! - a.pop!);
   const asKnown = (m: Municipi) => ({ label: m.label, value: m.pop!, fame: m.pop! });
 
+  // 450 municipis i no 220: el 450è ja és un poble de quatre mil habitants, o sigui una
+  // pregunta difícil —no injusta—, i la dificultat surt de la població, així que se'n va
+  // sola a d5. Qui és de la comarca ho sap; qui no, ho falla i no passa res.
   await authorship(
-    byPop.slice(0, 220).map((m) => ({ label: m.label, comarca: m.comarca, fame: m.pop! })),
+    byPop.slice(0, 450).map((m) => ({ label: m.label, comarca: m.comarca, fame: m.pop! })),
     (m) => m.comarca, (m) => `A quina comarca pertany ${m.label}?`, cats.geografia, "catalunya",
+  );
+  await orderingSets(
+    byPop.slice(0, 300), (m) => m.pop!,
+    "de menys a més població",
+    (names) => `Ordena aquests municipis de menys a més població: ${names}`,
+    cats.geografia, "catalunya", [10, 30, 80],
   );
   // La dificultat es calcula UN COP i es desa per nom. `fameRanker` indexa per identitat
   // d'objecte, o sigui que cridar-lo amb un `{...}` acabat de fer sempre falla el `get` i
@@ -439,7 +545,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   );
   // Mapa centrat a Catalunya i amb zoom de comarca. Amb la vista del món (que és el que
   // feia el mapa fins ara, ignorant el `payload`), situar Manresa seria clicar dos píxels.
-  for (const m of byPop.slice(0, 90).filter((m) => m.lat !== null && m.lon !== null)) {
+  for (const m of byPop.slice(0, 220).filter((m) => m.lat !== null && m.lon !== null)) {
     if (await upsertQuestion({
       typeSlug: "map_guess", categoryId: cats.geografia, locale: "ca",
       prompt: `On és ${m.label}? Clica al mapa`,
@@ -459,6 +565,16 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   await comparisons(
     comarques.filter((c) => c.area).map((c) => ({ label: c.label, value: c.area!, fame: c.pop ?? c.fame })),
     "superfície", (v) => `${Math.round(v).toLocaleString("ca")} km²`, cats.geografia, "catalunya", 40,
+  );
+  await comparisons(
+    comarques.filter((c) => c.pop).map((c) => ({ label: c.label, value: c.pop!, fame: c.pop! })),
+    "població", (v) => `${Math.round(v).toLocaleString("ca")} habitants`, cats.geografia, "catalunya", 40,
+  );
+  await orderingSets(
+    comarques.filter((c) => c.pop), (c) => c.pop!,
+    "de menys a més població",
+    (names) => `Ordena aquestes comarques de menys a més població: ${names}`,
+    cats.geografia, "catalunya", [2, 6, 12],
   );
 
   // ── SECCIONS REGIONALS D'EUROPA (geografia) ──────────────────────────────
@@ -537,7 +653,9 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   // S'exclouen les espècies que NO tenen nom popular en català (l'etiqueta és el mateix
   // nom científic): l'enunciat portaria la resposta a dins.
   const named = taxa.filter((t) => t.label !== t.taxon);
-  for (const t of topBy(named, 0.35)) {
+  // Del 35% al 55%: el nom científic dels animals menys coneguts segueix sent una pregunta
+  // legítima, i la dificultat ja puja sola amb la fama.
+  for (const t of topBy(named, 0.55)) {
     const sameGroup = taxa.filter((o) => o.group === t.group && o.taxon !== t.taxon).map((o) => o.taxon);
     if (sameGroup.length < 3) continue;
     const [options, correctId] = mcOptions(t.taxon, shuffled(sameGroup).slice(0, 3));
@@ -548,7 +666,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       difficulty: clampDiff(taxDiff(t) + 1), status: "published", tags: tags("taxonomia", "nom-cientific"),
     })) n++;
   }
-  for (const t of topBy(named, 0.2)) {
+  for (const t of topBy(named, 0.35)) {
     const others = named.filter((o) => o.group === t.group && o.label !== t.label).map((o) => o.label);
     if (others.length < 3) continue;
     const [options, correctId] = mcOptions(t.label, shuffled(others).slice(0, 3));
@@ -559,6 +677,19 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       difficulty: clampDiff(taxDiff(t) + 1), status: "published", tags: tags("taxonomia", "nom-cientific"),
     })) n++;
   }
+
+  // Les ordenacions que aquesta passada ja no fa. Es retiren, no s'esborren: n'hi pot haver
+  // de jugades i esborrar-les trencaria l'històric de partides (mateix criteri que la poda
+  // del "més o menys" al seed).
+  const staleOrdering = await prisma.question.updateMany({
+    where: {
+      typeSlug: "ordering", status: "published",
+      tags: { hasEvery: ["wikidata", "ordena"] },
+      prompt: { notIn: [...orderingPrompts] },
+    },
+    data: { status: "retired" },
+  });
+  if (staleOrdering.count) console.log(`  · ${staleOrdering.count} ordenacions retirades (el generador ja no les fa)`);
 
   return n;
 }
