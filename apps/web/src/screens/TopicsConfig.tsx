@@ -82,7 +82,12 @@ export function TopicsConfig() {
           <button key={t.slug} onClick={() => toggle(t.slug)} disabled={t.questionCount === 0}
             className={`qc-btn${t.selected ? " qc-btn--primary" : ""}`}
             style={{ minHeight: 40, padding: "var(--qc-2) var(--qc-3)", fontSize: "var(--qc-t-small)" }}>
-            {TOPIC_ICON[t.slug] && <Icon name={TOPIC_ICON[t.slug]} size={16} />}
+            {/* Les seccions regionals no tenen icona pròpia i no en tindran: en són moltes i
+                dibuixar-ne una per país seria un joc d'icones dins del joc d'icones. Cauen a
+                la bandera, que ja llegeix com a «un lloc» i es queda dins del sistema. */}
+            {TOPIC_ICON[t.slug]
+              ? <Icon name={TOPIC_ICON[t.slug]} size={16} />
+              : t.kind === "region" && <Icon name="flag" size={16} />}
             {t.name}
             <span className="qc-num" style={{ opacity: 0.7 }}>{t.questionCount}</span>
             {t.suggested && <Icon name="star" size={14} label="Recomanat per a tu" />}

@@ -34,6 +34,14 @@ export const TOPIC_CHILDREN: Record<string, string[]> = {
   // L'esport hi entra com un fill més: viu a la categoria Cultura i, com el cinema o la
   // música, ha de poder-se triar sol o rebre's sencer quan tries "Cultura".
   cultura: ["cinema", "literatura", "art", "musica", "llengues", "esport"],
+  // Les seccions regionals es reparteixen preguntes que abans eren de "Món": sense aquesta
+  // línia, obrir França li ROBARIA a Món les seves deu preguntes en comptes d'afegir-hi un
+  // filtre. Qui tria "Món" les segueix rebent totes; qui tria "França" s'hi centra.
+  mon: [
+    "franca", "italia", "alemanya", "paisosbaixos", "suecia", "noruega",
+    "suissa", "austria", "txequia", "ucraina",
+    "euskalherria", "galicia", "occitania", "brusselles",
+  ],
 };
 
 /** Banda de dificultat [min,max] per als modes fixos. */

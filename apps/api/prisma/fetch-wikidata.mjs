@@ -306,6 +306,64 @@ SELECT ?item ?ca ?pop ?area ?capitalLabel ?sitelinks WHERE {
   capital: v(r, "capitalLabel"), fame: num(r, "sitelinks"),
 }));
 
+// ── REGIONS D'EUROPA (geografia) ───────────────────────────────────────────
+// Seccions regionals triables: nacions sense estat i països amb què el públic català té
+// afinitat. De cadascuna se'n treuen les CIUTATS amb població i coordenades, que donen
+// mapa, comparació i estimació amb els generadors que ja hi ha.
+//
+// Dos modes, i la diferència no és estètica:
+//   · `admin` (P131*) recorre la jerarquia administrativa cap avall des d'una regió. És
+//     barat perquè el subarbre és petit, i és l'únic que funciona per a Occitània o Galícia.
+//   · `country` (P17) ha de mirar TOT el que pertany a un estat —centenars de milers de
+//     comunes— i el servei públic el tomba sovint. La població va davant de tot a la
+//     consulta justament per això: el conjunt d'ítems del món amb prou habitants és petit.
+//
+// Nota sobre les nacions sense estat: la jerarquia administrativa de Wikidata no penja
+// d'Euskal Herria ni de l'Occitània cultural, sinó de les divisions dels estats. Per això
+// Euskal Herria es demana per Euskadi + Navarra (queda fora Iparralde) i Occitània per la
+// regió administrativa francesa (que sí que inclou la Catalunya Nord).
+const REGIONS = [
+  ["euskalherria", "admin", ["Q3995", "Q4018"], 8000, 12],
+  ["galicia", "admin", ["Q3908"], 8000, 12],
+  ["occitania", "admin", ["Q18678265"], 8000, 12],
+  ["brusselles", "admin", ["Q240"], 5000, 10],
+  ["franca", "country", ["Q142"], 60000, 30],
+  ["italia", "country", ["Q38"], 60000, 30],
+  ["alemanya", "country", ["Q183"], 60000, 30],
+  ["paisosbaixos", "country", ["Q55"], 40000, 25],
+  ["suecia", "country", ["Q34"], 25000, 22],
+  ["noruega", "country", ["Q20"], 15000, 20],
+  ["suissa", "country", ["Q39"], 20000, 22],
+  ["austria", "country", ["Q40"], 20000, 22],
+  ["txequia", "country", ["Q213"], 25000, 22],
+  ["ucraina", "country", ["Q212"], 40000, 25],
+];
+data.regionCities = {};
+for (const [slug, mode, qids, minPop, minFame] of REGIONS) {
+  const where = mode === "admin"
+    ? `?item wdt:P131* ?region. VALUES ?region { ${qids.map((q) => `wd:${q}`).join(" ")} }`
+    : `?item wdt:P17 wd:${qids[0]}.`;
+  try {
+    const rows = byId(await sparql(`cities-${slug}`, `
+SELECT ?item ?ca ?pop ?lat ?lon ?sitelinks WHERE {
+  ?item wdt:P1082 ?pop. FILTER(?pop > ${minPop})
+  ?item wdt:P31 ?class. ?class wdt:P279* wd:Q486972.
+  ${where}
+  ?item p:P625/psv:P625 ?c. ?c wikibase:geoLatitude ?lat; wikibase:geoLongitude ?lon.
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > ${minFame})
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+} LIMIT 250`), "item");
+    data.regionCities[slug] = rows.map((r) => ({
+      label: v(r, "ca"), pop: num(r, "pop"), lat: num(r, "lat"), lon: num(r, "lon"), fame: num(r, "sitelinks"),
+    }));
+  } catch (e) {
+    // Una regió que no s'acaba de baixar NO ha de tombar la resta: es queda sense tema i ja
+    // està. El seed només crea les seccions que tenen contingut de debò.
+    console.log(`  cities-${slug}: sense dades (${e.message.slice(0, 70)})`);
+    data.regionCities[slug] = [];
+  }
+}
+
 fs.writeFileSync(OUT, JSON.stringify({
   source: "Wikidata (query.wikidata.org) — CC0 1.0",
   generatedAt: new Date().toISOString().slice(0, 10),
@@ -313,5 +371,8 @@ fs.writeFileSync(OUT, JSON.stringify({
   ...data,
 }, null, 0));
 
-for (const [k, rows] of Object.entries(data)) console.log(`  ${k.padEnd(12)} ${rows.length}`);
+for (const [k, rows] of Object.entries(data)) {
+  if (Array.isArray(rows)) console.log(`  ${k.padEnd(14)} ${rows.length}`);
+  else for (const [sub, r] of Object.entries(rows)) console.log(`  ${(k + ":" + sub).padEnd(28)} ${r.length}`);
+}
 console.log(`\n→ ${path.basename(OUT)} (${(fs.statSync(OUT).size / 1024).toFixed(0)} kB)`);

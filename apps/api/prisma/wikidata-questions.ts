@@ -31,6 +31,37 @@ interface Founded { label: string; year: number | null; country: string | null; 
 interface Athlete { label: string; sport: string; birth: number | null; occupation: string; fame: number }
 interface Municipi { label: string; pop: number | null; comarca: string | null; lat: number | null; lon: number | null; fame: number }
 interface Comarca { label: string; pop: number | null; area: number | null; capital: string | null; fame: number }
+interface RegionCity { label: string; pop: number | null; lat: number | null; lon: number | null; fame: number }
+
+/**
+ * Seccions regionals d'Europa: nacions sense estat i països amb què el públic català té
+ * afinitat. `center`/`zoom` enquadren el mapa a la regió i `km` és el marge d'encert —
+ * tots dos han d'anar lligats a la mida real del lloc: 40 km a Brussel·les seria tota la
+ * regió, i 5 km a Ucraïna seria impossible.
+ */
+const REGIONS: Array<{ slug: string; name: string; icon: string; center: [number, number]; zoom: number; km: number }> = [
+  { slug: "euskalherria", name: "Euskal Herria", icon: "🏔️", center: [43.0, -2.2], zoom: 8, km: 15 },
+  { slug: "galicia", name: "Galícia", icon: "🐙", center: [42.8, -8.0], zoom: 8, km: 20 },
+  { slug: "occitania", name: "Occitània", icon: "🌾", center: [43.8, 2.0], zoom: 7, km: 25 },
+  { slug: "brusselles", name: "Brussel·les", icon: "🏛️", center: [50.85, 4.35], zoom: 11, km: 3 },
+  { slug: "franca", name: "França", icon: "🥖", center: [46.6, 2.4], zoom: 6, km: 45 },
+  { slug: "italia", name: "Itàlia", icon: "🍝", center: [42.5, 12.5], zoom: 6, km: 45 },
+  { slug: "alemanya", name: "Alemanya", icon: "🍺", center: [51.2, 10.4], zoom: 6, km: 45 },
+  { slug: "paisosbaixos", name: "Països Baixos", icon: "🌷", center: [52.2, 5.3], zoom: 7, km: 25 },
+  { slug: "suecia", name: "Suècia", icon: "🌲", center: [62.0, 15.0], zoom: 5, km: 60 },
+  { slug: "noruega", name: "Noruega", icon: "⛰️", center: [64.5, 12.0], zoom: 5, km: 60 },
+  { slug: "suissa", name: "Suïssa", icon: "🏔️", center: [46.8, 8.2], zoom: 7, km: 20 },
+  { slug: "austria", name: "Àustria", icon: "🎻", center: [47.6, 14.1], zoom: 7, km: 25 },
+  { slug: "txequia", name: "Txèquia", icon: "🍻", center: [49.8, 15.5], zoom: 7, km: 25 },
+  { slug: "ucraina", name: "Ucraïna", icon: "🌻", center: [48.4, 31.2], zoom: 5, km: 60 },
+];
+
+/**
+ * Ciutats mínimes per obrir una secció. Una temàtica amb quatre preguntes és pitjor que
+ * no tenir-la: la pantalla la deixa triar i després la partida no la pot respectar, perquè
+ * `selection.ts` només s'hi centra si hi ha prou contingut per omplir la partida sencera.
+ */
+const MIN_CITIES = 6;
 
 interface Manifest {
   elements: Element[]; planets: Planet[]; scientists: Person[];
@@ -39,6 +70,7 @@ interface Manifest {
   musicians?: Person[]; albums?: Album[]; bands?: Founded[];
   athletes?: Athlete[]; clubs?: Founded[];
   municipis?: Municipi[]; comarques?: Comarca[];
+  regionCities?: Record<string, RegionCity[]>;
 }
 
 export interface WikidataCtx {
@@ -192,7 +224,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   /** Comparar una xifra entre dos ítems: com més iguals, més difícil. */
   async function comparisons(
     rows: Array<{ label: string; value: number; fame: number }>, metric: string, fmt: (v: number) => string,
-    categoryId: string, tag: string, max: number,
+    categoryId: string, tag: string, max: number, topicSlug?: string,
   ) {
     const sorted = [...rows].filter((r) => r.value > 0).sort((a, b) => a.value - b.value);
     const diff = fameRanker(sorted);
@@ -212,7 +244,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
         payload: { metric, a: { label: known.label, display: fmt(known.value) }, b: { label: hidden.label } },
         answer: { bHigher: hidden.value > known.value, bDisplay: fmt(hidden.value) },
         difficulty: clampDiff((byRatio + Math.max(diff(a), diff(b))) / 2),
-        status: "published", tags: tags(tag),
+        status: "published", topicSlug, tags: tags(tag),
       })) { n++; made++; }
     }
   }
@@ -416,6 +448,56 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     comarques.filter((c) => c.area).map((c) => ({ label: c.label, value: c.area!, fame: c.pop ?? c.fame })),
     "superfície", (v) => `${Math.round(v).toLocaleString("ca")} km²`, cats.geografia, "catalunya", 40,
   );
+
+  // ── SECCIONS REGIONALS D'EUROPA (geografia) ──────────────────────────────
+  // Cada regió és una temàtica triable, i **el tema només es crea si té contingut**. Una
+  // secció buida no és neutra: apareix a la pantalla, es deixa triar, i després la partida
+  // no la respecta perquè `selection.ts` només s'hi centra si pot omplir la partida sencera.
+  // Val més que no hi surti.
+  const regionCities = wd.regionCities ?? {};
+  for (const [i, r] of REGIONS.entries()) {
+    const cities = (regionCities[r.slug] ?? []).filter((c) => c.pop && c.lat !== null && c.lon !== null);
+    if (cities.length < MIN_CITIES) continue;
+
+    const sortOrder = 30 + i;
+    await prisma.topic.upsert({
+      where: { slug: r.slug },
+      update: { name: r.name, icon: r.icon, kind: "region", sortOrder },
+      create: { slug: r.slug, name: r.name, icon: r.icon, kind: "region", regions: [], sortOrder },
+    });
+
+    const byPopulation = [...cities].sort((a, b) => b.pop! - a.pop!);
+    const rows = byPopulation.map((c) => ({ label: c.label, value: c.pop!, fame: c.pop! }));
+    const rank = fameRanker(rows);
+    const cityDiff = new Map(byPopulation.map((c, k) => [c.label, rank(rows[k])]));
+
+    // El mapa és el que fa que aquestes seccions valguin la pena: enquadrat a la regió,
+    // situar Tolosa o Bilbao és geografia de debò i no punteria sobre un mapamundi.
+    for (const c of byPopulation) {
+      if (await upsertQuestion({
+        typeSlug: "map_guess", categoryId: cats.geografia, locale: "ca",
+        prompt: `On és ${c.label}? Clica al mapa`,
+        payload: { center: r.center, zoom: r.zoom, maxZoom: r.zoom + 4 },
+        answer: { lat: c.lat, lng: c.lon, toleranceKm: r.km },
+        difficulty: clampDiff((cityDiff.get(c.label) ?? 3) + 1),
+        status: "published", topicSlug: r.slug, tags: tags("regio", r.slug, "mapa"),
+      })) n++;
+    }
+    await comparisons(
+      rows, "població", (v) => `${Math.round(v).toLocaleString("ca")} habitants`,
+      cats.geografia, `regio-${r.slug}`, 40, r.slug,
+    );
+    for (const c of byPopulation.slice(0, 25)) {
+      if (await upsertQuestion({
+        typeSlug: "estimation", categoryId: cats.geografia, locale: "ca",
+        prompt: `Quants habitants té ${c.label}?`,
+        payload: { unit: "habitants", min: 0, max: 4000000, step: 1, scale: "log" },
+        answer: { value: c.pop!, tolerancePct: 40 },
+        difficulty: clampDiff((cityDiff.get(c.label) ?? 3) + 2),
+        status: "published", topicSlug: r.slug, tags: tags("regio", r.slug),
+      })) n++;
+    }
+  }
 
   // ── NATURA ───────────────────────────────────────────────────────────────
   // Era la categoria buida (10 preguntes) després de descartar les dades de massa.

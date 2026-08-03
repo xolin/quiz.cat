@@ -290,13 +290,14 @@ async function retireDroppedFamilies() {
  */
 let difficultyResynced = 0;
 let statusResynced = 0;
+let tagsResynced = 0;
 async function upsertQuestion(data: Parameters<typeof prisma.question.create>[0]["data"]) {
   const exists = await prisma.question.findFirst({
     where: { prompt: data.prompt as string, typeSlug: data.typeSlug as string },
-    select: { id: true, difficulty: true, status: true },
+    select: { id: true, difficulty: true, status: true, tags: true },
   });
   if (exists) {
-    const patch: { difficulty?: number; status?: string } = {};
+    const patch: { difficulty?: number; status?: string; tags?: string[] } = {};
     if (typeof data.difficulty === "number" && exists.difficulty !== data.difficulty) {
       patch.difficulty = data.difficulty;
       difficultyResynced++;
@@ -304,6 +305,17 @@ async function upsertQuestion(data: Parameters<typeof prisma.question.create>[0]
     if (typeof data.status === "string" && exists.status !== data.status) {
       patch.status = data.status;
       statusResynced++;
+    }
+    // Les ETIQUETES també, i no és cosmètic: són el que classifica les preguntes per
+    // temàtica. Sense això, afegir una etiqueta a un generador no arribava mai a les
+    // preguntes ja sembrades —que són totes— i el canvi semblava no fer res.
+    if (Array.isArray(data.tags)) {
+      const before = [...exists.tags].sort().join("|");
+      const after = [...(data.tags as string[])].sort().join("|");
+      if (before !== after) {
+        patch.tags = data.tags as string[];
+        tagsResynced++;
+      }
     }
     if (Object.keys(patch).length > 0) {
       await prisma.question.update({ where: { id: exists.id }, data: patch });
@@ -384,6 +396,11 @@ async function main() {
     const others = COUNTRIES.filter((o) => o.label !== c.label && o.continent !== c.continent);
     const countryDistractors = shuffled([...sameContinent, ...shuffled(others)].slice(0, 8)).slice(0, 3);
 
+    // Etiqueta de país. És el que permet fer seccions regionals sense generar res de nou:
+    // aquestes preguntes ja parlaven d'un país concret, però no ho deien enlloc, i buscar-ho
+    // pel text del prompt seria fals ("Roma" casa amb "Romania"). Aquí el generador ho sap.
+    const pais = `pais:${c.label}`;
+
     // 1) capital → país (MC)
     {
       const [options, correctId] = mcOptions(c.label, countryDistractors.map((d) => d.label));
@@ -391,7 +408,7 @@ async function main() {
         typeSlug: "multiple_choice", categoryId: catGeo.id, locale: "ca",
         prompt: `De quin país és capital ${c.capital}?`,
         payload: { options }, answer: { correctId },
-        difficulty: c.difficulty, status: "published", tags: ["generated", "capitals"],
+        difficulty: c.difficulty, status: "published", tags: ["generated", "capitals", pais],
       })) generated++;
     }
     // 2) país → capital (MC)
@@ -401,7 +418,7 @@ async function main() {
         typeSlug: "multiple_choice", categoryId: catGeo.id, locale: "ca",
         prompt: `Quina és la capital de ${c.label}?`,
         payload: { options }, answer: { correctId },
-        difficulty: c.difficulty, status: "published", tags: ["generated", "capitals"],
+        difficulty: c.difficulty, status: "published", tags: ["generated", "capitals", pais],
       })) generated++;
     }
     // 3) bandera (emoji) → país (MC) — substitueix les d'escriure
@@ -411,7 +428,7 @@ async function main() {
         typeSlug: "multiple_choice", categoryId: catGeo.id, locale: "ca",
         prompt: `De quin país és aquesta bandera?  ${flagEmoji(c.cc)}`,
         payload: { options }, answer: { correctId },
-        difficulty: Math.min(5, c.difficulty + 1), status: "published", tags: ["generated", "banderes"],
+        difficulty: Math.min(5, c.difficulty + 1), status: "published", tags: ["generated", "banderes", pais],
       })) generated++;
     }
     // 4) situa la capital al mapa
@@ -420,7 +437,7 @@ async function main() {
       prompt: `On és ${c.capital}? Clica al mapa`,
       payload: { center: [20, 0], zoom: 1 },
       answer: { lat: c.lat, lng: c.lng, toleranceKm: 800 },
-      difficulty: Math.min(5, c.difficulty + 1), status: "published", tags: ["generated", "mapa"],
+      difficulty: Math.min(5, c.difficulty + 1), status: "published", tags: ["generated", "mapa", pais],
     })) generated++;
     // 4b) la mateixa, però fina: el marge estret la converteix en una pregunta d'experts.
     if (await upsertQuestion({
@@ -428,7 +445,7 @@ async function main() {
       prompt: `Situa ${c.capital} amb precisió (marge de 250 km)`,
       payload: { center: [20, 0], zoom: 1 },
       answer: { lat: c.lat, lng: c.lng, toleranceKm: 250 },
-      difficulty: clampDiff(c.difficulty + 2), status: "published", tags: ["generated", "mapa", "precisio"],
+      difficulty: clampDiff(c.difficulty + 2), status: "published", tags: ["generated", "mapa", "precisio", pais],
     })) generated++;
   }
 
@@ -612,7 +629,9 @@ async function main() {
         prompt,
         payload: { metric: metric.label, a: { label: known.label, display: metric.fmt(vKnown) }, b: { label: hidden.label } },
         answer: { bHigher: vHidden > vKnown, bDisplay: metric.fmt(vHidden) },
-        difficulty, status: "published", tags: ["generated", "mesomenys", metric.key],
+        difficulty, status: "published",
+        // Una comparació parla de dos països: pertany a les seccions dels dos.
+        tags: ["generated", "mesomenys", metric.key, `pais:${known.label}`, `pais:${hidden.label}`],
       })) generated++;
     }
 
@@ -649,7 +668,7 @@ async function main() {
       prompt: `Quants habitants té ${c.label}?`,
       payload: { unit: "milions d'hab.", min: 0, max: 1500, step: 1, scale: "log" },
       answer: { value: STATS[c.label].pop, tolerancePct: f <= 1 ? 45 : f === 2 ? 35 : 25 },
-      difficulty: clampDiff(f), status: "published", tags: ["generated", "estimacio", "poblacio"],
+      difficulty: clampDiff(f), status: "published", tags: ["generated", "estimacio", "poblacio", `pais:${c.label}`],
     })) generated++;
   }
   for (const c of withStats) {
@@ -659,7 +678,7 @@ async function main() {
       prompt: `Quina superfície té ${c.label}?`,
       payload: { unit: "mil km²", min: 0, max: 10000, step: 10, scale: "log" },
       answer: { value: STATS[c.label].area, tolerancePct: f <= 1 ? 45 : f === 2 ? 35 : 25 },
-      difficulty: clampDiff(f + 1), status: "published", tags: ["generated", "estimacio", "superficie"],
+      difficulty: clampDiff(f + 1), status: "published", tags: ["generated", "estimacio", "superficie", `pais:${c.label}`],
     })) generated++;
   }
   // Densitat: surt de les dues xifres que ja tenim i és molt menys intuïtiva que la
@@ -672,7 +691,7 @@ async function main() {
       prompt: `Quants habitants per km² té ${c.label}?`,
       payload: { unit: "hab./km²", min: 0, max: 600, step: 1, scale: "log" },
       answer: { value: density, tolerancePct: 40 },
-      difficulty: clampDiff(fame(c.label) + 1.5), status: "published", tags: ["generated", "estimacio", "densitat"],
+      difficulty: clampDiff(fame(c.label) + 1.5), status: "published", tags: ["generated", "estimacio", "densitat", `pais:${c.label}`],
     })) generated++;
   }
 
@@ -1023,6 +1042,45 @@ async function main() {
     await prisma.question.updateMany({ where: { tags: { hasSome: tagList } }, data: { topicSlug: topic } });
   }
 
+  // ── SECCIONS REGIONALS D'EUROPA ──────────────────────────────────────────
+  // No generen contingut nou: reparteixen el que ja hi havia. Aquestes preguntes ja parlaven
+  // d'un país concret (capital, bandera, mapa, superfície…) però no ho deien enlloc, i
+  // buscar-ho pel text seria fals — "Roma" casa amb "Romania". L'etiqueta `pais:` la posa el
+  // generador, que sí que ho sap del cert.
+  //
+  // Les nacions sense estat (Euskal Herria, Galícia, Occitània) i Brussel·les NO surten
+  // d'aquí, perquè no són països del dataset: depenen de les ciutats de Wikidata i només
+  // tindran secció si aquelles consultes arriben a baixar-se.
+  const COUNTRY_TOPICS = [
+    { slug: "franca", name: "França", icon: "🇫🇷" },
+    { slug: "italia", name: "Itàlia", icon: "🇮🇹" },
+    { slug: "alemanya", name: "Alemanya", icon: "🇩🇪" },
+    { slug: "paisosbaixos", name: "Països Baixos", icon: "🇳🇱" },
+    { slug: "suecia", name: "Suècia", icon: "🇸🇪" },
+    { slug: "noruega", name: "Noruega", icon: "🇳🇴" },
+    { slug: "suissa", name: "Suïssa", icon: "🇨🇭" },
+    { slug: "austria", name: "Àustria", icon: "🇦🇹" },
+    { slug: "txequia", name: "Txèquia", icon: "🇨🇿" },
+    { slug: "ucraina", name: "Ucraïna", icon: "🇺🇦" },
+  ];
+  // Una partida sencera. Per sota d'això la temàtica es podria triar però la partida no la
+  // respectaria (`selection.ts` només s'hi centra si pot omplir-la), i seria pitjor que res.
+  const MIN_TOPIC_QUESTIONS = 8;
+  const openedTopics: string[] = [];
+  for (const [i, t] of COUNTRY_TOPICS.entries()) {
+    const tag = `pais:${t.name}`;
+    const count = await prisma.question.count({ where: { status: "published", tags: { has: tag } } });
+    if (count < MIN_TOPIC_QUESTIONS) continue;
+    await prisma.topic.upsert({
+      where: { slug: t.slug },
+      update: { name: t.name, icon: t.icon, kind: "region", sortOrder: 40 + i },
+      create: { slug: t.slug, name: t.name, icon: t.icon, kind: "region", regions: [], sortOrder: 40 + i },
+    });
+    await prisma.question.updateMany({ where: { status: "published", tags: { has: tag } }, data: { topicSlug: t.slug } });
+    openedTopics.push(`${t.name}=${count}`);
+  }
+  console.log(`Seccions regionals: ${openedTopics.length}/${COUNTRY_TOPICS.length} · ${openedTopics.join(" · ")}`);
+
   await prisma.question.updateMany({ where: { categoryId: catGeo.id, topicSlug: null }, data: { topicSlug: "mon" } });
   await prisma.question.updateMany({ where: { categoryId: catHist.id, topicSlug: null }, data: { topicSlug: "historia" } });
   await prisma.question.updateMany({ where: { categoryId: catSci.id, topicSlug: null }, data: { topicSlug: "ciencia" } });
@@ -1061,7 +1119,7 @@ async function main() {
   console.log(byType.map((t) => `${t.typeSlug}=${t._count}`).join(" · "));
   // Es comptaven però no es deien enlloc, i són justament les dues xifres que diuen si una
   // poda o un recàlcul de dificultat ha arribat a la base o s'ha quedat al generador.
-  console.log(`Resincronitzat: ${difficultyResynced} dificultats · ${statusResynced} estats.`);
+  console.log(`Resincronitzat: ${difficultyResynced} dificultats · ${statusResynced} estats · ${tagsResynced} etiquetes.`);
 }
 
 main()
