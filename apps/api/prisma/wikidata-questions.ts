@@ -25,15 +25,25 @@ interface Dated { label: string; year: number | null; fame: number }
 interface Person { label: string; birth: number | null; death: number | null; fame: number }
 interface Work { label: string; year: number | null; fame: number; director?: string; creator?: string; author?: string }
 interface Taxon { label: string; taxon: string; group: string; fame: number }
+interface Album { label: string; performer: string; year: number | null; fame: number }
+/** Grups musicals i clubs esportius: mateixa forma, mateixes preguntes (any i país). */
+interface Founded { label: string; year: number | null; country: string | null; fame: number }
+interface Athlete { label: string; sport: string; birth: number | null; occupation: string; fame: number }
+interface Municipi { label: string; pop: number | null; comarca: string | null; lat: number | null; lon: number | null; fame: number }
+interface Comarca { label: string; pop: number | null; area: number | null; capital: string | null; fame: number }
 
 interface Manifest {
   elements: Element[]; planets: Planet[]; scientists: Person[];
   events: Dated[]; leaders: Person[]; films: Work[]; paintings: Work[]; books: Work[]; taxa: Taxon[];
+  // Opcionals: un manifest baixat abans d'afegir-los no els porta, i el seed ha de tirar igual.
+  musicians?: Person[]; albums?: Album[]; bands?: Founded[];
+  athletes?: Athlete[]; clubs?: Founded[];
+  municipis?: Municipi[]; comarques?: Comarca[];
 }
 
 export interface WikidataCtx {
   prisma: PrismaClient;
-  cats: { ciencia: string; historia: string; cultura: string; natura: string };
+  cats: { ciencia: string; historia: string; cultura: string; natura: string; geografia: string };
   upsertQuestion: (data: any) => Promise<boolean>;
   mcOptions: (correct: string, distractors: string[]) => [Array<{ id: string; text: string }>, string];
   shuffled: <T>(a: T[]) => T[];
@@ -117,9 +127,15 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     }
   }
 
-  /** "Qui va fer X?" — pel·lícules, quadres i llibres segueixen el mateix patró. */
-  async function authorship(
-    works: Work[], authorOf: (w: Work) => string | undefined, prompt: (w: Work) => string,
+  /**
+   * "Qui va fer X?" — pel·lícules, quadres i llibres segueixen el mateix patró.
+   *
+   * És genèrica perquè la forma («una entitat, un atribut de text, distractors del mateix
+   * conjunt») serveix per a molt més que l'autoria: el país d'un grup, la comarca d'un
+   * municipi o l'esport d'un esportista són exactament la mateixa pregunta.
+   */
+  async function authorship<T extends { label: string; fame: number }>(
+    works: T[], authorOf: (w: T) => string | undefined | null, prompt: (w: T) => string,
     categoryId: string, tag: string,
   ) {
     const valid = works.filter((w) => authorOf(w));
@@ -304,6 +320,102 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   await yearQuestions(topBy(printed(wd.paintings), 0.6), (p) => `De quin any és el quadre «${p.label}»?`, cats.cultura, "pintura", 1);
   await timelineSets(wd.films.map((f) => ({ label: f.label, year: f.year, fame: f.fame })), cats.cultura, "cultura", "cinema-timeline", [1, 3, 8]);
   await timelineSets(printed(wd.books).map((b) => ({ label: b.label, year: b.year, fame: b.fame })), cats.cultura, "cultura", "llibres-timeline", [2, 5, 11, 26]);
+
+  // ── MÚSICA (cultura) ─────────────────────────────────────────────────────
+  // Era el forat més gran: zero preguntes de música en un joc de trivia. Els percentils
+  // són deliberadament curts — amb tot el dataset, la música sola seria un terç del pou.
+  const albums = wd.albums ?? [];
+  const musicians = wd.musicians ?? [];
+  const bands = wd.bands ?? [];
+  await authorship(topBy(albums, 0.6), (a) => a.performer, (a) => `Qui va publicar l'àlbum «${a.label}»?`, cats.cultura, "musica");
+  await yearQuestions(topBy(albums, 0.3), (a) => `De quin any és l'àlbum «${a.label}»?`, cats.cultura, "musica", 1);
+  await centuryQuestions(topBy(musicians, 0.4), cats.cultura, "musics");
+  await yearQuestions(topBy(bands, 0.6), (b) => `En quin any es va formar el grup ${b.label}?`, cats.cultura, "musica", 1);
+  await authorship(topBy(bands, 0.7), (b) => b.country, (b) => `De quin país és el grup ${b.label}?`, cats.cultura, "musica");
+  await timelineSets(
+    albums.map((a) => ({ label: a.label, year: a.year, fame: a.fame })),
+    cats.cultura, "cultura", "musica-timeline", [4, 12],
+  );
+
+  // ── ESPORT (cultura, etiquetat `esport`) ─────────────────────────────────
+  // Va a Cultura perquè no hi ha categoria pròpia: crear-ne una demana color, icona i
+  // retocs al sistema de disseny. L'etiqueta `esport` deixa fer-ho més endavant sense
+  // haver de tornar a generar res.
+  const athletes = wd.athletes ?? [];
+  const clubs = wd.clubs ?? [];
+  // "Va destacar" i no "practica": una part bona d'aquesta llista ja és morta.
+  //
+  // Retallat al 45%: el dataset en dona 1028, i mil preguntes de la mateixa forma serien
+  // el mateix error que el nombre atòmic — no per repetir el fet (saber a què jugava Messi
+  // no et diu l'esport de ningú més), sinó per repetir el MOTLLE fins a fer-lo previsible.
+  await authorship(topBy(athletes, 0.45), (a) => a.sport, (a) => `En quin esport va destacar ${a.label}?`, cats.cultura, "esport");
+  // Retallats: sense filtre sortien clubs com el «FK Kauno Žalgiris», i «de quin país és»
+  // deixa de ser difícil per passar a ser impossible — no és coneixement, és sort.
+  await yearQuestions(topBy(clubs, 0.6), (c) => `En quin any es va fundar el ${c.label}?`, cats.cultura, "esport", 1);
+  await authorship(topBy(clubs, 0.55), (c) => c.country, (c) => `De quin país és el club ${c.label}?`, cats.cultura, "esport");
+  await timelineSets(
+    athletes.map((a) => ({ label: a.label, year: a.birth, fame: a.fame })),
+    cats.cultura, "cultura", "esport-timeline", [8, 25],
+  );
+
+  // ── CATALUNYA (geografia) ────────────────────────────────────────────────
+  // El diferencial del joc: contingut que cap altre trivia genera.
+  //
+  // Nota sobre la dificultat: aquí NO es fa servir `fame` (nombre de wikis). Entre pobles
+  // catalans amb prou feines discrimina — Vic i la Vajol tenen wikis semblants —, mentre que
+  // la POBLACIÓ sí que diu quins coneix la gent. Per això es passa `fame: pop`.
+  const municipis = (wd.municipis ?? []).filter((m) => m.pop && m.pop > 0);
+  const byPop = [...municipis].sort((a, b) => b.pop! - a.pop!);
+  const asKnown = (m: Municipi) => ({ label: m.label, value: m.pop!, fame: m.pop! });
+
+  await authorship(
+    byPop.slice(0, 220).map((m) => ({ label: m.label, comarca: m.comarca, fame: m.pop! })),
+    (m) => m.comarca, (m) => `A quina comarca pertany ${m.label}?`, cats.geografia, "catalunya",
+  );
+  // La dificultat es calcula UN COP i es desa per nom. `fameRanker` indexa per identitat
+  // d'objecte, o sigui que cridar-lo amb un `{...}` acabat de fer sempre falla el `get` i
+  // torna el valor del mig: totes les preguntes sortirien amb la mateixa dificultat.
+  const popTop = byPop.slice(0, 220);
+  const popRows = popTop.map(asKnown);
+  const rankPop = fameRanker(popRows);
+  const popDiff = new Map(popTop.map((m, i) => [m.label, rankPop(popRows[i])]));
+
+  for (const m of byPop.slice(0, 120)) {
+    if (await upsertQuestion({
+      typeSlug: "estimation", categoryId: cats.geografia, locale: "ca",
+      prompt: `Quants habitants té ${m.label}?`,
+      payload: { unit: "habitants", min: 0, max: 2000000, step: 1, scale: "log" },
+      answer: { value: m.pop!, tolerancePct: 35 },
+      difficulty: clampDiff((popDiff.get(m.label) ?? 3) + 1), status: "published", tags: tags("catalunya"),
+    })) n++;
+  }
+  await comparisons(
+    byPop.slice(0, 200).map(asKnown), "població",
+    (v) => `${Math.round(v).toLocaleString("ca")} habitants`, cats.geografia, "catalunya", 90,
+  );
+  // Mapa centrat a Catalunya i amb zoom de comarca. Amb la vista del món (que és el que
+  // feia el mapa fins ara, ignorant el `payload`), situar Manresa seria clicar dos píxels.
+  for (const m of byPop.slice(0, 90).filter((m) => m.lat !== null && m.lon !== null)) {
+    if (await upsertQuestion({
+      typeSlug: "map_guess", categoryId: cats.geografia, locale: "ca",
+      prompt: `On és ${m.label}? Clica al mapa`,
+      payload: { center: [41.8, 1.7], zoom: 8, maxZoom: 12 },
+      answer: { lat: m.lat, lng: m.lon, toleranceKm: 20 },
+      difficulty: clampDiff((popDiff.get(m.label) ?? 3) + 1), status: "published", tags: tags("catalunya", "mapa"),
+    })) n++;
+  }
+
+  const comarques = wd.comarques ?? [];
+  // Preguntada al revés a posta. «La capital de la comarca Barcelonès» és incorrecte —les
+  // comarques porten article ("el Barcelonès", "l'Alt Empordà") i Wikidata no el dona, o sigui
+  // que qualsevol frase que hi encaixi el nom directament grinyola. Amb la capital al davant
+  // la frase funciona amb tots els noms, i de passada la pregunta és millor: saps on és Vic,
+  // però potser no de quina comarca és capital.
+  await authorship(comarques.filter((c) => c.capital), (c) => c.label, (c) => `De quina comarca és capital ${c.capital}?`, cats.geografia, "catalunya");
+  await comparisons(
+    comarques.filter((c) => c.area).map((c) => ({ label: c.label, value: c.area!, fame: c.pop ?? c.fame })),
+    "superfície", (v) => `${Math.round(v).toLocaleString("ca")} km²`, cats.geografia, "catalunya", 40,
+  );
 
   // ── NATURA ───────────────────────────────────────────────────────────────
   // Era la categoria buida (10 preguntes) després de descartar les dades de massa.

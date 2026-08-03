@@ -24,24 +24,35 @@ async function sparql(name, query) {
   const cached = path.join(CACHE, `${name}.json`);
   if (fs.existsSync(cached)) return JSON.parse(fs.readFileSync(cached, "utf8"));
   for (let attempt = 1; ; attempt++) {
-    const res = await fetch("https://query.wikidata.org/sparql", {
-      method: "POST",
-      headers: {
-        "User-Agent": UA,
-        Accept: "application/sparql-results+json",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({ query }),
-    });
-    if (res.ok) {
-      const rows = (await res.json()).results.bindings;
-      fs.writeFileSync(cached, JSON.stringify(rows));
-      return rows;
+    // El `try` cobreix el `fetch` I el `json()`: amb les consultes pesades, el servei no
+    // sempre respon amb un codi d'error — de vegades tanca el socket a mitja resposta, o
+    // la retorna tallada i el JSON no es pot llegir. Abans això sortia del bucle com una
+    // excepció i es carregava tota la descàrrega, perdent també el que ja havia baixat.
+    let error;
+    try {
+      const res = await fetch("https://query.wikidata.org/sparql", {
+        method: "POST",
+        headers: {
+          "User-Agent": UA,
+          Accept: "application/sparql-results+json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ query }),
+      });
+      if (res.ok) {
+        const rows = (await res.json()).results.bindings;
+        fs.writeFileSync(cached, JSON.stringify(rows));
+        return rows;
+      }
+      error = `HTTP ${res.status} ${(await res.text()).slice(0, 120).replace(/\s+/g, " ")}`;
+    } catch (e) {
+      error = e.message.slice(0, 120);
     }
-    // El servei públic limita l'ús: si talla, s'espera i es torna a provar.
-    if (attempt >= 3) throw new Error(`${name}: HTTP ${res.status} ${(await res.text()).slice(0, 160)}`);
-    console.log(`  ${name}: HTTP ${res.status}, reintent ${attempt}…`);
-    await sleep(5000 * attempt);
+    // El servei públic limita l'ús: si talla, s'espera i es torna a provar. Cinc intents amb
+    // espera creixent, que les consultes grosses en solen necessitar més d'un.
+    if (attempt >= 5) throw new Error(`${name}: ${error}`);
+    console.log(`  ${name}: ${error}, reintent ${attempt}…`);
+    await sleep(6000 * attempt);
   }
 }
 
@@ -184,6 +195,116 @@ SELECT ?item ?ca ?taxon ?sitelinks WHERE {
     data.taxa.push({ label: v(r, "ca"), taxon: v(r, "taxon"), group, fame: num(r, "sitelinks") });
   }
 }
+
+// ── MÚSICA (cultura) ───────────────────────────────────────────────────────
+// Era el forat més gran del pou: zero preguntes de música en un joc de trivia.
+data.musicians = byId(await sparql("musicians", `
+SELECT ?item ?ca ?birth ?death ?sitelinks WHERE {
+  ?item wdt:P106 ?occ. VALUES ?occ { wd:Q36834 wd:Q177220 wd:Q639669 wd:Q753110 wd:Q855091 }
+  ?item wdt:P569 ?birth.
+  OPTIONAL { ?item wdt:P570 ?death. }
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > 70)
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+  FILTER(YEAR(?birth) > 1500 && YEAR(?birth) < 2005)
+} LIMIT 500`), "item").map((r) => ({
+  label: v(r, "ca"), birth: year(r, "birth"), death: year(r, "death"), fame: num(r, "sitelinks"),
+}));
+
+data.albums = byId(await sparql("albums", `
+SELECT ?item ?ca ?performerLabel ?date ?sitelinks WHERE {
+  ?item wdt:P31 wd:Q482994; wdt:P175 ?performer; wdt:P577 ?date.
+  ?performer rdfs:label ?performerLabel. FILTER(LANG(?performerLabel) = "ca")
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > 22)
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+  FILTER(YEAR(?date) > 1950 && YEAR(?date) < 2025)
+} LIMIT 500`), "item").map((r) => ({
+  label: v(r, "ca"), performer: v(r, "performerLabel"), year: year(r, "date"), fame: num(r, "sitelinks"),
+}));
+
+data.bands = byId(await sparql("bands", `
+SELECT ?item ?ca ?inception ?countryLabel ?sitelinks WHERE {
+  ?item wdt:P31 wd:Q215380; wdt:P571 ?inception.
+  OPTIONAL { ?item wdt:P495 ?country. ?country rdfs:label ?countryLabel. FILTER(LANG(?countryLabel)="ca") }
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > 45)
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+} LIMIT 400`), "item").map((r) => ({
+  label: v(r, "ca"), year: year(r, "inception"), country: v(r, "countryLabel"), fame: num(r, "sitelinks"),
+}));
+
+// ── ESPORT (cultura, etiquetat `esport`) ───────────────────────────────────
+// Una consulta sola amb totes les ocupacions tomba el servei (504 i respostes tallades),
+// igual que passava amb els tàxons. Partida per ocupació, aguanta.
+const SPORT_OCCUPATIONS = [
+  ["futbolista", "Q937857", 45],
+  ["basquet", "Q3665646", 40],
+  ["tennista", "Q10833314", 35],
+  ["ciclista", "Q2309784", 30],
+  ["nedador", "Q10843402", 30],
+  ["atleta", "Q11513337", 35],
+  ["pilot", "Q378622", 35],
+  // DESCARTAT els escacs (Q10873124): és l'ocupació que més gent famosa per ALTRES coses
+  // arrossega, perquè `P641` marca qualsevol que hagi competit. En sortien preguntes com
+  // «en quin esport va destacar Peter Thiel?», que és certa i alhora absurda.
+];
+data.athletes = [];
+for (const [slug, qid, minFame] of SPORT_OCCUPATIONS) {
+  const rows = byId(await sparql(`athletes-${qid}`, `
+SELECT ?item ?ca ?sportLabel ?birth ?sitelinks WHERE {
+  ?item wdt:P106 wd:${qid}; wdt:P641 ?sport; wdt:P569 ?birth.
+  ?sport rdfs:label ?sportLabel. FILTER(LANG(?sportLabel) = "ca")
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > ${minFame})
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+  FILTER(YEAR(?birth) > 1890)
+} LIMIT 250`), "item");
+  for (const r of rows) {
+    data.athletes.push({
+      label: v(r, "ca"), sport: v(r, "sportLabel"), birth: year(r, "birth"),
+      occupation: slug, fame: num(r, "sitelinks"),
+    });
+  }
+}
+// Un mateix esportista pot sortir per dues ocupacions (P106 en porta diverses).
+data.athletes = [...new Map(data.athletes.map((a) => [a.label, a])).values()];
+
+data.clubs = byId(await sparql("clubs", `
+SELECT ?item ?ca ?inception ?countryLabel ?sitelinks WHERE {
+  ?item wdt:P31 wd:Q476028; wdt:P571 ?inception.
+  OPTIONAL { ?item wdt:P17 ?country. ?country rdfs:label ?countryLabel. FILTER(LANG(?countryLabel)="ca") }
+  ?item wikibase:sitelinks ?sitelinks. FILTER(?sitelinks > 65)
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+} LIMIT 400`), "item").map((r) => ({
+  label: v(r, "ca"), year: year(r, "inception"), country: v(r, "countryLabel"), fame: num(r, "sitelinks"),
+}));
+
+// ── CATALUNYA (geografia) ──────────────────────────────────────────────────
+// El diferencial: contingut que cap altre joc de trivia genera. Surten els 947 municipis
+// amb població, comarca i coordenades — o sigui que també donen preguntes de mapa.
+// Compte amb el QID: `Q33146` és una altra cosa; el bo és `Q33146843`.
+data.municipis = byId(await sparql("municipis", `
+SELECT ?item ?ca ?pop ?comarcaLabel ?lat ?lon ?sitelinks WHERE {
+  ?item wdt:P31 wd:Q33146843.
+  OPTIONAL { ?item wdt:P1082 ?pop. }
+  OPTIONAL { ?item wdt:P131 ?comarca. ?comarca rdfs:label ?comarcaLabel. FILTER(LANG(?comarcaLabel)="ca") }
+  OPTIONAL { ?item p:P625/psv:P625 ?c. ?c wikibase:geoLatitude ?lat; wikibase:geoLongitude ?lon. }
+  ?item wikibase:sitelinks ?sitelinks.
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+} LIMIT 2000`), "item").map((r) => ({
+  label: v(r, "ca"), pop: num(r, "pop"), comarca: v(r, "comarcaLabel"),
+  lat: num(r, "lat"), lon: num(r, "lon"), fame: num(r, "sitelinks"),
+}));
+
+data.comarques = byId(await sparql("comarques", `
+SELECT ?item ?ca ?pop ?area ?capitalLabel ?sitelinks WHERE {
+  ?item wdt:P31 wd:Q937876.
+  OPTIONAL { ?item wdt:P1082 ?pop. }
+  OPTIONAL { ?item wdt:P2046 ?area. }
+  OPTIONAL { ?item wdt:P36 ?cap. ?cap rdfs:label ?capitalLabel. FILTER(LANG(?capitalLabel)="ca") }
+  ?item wikibase:sitelinks ?sitelinks.
+  ?item rdfs:label ?ca. FILTER(LANG(?ca) = "ca")
+} LIMIT 100`), "item").map((r) => ({
+  label: v(r, "ca"), pop: num(r, "pop"), area: num(r, "area"),
+  capital: v(r, "capitalLabel"), fame: num(r, "sitelinks"),
+}));
 
 fs.writeFileSync(OUT, JSON.stringify({
   source: "Wikidata (query.wikidata.org) — CC0 1.0",

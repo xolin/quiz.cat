@@ -900,7 +900,7 @@ async function main() {
   // dades verificables, llicència neta i dificultat deduïda de la fama de cada ítem.
   const wikidataN = await seedWikidata({
     prisma,
-    cats: { ciencia: catSci.id, historia: catHist.id, cultura: catCul.id, natura: catNat.id },
+    cats: { ciencia: catSci.id, historia: catHist.id, cultura: catCul.id, natura: catNat.id, geografia: catGeo.id },
     upsertQuestion, mcOptions, shuffled, clampDiff, gapDifficulty,
   });
   generated += wikidataN;
