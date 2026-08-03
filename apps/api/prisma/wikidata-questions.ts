@@ -60,8 +60,20 @@ const REGIONS: Array<{ slug: string; name: string; icon: string; center: [number
  * Ciutats mínimes per obrir una secció. Una temàtica amb quatre preguntes és pitjor que
  * no tenir-la: la pantalla la deixa triar i després la partida no la pot respectar, perquè
  * `selection.ts` només s'hi centra si hi ha prou contingut per omplir la partida sencera.
+ * Amb cinc ciutats surten unes quinze preguntes (mapa + comparació + estimació), que ja
+ * omplen la partida.
  */
-const MIN_CITIES = 6;
+const MIN_CITIES = 5;
+
+/**
+ * Terra de població RELATIU a la ciutat més gran de la regió.
+ *
+ * Absolut no serveix: 20.000 habitants és un poble perdut a Alemanya i una ciutat mitjana
+ * a Occitània. El filtre de fama de Wikidata tampoc no ho resol —a Occitània deixava passar
+ * Aucamvila (10.000) i la Sauvetat Sent Gili (9.000) al costat de Tolosa i Montpeller—, i
+ * «on és la Sauvetat Sent Gili?» no és una pregunta difícil, és una pregunta impossible.
+ */
+const CITY_FLOOR_RATIO = 0.03;
 
 interface Manifest {
   elements: Element[]; planets: Planet[]; scientists: Person[];
@@ -456,7 +468,9 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   // Val més que no hi surti.
   const regionCities = wd.regionCities ?? {};
   for (const [i, r] of REGIONS.entries()) {
-    const cities = (regionCities[r.slug] ?? []).filter((c) => c.pop && c.lat !== null && c.lon !== null);
+    const withData = (regionCities[r.slug] ?? []).filter((c) => c.pop && c.lat !== null && c.lon !== null);
+    const biggest = Math.max(0, ...withData.map((c) => c.pop!));
+    const cities = withData.filter((c) => c.pop! >= biggest * CITY_FLOOR_RATIO);
     if (cities.length < MIN_CITIES) continue;
 
     const sortOrder = 30 + i;
