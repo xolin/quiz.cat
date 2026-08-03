@@ -16,6 +16,12 @@ export function GeoMap(props: {
   onPick?: (lat: number, lng: number) => void;
   markers: GeoMarker[];
   disabled?: boolean;
+  /* El `payload` de map_guess ja portava `center` i `zoom` des del principi, però ningú els
+     llegia: el mapa sempre s'obria al món sencer. Amb preguntes de municipis això és clicar
+     un punt de dos píxels, o sigui que ara manen la vista inicial. */
+  center?: [number, number];
+  zoom?: number;
+  maxZoom?: number;
 }) {
   const divRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -25,9 +31,13 @@ export function GeoMap(props: {
   pickRef.current = props.onPick;
   disabledRef.current = props.disabled;
 
+  const [lat, lng] = props.center ?? [25, 10];
+  const zoom = props.zoom ?? 1;
+
   useEffect(() => {
     if (!divRef.current || mapRef.current) return;
-    const map = L.map(divRef.current, { worldCopyJump: true, minZoom: 1, maxZoom: 7 }).setView([25, 10], 1);
+    const map = L.map(divRef.current, { worldCopyJump: true, minZoom: 1, maxZoom: props.maxZoom ?? 7 })
+      .setView([lat, lng], zoom);
     // Variant FOSCA del mateix proveïdor: sobre l'escenari del plató, les tessel·les
     // clares cantaven com un llum encès. Mateixa llicència, mateixa absència d'etiquetes.
     L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}{r}.png", {
@@ -44,6 +54,14 @@ export function GeoMap(props: {
       mapRef.current = null;
     };
   }, []);
+
+  // La vista, a cada ronda. Cal un efecte a part perquè entre dues preguntes de mapa
+  // seguides el component NO es desmunta —React el reaprofita—, i el mapa es quedaria on
+  // l'havia deixat la pregunta anterior. Les dependències són els números i no `props.center`,
+  // que és un array nou a cada render i dispararia l'efecte sempre.
+  useEffect(() => {
+    mapRef.current?.setView([lat, lng], zoom);
+  }, [lat, lng, zoom]);
 
   useEffect(() => {
     const g = layerRef.current;

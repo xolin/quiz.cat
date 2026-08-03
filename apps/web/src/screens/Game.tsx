@@ -463,6 +463,9 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
               <GeoMap
                 disabled={!!feedback}
                 onPick={(lat, lng) => setMapPick({ lat, lng })}
+                center={round.payload.center}
+                zoom={round.payload.zoom}
+                maxZoom={round.payload.maxZoom}
                 markers={[
                   ...(mapPick ? [{ ...mapPick, color: "#F0A044", label: feedback ? "tu" : undefined }] : []),
                   ...(feedback?.correctAnswer?.lat !== undefined
