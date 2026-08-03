@@ -226,18 +226,18 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       })) n++;
     }
   }
-  for (const e of topBy(elements, 0.4)) {
-    if (await upsertQuestion({
-      typeSlug: "estimation", categoryId: cats.ciencia, locale: "ca",
-      prompt: `Quin nombre atòmic té ${e.label}?`,
-      payload: { unit: "protons", min: 1, max: 103, step: 1, scale: "linear" },
-      answer: { value: e.number, tolerancePct: 20 },
-      difficulty: clampDiff(elDiff(e) + 1), status: "published", tags: tags("elements"),
-    })) n++;
-  }
+  // El nombre atòmic dona per a UNA pregunta, no per a setanta: qui sap on cau un element a
+  // la taula els sap tots, i qui no, no en sap cap. Sembrar-ne desenes no mesurava desenes de
+  // coses, mesurava la mateixa una i prou, i sortien en ratxa. Per això:
+  //
+  // - Fora l'estimació «Quin nombre atòmic té X?». Era la forma més injusta del mateix fet: amb
+  //   una tolerància del 20%, encertar l'oxigen (8) volia dir clavar-lo entre 7 i 10, mentre que
+  //   a l'urani (92) t'hi vaig un marge de divuit protons.
+  // - De l'ordenació queden només els salts amples. Ordenar quatre elements consecutius és
+  //   memòria de la taula; ordenar-ne quatre de separats es pot deduir, que és el que volem.
   const byNumber = [...elements].sort((a, b) => a.number - b.number);
-  for (const spacing of [1, 7, 20]) {
-    for (let i = 0; i + 3 * spacing < byNumber.length; i += 4 * spacing) {
+  for (const spacing of [7, 20]) {
+    for (let i = 0; i + 3 * spacing < byNumber.length; i += 2 * spacing) {
       const group = [0, 1, 2, 3].map((k) => byNumber[i + k * spacing]);
       const display = shuffled(group).map((e, idx) => ({ id: String.fromCharCode(97 + idx), text: e.label, number: e.number }));
       const order = [...display].sort((a, b) => a.number - b.number).map((d) => d.id);

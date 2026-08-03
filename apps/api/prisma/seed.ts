@@ -253,21 +253,60 @@ function mcOptions(correct: string, distractors: string[]): [{ id: string; text:
 }
 
 /**
+ * Famílies de preguntes retirades del generador, per prefix de prompt.
+ *
+ * Cal una llista explícita perquè `upsertQuestion` no esborra mai: treure un generador no
+ * treu de la base el que ja havia sembrat, i aquelles preguntes es quedarien publicades per
+ * sempre. Es retiren aquí, i les que el generador encara vulgui tornen soles a `published`
+ * quan hi passen — o sigui que desfer una poda és treure la línia d'aquesta llista.
+ */
+const RETIRED_PROMPT_PREFIXES = [
+  // El nombre atòmic es preguntava de tres maneres i totes demanaven el mateix: qui sap on cau
+  // un element a la taula els sap tots. Queden només les ordenacions de salt ample, que es
+  // poden deduir. Veure el bloc de CIÈNCIA de `wikidata-questions.ts`.
+  "Quin nombre atòmic té ",
+  "Ordena per nombre atòmic",
+];
+
+async function retireDroppedFamilies() {
+  for (const prefix of RETIRED_PROMPT_PREFIXES) {
+    const { count } = await prisma.question.updateMany({
+      where: { prompt: { startsWith: prefix }, status: "published" },
+      data: { status: "retired" },
+    });
+    if (count) console.log(`  · retirades ${count} preguntes «${prefix}…»`);
+  }
+}
+
+/**
  * Crea la pregunta només si no existeix ja (idempotent per prompt+tipus).
  * Si ja hi és però el generador ara li dona una DIFICULTAT diferent, la posa al dia:
  * altrament, afinar el càlcul de dificultat no serviria de res per a tot el que ja
  * està sembrat, i el mode adaptatiu seguiria veient les xifres velles.
+ *
+ * L'ESTAT es resincronitza pel mateix motiu, i a més és el que permet que la poda de
+ * `retireDroppedFamilies()` sigui reversible: una pregunta retirada que el generador torna
+ * a demanar es torna a publicar sola.
  */
 let difficultyResynced = 0;
+let statusResynced = 0;
 async function upsertQuestion(data: Parameters<typeof prisma.question.create>[0]["data"]) {
   const exists = await prisma.question.findFirst({
     where: { prompt: data.prompt as string, typeSlug: data.typeSlug as string },
-    select: { id: true, difficulty: true },
+    select: { id: true, difficulty: true, status: true },
   });
   if (exists) {
+    const patch: { difficulty?: number; status?: string } = {};
     if (typeof data.difficulty === "number" && exists.difficulty !== data.difficulty) {
-      await prisma.question.update({ where: { id: exists.id }, data: { difficulty: data.difficulty } });
+      patch.difficulty = data.difficulty;
       difficultyResynced++;
+    }
+    if (typeof data.status === "string" && exists.status !== data.status) {
+      patch.status = data.status;
+      statusResynced++;
+    }
+    if (Object.keys(patch).length > 0) {
+      await prisma.question.update({ where: { id: exists.id }, data: patch });
     }
     return false;
   }
@@ -850,6 +889,11 @@ async function main() {
     })) handmade++;
   }
 
+  // Abans de generar, no després: així el generador encara pot tornar a publicar les que
+  // segueixi volent (`upsertQuestion` resincronitza l'estat) i la poda només deixa retirat
+  // el que de debò s'ha tret.
+  await retireDroppedFamilies();
+
   // ── WIKIDATA (CC0): Ciència, Història, Cultura i Natura ─────────────────────
   // El joc era 75% geografia perquè l'únic dataset que teníem era de països. Aquest
   // bloc alimenta la resta de categories des de Wikidata, amb la mateixa disciplina:
@@ -1011,6 +1055,9 @@ async function main() {
   console.log(`Premium: ${PACKS.length} packs · ${premiumQ} preguntes premium noves. Gratuïtes: ${freeTotal}.`);
   console.log(`Seed fet: ${retired.count} text_input retirades · ${generated} generades · ${mystery} foto misteriosa (${MYSTERY.length} imatges) · ${handmade} a mà · ${total} publicades.`);
   console.log(byType.map((t) => `${t.typeSlug}=${t._count}`).join(" · "));
+  // Es comptaven però no es deien enlloc, i són justament les dues xifres que diuen si una
+  // poda o un recàlcul de dificultat ha arribat a la base o s'ha quedat al generador.
+  console.log(`Resincronitzat: ${difficultyResynced} dificultats · ${statusResynced} estats.`);
 }
 
 main()
