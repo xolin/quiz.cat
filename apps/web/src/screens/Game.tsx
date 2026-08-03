@@ -130,20 +130,28 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   const advanceRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
   const feedbackRef = useRef<AnswerFeedback | null>(null);
+  // Hi ha una ronda demanada i encara no arribada. Mentre duri, el compte enrere no pot
+  // córrer: el que es pinta és la ronda anterior i el temps encara no és de ningú.
+  const loadingRef = useRef(false);
 
   const loadRound = useCallback(async () => {
+    loadingRef.current = true;
     setFeedback(null);
     feedbackRef.current = null;
     setChosenId(null);
     setMapPick(null);
     setOrderPicks([]);
     setEstimate(null);
-    submittedRef.current = false;
     const r = await api<{ finished: boolean; round?: RoundView }>(`/matches/${props.matchId}/round`);
     if (r.finished || !r.round) {
       props.onFinished(null);
       return;
     }
+    // El desbloqueig va DESPRÉS de la xarxa, no abans: entre que es neteja el feedback i
+    // arriba la ronda nova hi ha un forat, i deixar-lo obert permetia enviar una resposta
+    // contra una ronda que encara no existia a la pantalla.
+    submittedRef.current = false;
+    loadingRef.current = false;
     setRound(r.round);
     setRemaining(r.round.timeLimitMs);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,9 +167,12 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
 
   // Compte enrere del client (el servidor és l'àrbitre real, amb 2s de gràcia).
   useEffect(() => {
-    if (!round || feedback) return;
+    if (!round || feedback || loadingRef.current) return;
     const startedAt = Date.now();
-    const limit = remaining;
+    // El límit surt de la RONDA i no de `remaining`. En netejar el feedback per carregar la
+    // següent, `remaining` encara valia 0 de la ronda caducada: el comptador arrencava ja
+    // exhaurit i fallava tot sol una ronda que el jugador no havia arribat a veure.
+    const limit = round.timeLimitMs;
     timerRef.current = window.setInterval(() => {
       const left = limit - (Date.now() - startedAt);
       setRemaining(Math.max(0, left));
