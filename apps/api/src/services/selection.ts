@@ -30,8 +30,10 @@ function pickVaried(pool: PoolItem[], n: number): PoolItem[] {
 }
 
 /** Temes concrets que pengen d'un bloc gros (`topicSlug` és pla, així que va aquí). */
-const TOPIC_CHILDREN: Record<string, string[]> = {
-  cultura: ["cinema", "literatura", "art", "musica", "llengues"],
+export const TOPIC_CHILDREN: Record<string, string[]> = {
+  // L'esport hi entra com un fill més: viu a la categoria Cultura i, com el cinema o la
+  // música, ha de poder-se triar sol o rebre's sencer quan tries "Cultura".
+  cultura: ["cinema", "literatura", "art", "musica", "llengues", "esport"],
 };
 
 /** Banda de dificultat [min,max] per als modes fixos. */

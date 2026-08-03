@@ -959,6 +959,7 @@ async function main() {
     { slug: "natura", name: "Natura", icon: "🦁", kind: "general", regions: [] as string[], sortOrder: 8 },
     { slug: "llengues", name: "Llengües", icon: "🗣️", kind: "general", regions: [] as string[], sortOrder: 9 },
     { slug: "musica", name: "Música", icon: "🎵", kind: "general", regions: [] as string[], sortOrder: 10 },
+    { slug: "esport", name: "Esport", icon: "⚽", kind: "general", regions: [] as string[], sortOrder: 11 },
     { slug: "catalunya", name: "Catalunya", icon: "🏰", kind: "region", regions: ["catalunya"], sortOrder: 20 },
     { slug: "espanya", name: "Espanya", icon: "🇪🇸", kind: "region", regions: ["catalunya", "espanya"], sortOrder: 21 },
   ];
@@ -1007,13 +1008,16 @@ async function main() {
   // no tindria contingut.
   const byTag: Array<[string, string[]]> = [
     // Els accents del català són la falca local: van a "catalunya", no a "llengües".
-    ["catalunya", ["accent"]],
+    // El tema de Catalunya recull també els municipis i les comarques generats de Wikidata,
+    // encara que siguin de la categoria Geografia: el TEMA no és la categoria.
+    ["catalunya", ["accent", "catalunya"]],
     ["cinema", ["cinema", "cinema-timeline"]],
     ["literatura", ["llibres", "llibres-timeline"]],
     ["art", ["pintura"]],
     ["natura", ["taxonomia"]],
     ["llengues", ["llengua"]], // els accents es queden a "catalunya": són la falca local
-    ["musica", ["instrument"]],
+    ["musica", ["instrument", "musica", "musics", "musica-timeline"]],
+    ["esport", ["esport", "esport-timeline"]],
   ];
   for (const [topic, tagList] of byTag) {
     await prisma.question.updateMany({ where: { tags: { hasSome: tagList } }, data: { topicSlug: topic } });

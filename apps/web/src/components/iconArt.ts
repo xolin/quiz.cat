@@ -94,6 +94,9 @@ export const TOPIC_ICON: Record<string, IconName> = {
   natura: "paw",
   llengues: "speech",
   musica: "note",
+  // No hi ha cap icona d'esport al joc: `trophy` és la que hi encaixa sense haver-ne de
+  // dibuixar una de nova, i el trofeu ja llegeix com a competició.
+  esport: "trophy",
   catalunya: "castle",
   espanya: "flag",
 };

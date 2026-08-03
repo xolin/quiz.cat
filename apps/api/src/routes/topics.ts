@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { PrismaClient } from "@prisma/client";
+import { TOPIC_CHILDREN } from "../services/selection.js";
 
 const ALLOWED_REGIONS = ["catalunya", "espanya", "mon"];
 
@@ -15,12 +16,17 @@ export function topicRoutes(app: FastifyInstance, prisma: PrismaClient) {
     ]);
     const countBy = new Map(counts.map((c) => [c.topicSlug, c._count]));
     const selected = new Set(profile.topics);
+    // El recompte d'un bloc gros ha d'incloure els seus fills, que és el que rep qui el tria
+    // (veure `TOPIC_CHILDREN`). Sense això, «Cultura» surt amb 22 preguntes —les que no
+    // encaixen a cap fill— quan de fet n'hi donen prop de dues mil i mitja.
+    const countOf = (slug: string) =>
+      (countBy.get(slug) ?? 0) + (TOPIC_CHILDREN[slug] ?? []).reduce((sum, c) => sum + (countBy.get(c) ?? 0), 0);
     return {
       region: profile.region,
       selected: profile.topics,
       topics: topics.map((t) => ({
         slug: t.slug, name: t.name, icon: t.icon, kind: t.kind,
-        questionCount: countBy.get(t.slug) ?? 0,
+        questionCount: countOf(t.slug),
         suggested: t.regions.length > 0 && profile.region != null && t.regions.includes(profile.region),
         selected: selected.has(t.slug),
       })),
