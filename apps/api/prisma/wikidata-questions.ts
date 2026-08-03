@@ -257,6 +257,46 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     }
   }
 
+  /**
+   * "Quina d'aquestes obres és de X?" — l'autoria preguntada al revés.
+   *
+   * No és la mateixa pregunta girada: `authorship` et dona l'obra i has de saber qui la va
+   * fer; aquesta et dona l'autor i has de reconèixer-li l'obra entre les d'altres. Es
+   * responen amb coneixements diferents, i és la manera més barata que tenim d'afegir una
+   * FORMA nova de pregunta en comptes de més quantitat del mateix motlle.
+   *
+   * Surt una pregunta per AUTOR i no per obra: amb el mateix enunciat per a totes les obres
+   * d'un mateix autor, l'`upsertQuestion` només en desaria la primera de totes maneres.
+   */
+  async function reverseAuthorship<T extends { label: string; fame: number }>(
+    works: T[], authorOf: (w: T) => string | undefined | null, prompt: (author: string) => string,
+    categoryId: string, tag: string,
+  ) {
+    const valid = works.filter((w) => authorOf(w));
+    if (valid.length < 8) return;
+    const diff = fameRanker(valid);
+    const done = new Set<string>();
+    // Per fama descendent, perquè de cada autor se n'agafi l'obra MÉS coneguda. Sense
+    // ordenar, l'obra bona era la primera que sortia al dataset —arbitrària—, i llavors
+    // «quin d'aquests quadres va pintar Van Gogh?» podia acabar sent d5 amb un quadre que
+    // no ha vist ningú, quan la gràcia de la pregunta és justament reconèixer-l'hi.
+    for (const w of [...valid].sort((a, b) => b.fame - a.fame)) {
+      const author = authorOf(w)!;
+      if (done.has(author)) continue;
+      // Els distractors han de ser d'ALTRES autors: si no, la pregunta tindria més d'una
+      // resposta bona. També es descarten els títols repetits, que n'hi ha.
+      const others = shuffled(valid.filter((o) => authorOf(o) !== author && o.label !== w.label)).slice(0, 3);
+      if (others.length < 3) continue;
+      done.add(author);
+      const [options, correctId] = mcOptions(w.label, others.map((o) => o.label));
+      if (await upsertQuestion({
+        typeSlug: "multiple_choice", categoryId, locale: "ca",
+        prompt: prompt(author), payload: { options }, answer: { correctId },
+        difficulty: clampDiff(diff(w) + 1), status: "published", tags: tags(tag, "autoria-inversa"),
+      })) n++;
+    }
+  }
+
   /** "En quin any…?" amb anys falsos a prop. */
   async function yearQuestions(
     items: Dated[], prompt: (d: Dated) => string, categoryId: string, tag: string, bump = 0,
@@ -393,7 +433,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     "radi", (v) => `${Math.round(v).toLocaleString("ca")} km`, cats.ciencia, "planetes", 20,
   );
 
-  await centuryQuestions(topBy(wd.scientists, 0.6), cats.ciencia, "cientifics");
+  await centuryQuestions(topBy(wd.scientists, 0.85), cats.ciencia, "cientifics");
   await timelineSets(
     wd.scientists.map((s) => ({ label: s.label, year: s.birth, fame: s.fame })),
     cats.ciencia, "ciencia", "cientifics-timeline", [3, 12, 30],
@@ -424,12 +464,15 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   // ── CULTURA ──────────────────────────────────────────────────────────────
   await authorship(wd.films, (w) => w.director, (w) => `Qui va dirigir «${w.label}»?`, cats.cultura, "cinema");
   await authorship(wd.paintings, (w) => w.creator, (w) => `Qui va pintar «${w.label}»?`, cats.cultura, "pintura");
-  await authorship(topBy(wd.books, 0.7), (w) => w.author, (w) => `Qui va escriure «${w.label}»?`, cats.cultura, "llibres");
+  await reverseAuthorship(wd.films, (w) => w.director, (a) => `Quina d'aquestes pel·lícules va dirigir ${a}?`, cats.cultura, "cinema");
+  await reverseAuthorship(wd.paintings, (w) => w.creator, (a) => `Quin d'aquests quadres va pintar ${a}?`, cats.cultura, "pintura");
+  await reverseAuthorship(topBy(wd.books, 0.9), (w) => w.author, (a) => `Quin d'aquests llibres va escriure ${a}?`, cats.cultura, "llibres");
+  await authorship(topBy(wd.books, 0.9), (w) => w.author, (w) => `Qui va escriure «${w.label}»?`, cats.cultura, "llibres");
   await yearQuestions(wd.films, (f) => `De quin any és la pel·lícula «${f.label}»?`, cats.cultura, "cinema", 1);
   // La data de publicació (P577) d'obres antigues és brossa: sortien coses com
   // "Guerra de les Gàl·lies (any 5)". Es talla a la impremta; abans no és de fiar.
   const printed = <T extends { year: number | null }>(items: T[]) => items.filter((x) => x.year !== null && x.year >= 1400);
-  await yearQuestions(topBy(printed(wd.paintings), 0.6), (p) => `De quin any és el quadre «${p.label}»?`, cats.cultura, "pintura", 1);
+  await yearQuestions(topBy(printed(wd.paintings), 0.85), (p) => `De quin any és el quadre «${p.label}»?`, cats.cultura, "pintura", 1);
   await timelineSets(wd.films.map((f) => ({ label: f.label, year: f.year, fame: f.fame })), cats.cultura, "cultura", "cinema-timeline", [1, 3, 8]);
   await timelineSets(printed(wd.books).map((b) => ({ label: b.label, year: b.year, fame: b.fame })), cats.cultura, "cultura", "llibres-timeline", [2, 5, 11, 26]);
 
@@ -439,11 +482,12 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   const albums = wd.albums ?? [];
   const musicians = wd.musicians ?? [];
   const bands = wd.bands ?? [];
-  await authorship(topBy(albums, 0.6), (a) => a.performer, (a) => `Qui va publicar l'àlbum «${a.label}»?`, cats.cultura, "musica");
-  await yearQuestions(topBy(albums, 0.3), (a) => `De quin any és l'àlbum «${a.label}»?`, cats.cultura, "musica", 1);
-  await centuryQuestions(topBy(musicians, 0.4), cats.cultura, "musics");
-  await yearQuestions(topBy(bands, 0.6), (b) => `En quin any es va formar el grup ${b.label}?`, cats.cultura, "musica", 1);
-  await authorship(topBy(bands, 0.7), (b) => b.country, (b) => `De quin país és el grup ${b.label}?`, cats.cultura, "musica");
+  await authorship(topBy(albums, 0.85), (a) => a.performer, (a) => `Qui va publicar l'àlbum «${a.label}»?`, cats.cultura, "musica");
+  await reverseAuthorship(topBy(albums, 0.85), (a) => a.performer, (p) => `Quin d'aquests discos va publicar ${p}?`, cats.cultura, "musica");
+  await yearQuestions(topBy(albums, 0.5), (a) => `De quin any és l'àlbum «${a.label}»?`, cats.cultura, "musica", 1);
+  await centuryQuestions(topBy(musicians, 0.65), cats.cultura, "musics");
+  await yearQuestions(topBy(bands, 0.9), (b) => `En quin any es va formar el grup ${b.label}?`, cats.cultura, "musica", 1);
+  await authorship(topBy(bands, 0.9), (b) => b.country, (b) => `De quin país és el grup ${b.label}?`, cats.cultura, "musica");
   await timelineSets(
     albums.map((a) => ({ label: a.label, year: a.year, fame: a.fame })),
     cats.cultura, "cultura", "musica-timeline", [4, 12],
@@ -486,8 +530,8 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   await authorship(topBy(athletes, 0.45), (a) => a.sport, (a) => `En quin esport va destacar ${a.label}?`, cats.cultura, "esport");
   // Retallats: sense filtre sortien clubs com el «FK Kauno Žalgiris», i «de quin país és»
   // deixa de ser difícil per passar a ser impossible — no és coneixement, és sort.
-  await yearQuestions(topBy(clubs, 0.6), (c) => `En quin any es va fundar el ${c.label}?`, cats.cultura, "esport", 1);
-  await authorship(topBy(clubs, 0.55), (c) => c.country, (c) => `De quin país és el club ${c.label}?`, cats.cultura, "esport");
+  await yearQuestions(topBy(clubs, 0.85), (c) => `En quin any es va fundar el ${c.label}?`, cats.cultura, "esport", 1);
+  await authorship(topBy(clubs, 0.8), (c) => c.country, (c) => `De quin país és el club ${c.label}?`, cats.cultura, "esport");
   await timelineSets(
     athletes.map((a) => ({ label: a.label, year: a.birth, fame: a.fame })),
     cats.cultura, "cultura", "esport-timeline", [8, 25],
