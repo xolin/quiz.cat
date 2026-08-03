@@ -19,10 +19,28 @@ const UA = "quizcat-content/1.0 (joc de trivia; joanetap@gmail.com)";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Quant es recorda que una consulta ha fallat.
+ *
+ * Sense això, cada re-execució torna a patir sencers tots els fracassos: amb cinc reintents
+ * i espera creixent, una consulta que el servei no pot servir costa uns tres minuts, i n'hi
+ * ha una dotzena. El dia que el servei va malament, tornar a executar el fitxer per baixar
+ * UNA cosa nova vol dir esperar mitja hora de fracassos coneguts.
+ *
+ * Caduca sol perquè el fracàs és del servei, no de la consulta: el que avui dona 504 la
+ * setmana que ve va bé. Per forçar-ho abans, s'esborra `.wikidata-cache/*.failed`.
+ */
+const FAILURE_TTL_MS = 6 * 60 * 60 * 1000;
+
 async function sparql(name, query) {
   fs.mkdirSync(CACHE, { recursive: true });
   const cached = path.join(CACHE, `${name}.json`);
   if (fs.existsSync(cached)) return JSON.parse(fs.readFileSync(cached, "utf8"));
+
+  const failed = path.join(CACHE, `${name}.failed`);
+  if (fs.existsSync(failed) && Date.now() - fs.statSync(failed).mtimeMs < FAILURE_TTL_MS) {
+    throw new Error(`${name}: va fallar fa poc, se salta (esborra ${path.basename(failed)} per reintentar-ho)`);
+  }
   for (let attempt = 1; ; attempt++) {
     // El `try` cobreix el `fetch` I el `json()`: amb les consultes pesades, el servei no
     // sempre respon amb un codi d'error — de vegades tanca el socket a mitja resposta, o
@@ -50,7 +68,10 @@ async function sparql(name, query) {
     }
     // El servei públic limita l'ús: si talla, s'espera i es torna a provar. Cinc intents amb
     // espera creixent, que les consultes grosses en solen necessitar més d'un.
-    if (attempt >= 5) throw new Error(`${name}: ${error}`);
+    if (attempt >= 5) {
+      fs.writeFileSync(failed, error);
+      throw new Error(`${name}: ${error}`);
+    }
     console.log(`  ${name}: ${error}, reintent ${attempt}…`);
     await sleep(6000 * attempt);
   }
