@@ -279,6 +279,11 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
         <div className="qc-timer__fill" style={{ transform: `scaleX(${feedback ? 0 : pct / 100})` }} />
       </div>
 
+      {/* Mentre es veu el resultat, un clic a QUALSEVOL lloc avança. Ha d'anar aquí fora i
+          no dins de `.qc-stagelight`: aquell té `isolation: isolate`, i des de dins cap
+          `z-index` no pot superar el mapa de Leaflet, que és qui es quedava els clics. */}
+      {feedback && <button type="button" className="qc-skip" aria-label="Continua" onClick={advance} />}
+
       <div className="qc-stagelight">
         {/* TOAST de resultat: no bloqueja i auto-avança (clica per saltar). Va DINS de la
             columna de la pregunta i no sobre la pantalla: quan era `fixed` a dalt tapava el
@@ -286,15 +291,12 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
         {feedback && (
           <div
             className={`qc-toast ${feedback.isCorrect ? "qc-toast--good" : "qc-toast--bad"}`}
-            onClick={advance}
             role="status"
             aria-live="polite"
-            /* L'auto-avanç s'atura mentre hi ets a sobre, per si vols llegir la resposta
-               correcta amb calma. No és el camí per a la valoració de la pregunta: al mòbil
-               no hi ha `mouseenter` i el dit no arriba a temps. Això viu al resum. */
-            onMouseEnter={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
-            onFocus={() => { if (advanceRef.current) clearTimeout(advanceRef.current); }}
-            style={{ cursor: "pointer", textAlign: "center" }}
+            /* Abans, el `mouseenter` aturava l'auto-avanç per poder llegir la resposta amb
+               calma — però no el tornava a armar mai, o sigui que amb el punter a sobre la
+               ronda es quedava congelada per sempre. La lectura amb calma viu al resum. */
+            style={{ textAlign: "center" }}
           >
             <div style={{ display: "flex", gap: "var(--qc-4)", alignItems: "center", justifyContent: "center" }}>
               {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}

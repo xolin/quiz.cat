@@ -98,6 +98,8 @@
   --qc-z-sticky: 10;
   --qc-z-overlay: 20;
   --qc-z-toast: 30;
+  /* Per damunt del toast: durant el resultat, tota la pantalla és el botó de continuar. */
+  --qc-z-skip: 40;
   --qc-z-modal: 50;
 
   -webkit-tap-highlight-color: transparent;
@@ -654,6 +656,21 @@ input[type="range"] {
 }
 .qc-toast--good { background: var(--qc-good); color: var(--qc-ink-on-light); }
 .qc-toast--bad { background: var(--qc-live); color: #fff; }
+
+/* Capa de salt del resultat.
+   Mentre es veu el resultat, la pantalla sencera avança la ronda. Abans el clic només el
+   recollia el toast, i sobre les mecàniques amb mapa ni això: `.leaflet-container` es
+   pintava al damunt i se'l quedava ell, o sigui que allà no hi havia manera de saltar.
+   És un `<button>` i no un `<div>` perquè amb teclat també s'hi ha de poder arribar. */
+.qc-skip {
+  position: fixed;
+  inset: 0;
+  z-index: var(--qc-z-skip);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
 
 /* Escombrada de canvi de ronda. Creua la pantalla sencera, com un canvi de càmera: és
    l'única cosa que passa per damunt de tot excepte el resultat, i no és clicable. */
