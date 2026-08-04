@@ -17,7 +17,8 @@
     "db:seed": "pnpm --filter @quizcat/api seed",
     "media:upload": "pnpm --filter @quizcat/api media:upload",
     "typecheck": "pnpm --filter @quizcat/api typecheck && pnpm --filter @quizcat/web exec tsc --noEmit",
-    "design:sheet": "pnpm --filter @quizcat/api exec tsx ../../scripts/design-sheet.mts"
+    "design:sheet": "pnpm --filter @quizcat/api exec tsx ../../scripts/design-sheet.mts",
+    "quality:questions": "pnpm --filter @quizcat/api quality:questions"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

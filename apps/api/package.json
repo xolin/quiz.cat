@@ -6,7 +6,8 @@
     "dev": "tsx watch src/server.ts",
     "seed": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit",
-    "media:upload": "tsx prisma/upload-media.ts"
+    "media:upload": "tsx prisma/upload-media.ts",
+    "quality:questions": "tsx prisma/question-quality.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
