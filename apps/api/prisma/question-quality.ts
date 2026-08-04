@@ -48,6 +48,55 @@ function chanceFor(typeSlug: string, payload: unknown): number {
 const MIN_SERVED_TREND = 10;
 const MIN_SERVED_SUSPECT = 20;
 
+/**
+ * FAMÍLIES de preguntes: el mateix generador, la mateixa forma, la mateixa font.
+ *
+ * Existeixen perquè mesurar pregunta a pregunta no escala amb el nostre trànsit: amb 7.000
+ * preguntes i vint respostes necessàries per jutjar-ne una, calen 145.000 respostes ≈ 18.000
+ * partides. No passarà en molt de temps.
+ *
+ * Però les 450 preguntes de comarca comparteixen forma i font: si com a GRUP s'encerten al
+ * 30%, això ja diu alguna cosa fiable amb un parell de centenars de respostes. I el que en
+ * surt no és només un informe — el biaix de la família corregeix el prior de cada pregunta
+ * (veure `--apply`), que és el que fa que 240 respostes acabin servint d'alguna cosa.
+ *
+ * L'ordre importa: una pregunta pot dur diverses etiquetes i es queda amb la primera que
+ * casi, de més específica a més general.
+ */
+const FAMILIES: Array<[string, string[]]> = [
+  ["Autoria inversa", ["autoria-inversa"]],
+  ["Ordena-ho", ["ordena"]],
+  ["Municipis i comarques", ["catalunya"]],
+  ["Seccions regionals", ["regio"]],
+  ["Música", ["musica", "musics"]],
+  ["Esport", ["esport"]],
+  ["Cinema", ["cinema"]],
+  ["Llibres", ["llibres"]],
+  ["Pintura", ["pintura"]],
+  ["Taxonomia", ["taxonomia"]],
+  ["Elements químics", ["elements"]],
+  ["Científics i personatges", ["cientifics", "personatges"]],
+  ["Fets històrics", ["fets"]],
+  ["Capitals", ["capitals"]],
+  ["Banderes", ["banderes"]],
+  ["Mapa del món", ["mapa"]],
+  ["Més o menys", ["mesomenys"]],
+  ["Estimació de països", ["estimacio"]],
+  ["Siluetes", ["silueta"]],
+  ["Accents i llengües", ["accent", "llengua", "instrument"]],
+];
+
+function familyOf(tags: string[]): string | null {
+  for (const [name, keys] of FAMILIES) if (keys.some((k) => tags.includes(k))) return name;
+  return null;
+}
+
+/** Encert normalitzat per l'atzar → dificultat 1-5. El mateix que fa `observedDifficulty`. */
+function toDifficulty(rate: number, chance: number): number {
+  const known = Math.max(0, Math.min(1, (rate - chance) / Math.max(0.01, 1 - chance)));
+  return 1 + 4 * (1 - known);
+}
+
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const bar = (x: number, width = 24) => "█".repeat(Math.round(x * width)).padEnd(width, "·");
 
@@ -56,7 +105,7 @@ async function main() {
     where: { timesServed: { gt: 0 } },
     select: {
       timesServed: true, timesCorrect: true, avgResponseMs: true,
-      question: { select: { id: true, prompt: true, typeSlug: true, difficulty: true, payload: true, topicSlug: true, status: true } },
+      question: { select: { id: true, prompt: true, typeSlug: true, difficulty: true, payload: true, topicSlug: true, status: true, tags: true } },
     },
   });
   const live = rows.filter((r) => r.question.status === "published");
@@ -124,6 +173,53 @@ async function main() {
     console.log(`  ${t.padEnd(16)} ${String(a.served).padStart(5)}  ${pct(rate).padStart(4)}  (atzar ${pct(a.chance)})${verdict}`);
   }
 
+  // ── 2b) Per FAMÍLIA de preguntes ─────────────────────────────────────────
+  // Aquí és on 240 respostes disperses es tornen senyal: agrupades per generador, cada
+  // família té prou mostra per dir si la dificultat que li declarem s'assembla a la que
+  // demostra. El `biaix` és la correcció que li falta a l'escala.
+  console.log("\n── Per família de preguntes ──");
+  const fam = new Map<string, { served: number; correct: number; declared: number; n: number; chance: number }>();
+  for (const r of live) {
+    const name = familyOf(r.question.tags);
+    if (!name) continue;
+    const acc = fam.get(name) ?? { served: 0, correct: 0, declared: 0, n: 0, chance: 0 };
+    acc.served += r.timesServed;
+    acc.correct += r.timesCorrect;
+    acc.declared += r.question.difficulty * r.timesServed;
+    acc.chance += chanceFor(r.question.typeSlug, r.question.payload) * r.timesServed;
+    acc.n++;
+    fam.set(name, acc);
+  }
+  /**
+   * El biaix d'una família també s'encongeix segons la seva pròpia mostra.
+   *
+   * Sense això, una família amb deu respostes podria moure la dificultat de les seves
+   * preguntes tres punts sencers, que és exactament l'error que tota la resta del disseny
+   * intenta evitar. Amb 60 respostes el biaix compta a mitges; amb 300, gairebé sencer.
+   */
+  const BIAS_PRIOR_WEIGHT = 60;
+  const biasOf = new Map<string, number>();
+  const famRows = [...fam.entries()]
+    .map(([name, a]) => {
+      const declared = a.declared / a.served;
+      const measured = toDifficulty(a.correct / a.served, a.chance / a.served);
+      return { name, ...a, declared, measured, bias: measured - declared };
+    })
+    .sort((a, b) => b.served - a.served);
+
+  console.log("  família                     resp.  declarada  mesurada  biaix");
+  for (const r of famRows) {
+    const enough = r.served >= MIN_SERVED_TREND;
+    if (enough) biasOf.set(r.name, r.bias * (r.served / (r.served + BIAS_PRIOR_WEIGHT)));
+    const arrow = !enough ? "" : r.bias > 0.6 ? "  ← més difícil del que dèiem" : r.bias < -0.6 ? "  ← més fàcil del que dèiem" : "";
+    console.log(
+      `  ${r.name.padEnd(26)} ${String(r.served).padStart(5)}` +
+      `      ${r.declared.toFixed(1)}       ${r.measured.toFixed(1)}` +
+      `   ${(r.bias >= 0 ? "+" : "") + r.bias.toFixed(1)}` +
+      `${enough ? `  (s'aplica ${(biasOf.get(r.name) ?? 0) >= 0 ? "+" : ""}${(biasOf.get(r.name) ?? 0).toFixed(1)})` : "   (mostra insuficient)"}${arrow}`,
+    );
+  }
+
   // ── 3) Preguntes sospitoses de ser incorrectes ───────────────────────────
   // No "difícils": INCORRECTES. Si la gent l'encerta menys que responent a l'atzar, el més
   // probable és que la resposta bona estigui mal calculada o que hi hagi una opció ambigua
@@ -157,7 +253,15 @@ async function main() {
     let written = 0;
     for (const r of live) {
       const chance = chanceFor(r.question.typeSlug, r.question.payload);
-      const value = observedDifficulty(r.timesServed, r.timesCorrect, chance, r.question.difficulty);
+      // El prior no és la dificultat declarada a seques, sinó la declarada CORREGIDA pel
+      // biaix de la seva família. És el que fa que les dades serveixin d'alguna cosa amb el
+      // trànsit que tenim: una pregunta amb tres respostes no pot dir res d'ella mateixa,
+      // però la seva família amb dues-centes sí que pot dir que tot aquell grup es va
+      // declarar massa fàcil.
+      const name = familyOf(r.question.tags);
+      const bias = name ? (biasOf.get(name) ?? 0) : 0;
+      const prior = Math.max(1, Math.min(5, r.question.difficulty + bias));
+      const value = observedDifficulty(r.timesServed, r.timesCorrect, chance, prior);
       if (value === null) continue;
       await prisma.question.update({
         where: { id: r.question.id },
