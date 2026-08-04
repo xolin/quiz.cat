@@ -233,7 +233,11 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
     if (t?.order && round?.payload?.items) {
       return t.order.map((id: string) => round.payload.items.find((it: any) => it.id === id)?.text).join(" → ");
     }
-    if (t?.tolerancePct !== undefined) return `${t.value} ${round?.payload?.unit ?? ""}`;
+    // Amb separador de milers, com la resta de xifres de la pantalla: al toast sortia
+    // «Era: 35926 habitants» just a sobre d'un «35.926» del marc de mèdia.
+    if (t?.tolerancePct !== undefined) {
+      return `${Number(t.value).toLocaleString("ca")} ${round?.payload?.unit ?? ""}`.trim();
+    }
     if (t?.accepted) return t.accepted[0];
     return "";
   }
@@ -285,10 +289,13 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {feedback && <button type="button" className="qc-skip" aria-label="Continua" onClick={advance} />}
 
       <div className="qc-stagelight">
-        {/* TOAST de resultat: no bloqueja i auto-avança (clica per saltar). Va DINS de la
-            columna de la pregunta i no sobre la pantalla: quan era `fixed` a dalt tapava el
-            rètol de categoria i el comptador, que són la identitat de la ronda. */}
-        {feedback && (
+        {/* TOAST de resultat: substitueix la pregunta, no s'hi posa a sobre.
+            Sura't absolut i podia fer 200px quan la pregunta en feia 50, o sigui que la
+            resta vessava cap avall i tapava el que vingués — el panell de la resposta
+            correcta, la silueta, o el número de l'estimació (text sobre text). Al flux i
+            al lloc de la pregunta, la intenció es manté —quan hi ha resultat ja no has de
+            llegir l'enunciat— i no pot trepitjar res per construcció. */}
+        {feedback ? (
           <div
             className={`qc-toast ${feedback.isCorrect ? "qc-toast--good" : "qc-toast--bad"}`}
             role="status"
@@ -320,8 +327,9 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
               </div>
             )}
           </div>
+        ) : (
+          <h1 className="qc-question">{round.prompt}</h1>
         )}
-        <h1 className="qc-question">{round.prompt}</h1>
       </div>
 
       {/* ── Opció múltiple ── */}
@@ -345,7 +353,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
           {/* El crèdit surt en revelar-se la foto, no abans: mentre penses no ha de competir
               amb res, però la majoria d'imatges són CC BY-SA i acreditar l'autor no és opcional. */}
           <Media
-            instruction="La imatge es va aclarint"
+            instruction={feedback ? "La foto, revelada" : "La imatge es va aclarint"}
             right={feedback && round.payload.credit ? (
               <a className="qc-media__credit" href={round.payload.creditUrl}
                 target="_blank" rel="noreferrer noopener">
@@ -379,7 +387,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
         const fill = feedback ? "var(--qc-amber)" : "var(--qc-ink-dim)";
         return (
           <>
-            <Media instruction="El contorn es va descobrint">
+            <Media instruction={feedback ? "El contorn, sencer" : "El contorn es va descobrint"}>
               <svg
                 viewBox={`0 0 ${round.payload.w} ${round.payload.h}`}
                 role="img"
@@ -458,7 +466,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {/* ── Mapa real ── */}
       {round.typeSlug === "map_guess" && (
         <>
-          <Media instruction={mapPick ? "Confirma o torna a clicar" : "Clica el punt al mapa"}>
+          <Media instruction={feedback ? "La teva marca i la correcta" : mapPick ? "Confirma o torna a clicar" : "Clica el punt al mapa"}>
             <div style={{ width: "100%" }}>
               <GeoMap
                 disabled={!!feedback}
@@ -528,7 +536,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
         const wrong = feedback && orderPicks.join() !== correctOrder.join();
         return (
           <>
-            <Media instruction="Del més antic al més recent">
+            <Media instruction={feedback ? "Amb els anys de cada fet" : "Del més antic al més recent"}>
               <div style={{ display: "flex", gap: 1, width: "100%" }}>
                 {Array.from({ length: events.length }, (_, i) => {
                   const placedId = orderPicks[i];

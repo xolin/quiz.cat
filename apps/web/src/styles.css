@@ -639,12 +639,10 @@ input[type="range"] {
 /* ── Toast de resposta ────────────────────────────────────────────────────── */
 
 .qc-toast {
-  /* Absolut dins de `.qc-stagelight` i no fix a la finestra: així tapa la pregunta —
-     que en aquell moment ja no has de llegir — i deixa veure el rètol i el comptador. */
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  /* AL FLUX, ocupant el lloc de la pregunta —que en aquell moment ja no has de llegir— i
+     deixant veure el rètol i el comptador. Absolut vessava per sota de la caixa i tapava
+     el contingut de la ronda; en flux això no pot passar. */
+  margin-inline: auto;
   z-index: var(--qc-z-toast);
   min-width: min(340px, calc(100vw - 32px));
   max-width: 92vw;
