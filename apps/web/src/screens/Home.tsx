@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, setToken } from "../api.js";
 import { TopicsConfig } from "./TopicsConfig.js";
+import { SkillRadar } from "../components/SkillRadar.js";
 import { Mascot } from "../components/Mascot.js";
 import { Icon } from "../components/Icon.js";
 import type { IconName } from "../components/iconArt.js";
@@ -264,7 +265,14 @@ export function Home(props: {
             <p style={{ margin: "0 0 var(--qc-5)", fontSize: "var(--qc-t-small)", color: "var(--qc-ink-dim)" }}>
               {DIFFICULTIES.find((d) => d.key === difficulty)!.hint}
             </p>
+            {/* El radar va AQUÍ i no a la pantalla principal, per decisió de producte: hi
+                ha gent que es pot sentir avaluada, i el joc no vol ser un examen
+                (`decisions.md`). Just abans del selector de temàtiques, que és amb el que
+                es fa alguna cosa amb el que t'ensenya. */}
             <div style={{ borderTop: "1px solid var(--qc-hairline)", paddingTop: "var(--qc-4)" }}>
+              <SkillRadar />
+            </div>
+            <div style={{ borderTop: "1px solid var(--qc-hairline)", paddingTop: "var(--qc-4)", marginTop: "var(--qc-4)" }}>
               <TopicsConfig />
             </div>
           </div>
