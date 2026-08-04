@@ -2,7 +2,8 @@
 // demostra jugant, i assenyala les preguntes que probablement no són difícils sinó
 // incorrectes.
 //
-//   pnpm quality:questions
+//   pnpm quality:questions            → només mira
+//   pnpm quality:questions --apply    → i a més escriu `observedDifficulty`
 //
 // Per què cal: la dificultat de cada pregunta la calcula `fameRanker` a partir del
 // percentil de sitelinks de Wikipedia, que mesura com de FAMOSA és l'entitat — no com de
@@ -11,6 +12,7 @@
 //
 // Aquest script no toca res: només mira.
 import { PrismaClient } from "@prisma/client";
+import { observedDifficulty } from "../src/services/skill.js";
 
 const prisma = new PrismaClient();
 
@@ -147,6 +149,27 @@ async function main() {
     for (const s of suspects.slice(0, 40)) {
       console.log(`  ${pct(s.rate).padStart(4)} de ${String(s.timesServed).padStart(3)} (atzar ${pct(s.chance)})  d${s.question.difficulty}  ${s.question.prompt?.slice(0, 76)}`);
     }
+  }
+
+  // ── 4) Escriure la dificultat mesurada (només amb --apply) ───────────────
+  if (process.argv.includes("--apply")) {
+    console.log("\n── Escrivint `observedDifficulty` ──");
+    let written = 0;
+    for (const r of live) {
+      const chance = chanceFor(r.question.typeSlug, r.question.payload);
+      const value = observedDifficulty(r.timesServed, r.timesCorrect, chance, r.question.difficulty);
+      if (value === null) continue;
+      await prisma.question.update({
+        where: { id: r.question.id },
+        data: { observedDifficulty: Math.round(value * 100) / 100 },
+      });
+      written++;
+    }
+    console.log(`  ${written} preguntes actualitzades.`);
+    console.log(`  Recorda que amb poques respostes el valor és gairebé el declarat: això`);
+    console.log(`  és volgut, i és el que impedeix que cinc respostes decideixin res.`);
+  } else {
+    console.log("\n(Amb `--apply` escriuria `observedDifficulty` a les preguntes.)");
   }
 
   console.log("");

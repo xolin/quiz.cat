@@ -248,10 +248,37 @@ export function matchRoutes(app: FastifyInstance, prisma: PrismaClient) {
       select: { skill: true, skillAnswers: true, energy: true, energyUpdatedAt: true },
     });
     const newSkill = updateSkill(profile.skill, round.question.difficulty, isCorrect, profile.skillAnswers);
+
+    // Nivell de la TEMÀTICA, a part del global. Una pregunta de química és fàcil per a qui
+    // en sap i molt difícil per a qui no; amb un sol rating, tots dos rebien el mateix.
+    //
+    // La primera resposta d'un tema arrenca del nivell GLOBAL i no d'un 2,5 arbitrari: si ja
+    // sabem que juga bé, no té sentit suposar que és mitjà en tot fins que ho demostri tema
+    // per tema. `effectiveTopicSkill` acaba la feina en llegir-lo, tibant cap al global
+    // mentre hi hagi poques respostes.
+    const topicSlug = round.question.topicSlug;
+    const topicRow = topicSlug
+      ? await prisma.topicSkill.findUnique({
+          where: { profileId_topicSlug: { profileId: req.user.sub, topicSlug } },
+          select: { skill: true, answers: true },
+        })
+      : null;
+    const newTopicSkill = topicSlug
+      ? updateSkill(topicRow?.skill ?? profile.skill, round.question.difficulty, isCorrect, topicRow?.answers ?? 0)
+      : null;
     const energyState = applyEnergy(profile.energy, profile.energyUpdatedAt, now, isCorrect ? ENERGY_PER_CORRECT : 0);
     const energyGained = isCorrect ? energyState.energy - profile.energy : 0;
 
     await prisma.$transaction([
+      ...(topicSlug && newTopicSkill !== null
+        ? [
+            prisma.topicSkill.upsert({
+              where: { profileId_topicSlug: { profileId: req.user.sub, topicSlug } },
+              update: { skill: newTopicSkill, answers: { increment: 1 }, correct: { increment: isCorrect ? 1 : 0 } },
+              create: { profileId: req.user.sub, topicSlug, skill: newTopicSkill, answers: 1, correct: isCorrect ? 1 : 0 },
+            }),
+          ]
+        : []),
       prisma.profile.update({
         where: { id: req.user.sub },
         data: {

@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { PrismaClient } from "@prisma/client";
 import { TOPIC_CHILDREN } from "../services/selection.js";
+import { effectiveTopicSkill, skillLabel } from "../services/skill.js";
 
 const ALLOWED_REGIONS = ["catalunya", "espanya", "mon"];
 
@@ -40,6 +41,47 @@ export function topicRoutes(app: FastifyInstance, prisma: PrismaClient) {
     const validSlugs = valid.map((v) => v.slug);
     await prisma.profile.update({ where: { id: req.user.sub }, data: { topics: validSlugs } });
     return { topics: validSlugs };
+  });
+
+  /**
+   * Perfil de coneixement per temàtica: la base del gràfic de radar.
+   *
+   * Torna TOTES les temàtiques amb el nivell efectiu i quantes n'has respost, i deixa que
+   * la interfície decideixi quines dibuixa. Un radar amb vint puntes on no has jugat mai
+   * no diu res de tu, diu que no has jugat — per això va `answers` a cada una.
+   *
+   * Nota de producte (decisions.md): quan es dibuixi, ha d'anar en un lloc DISCRET. Hi ha
+   * gent que es pot sentir avaluada, i el joc no vol ser un examen.
+   */
+  app.get("/me/radar", { preHandler: [app.authenticate] }, async (req) => {
+    const userId = req.user.sub;
+    const [profile, skills, topics] = await Promise.all([
+      prisma.profile.findUniqueOrThrow({ where: { id: userId }, select: { skill: true } }),
+      prisma.topicSkill.findMany({
+        where: { profileId: userId },
+        select: { topicSlug: true, skill: true, answers: true, correct: true },
+      }),
+      prisma.topic.findMany({ orderBy: { sortOrder: "asc" }, select: { slug: true, name: true, icon: true, kind: true } }),
+    ]);
+    const byTopic = new Map(skills.map((s) => [s.topicSlug, s]));
+    return {
+      skill: profile.skill,
+      label: skillLabel(profile.skill),
+      topics: topics.map((t) => {
+        const s = byTopic.get(t.slug);
+        return {
+          slug: t.slug,
+          name: t.name,
+          icon: t.icon,
+          kind: t.kind,
+          // Tibat cap al nivell global mentre hi hagi poques respostes: sense això, encertar
+          // les dues úniques preguntes de música que has vist et faria semblar musicòleg.
+          skill: Math.round(effectiveTopicSkill(profile.skill, s) * 100) / 100,
+          answers: s?.answers ?? 0,
+          correct: s?.correct ?? 0,
+        };
+      }),
+    };
   });
 
   app.put("/me/region", { preHandler: [app.authenticate] }, async (req, reply) => {
