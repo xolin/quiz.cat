@@ -75,6 +75,24 @@ const MIN_CITIES = 5;
  */
 const CITY_FLOOR_RATIO = 0.03;
 
+/**
+ * Caixa que conté tots els punts, [[sud,oest],[nord,est]].
+ *
+ * Va al `payload` en comptes d'un zoom fix perquè **el zoom correcte depèn de la mida del
+ * marc**, que el generador no sap: el mateix `zoom: 8` que enquadrava Catalunya en un marc
+ * ample la tallava pel sud en un de baix, i al mòbil l'hauria tallada pels costats. Dient el
+ * TERRITORI, Leaflet calcula l'enquadrament que toca a cada pantalla.
+ *
+ * Es calcula de les coordenades REALS del dataset, o sigui que no cal mantenir-la a mà: si
+ * demà entren municipis nous, la caixa s'ajusta sola.
+ */
+function boundsOf(points: Array<{ lat: number | null; lon: number | null }>): [[number, number], [number, number]] | null {
+  const lats = points.map((p) => p.lat).filter((v): v is number => v !== null);
+  const lons = points.map((p) => p.lon).filter((v): v is number => v !== null);
+  if (lats.length === 0 || lons.length === 0) return null;
+  return [[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]];
+}
+
 interface Manifest {
   elements: Element[]; planets: Planet[]; scientists: Person[];
   events: Dated[]; leaders: Person[]; films: Work[]; paintings: Work[]; books: Work[]; taxa: Taxon[];
@@ -551,6 +569,8 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
   // la POBLACIÓ sí que diu quins coneix la gent. Per això es passa `fame: pop`.
   const municipis = (wd.municipis ?? []).filter((m) => m.pop && m.pop > 0);
   const byPop = [...municipis].sort((a, b) => b.pop! - a.pop!);
+  // Caixa de Catalunya, de les coordenades reals dels 947 municipis.
+  const catBounds = boundsOf(municipis);
   const asKnown = (m: Municipi) => ({ label: m.label, value: m.pop!, fame: m.pop! });
 
   // 450 municipis i no 220: el 450è ja és un poble de quatre mil habitants, o sigui una
@@ -583,6 +603,17 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       difficulty: clampDiff((popDiff.get(m.label) ?? 3) + 1), status: "published", tags: tags("catalunya"),
     })) n++;
   }
+  // El `payload` no es resincronitza a `upsertQuestion` —les opcions es barregen a cada
+  // passada i qualsevol comparació diria sempre "ha canviat"—, o sigui que l'enquadrament
+  // nou s'ha d'escriure a mà per a les preguntes que ja existien. És deterministic i igual
+  // per a tota la família, així que és una sola sentència.
+  if (catBounds) {
+    await prisma.question.updateMany({
+      where: { typeSlug: "map_guess", tags: { hasEvery: ["catalunya", "mapa"] } },
+      data: { payload: { bounds: catBounds, maxZoom: 12 } },
+    });
+  }
+
   await comparisons(
     byPop.slice(0, 200).map(asKnown), "població",
     (v) => `${Math.round(v).toLocaleString("ca")} habitants`, cats.geografia, "catalunya", 90,
@@ -593,7 +624,7 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
     if (await upsertQuestion({
       typeSlug: "map_guess", categoryId: cats.geografia, locale: "ca",
       prompt: `On és ${m.label}? Clica al mapa`,
-      payload: { center: [41.8, 1.7], zoom: 8, maxZoom: 12 },
+      payload: { bounds: catBounds, maxZoom: 12 },
       answer: { lat: m.lat, lng: m.lon, toleranceKm: 20 },
       difficulty: clampDiff((popDiff.get(m.label) ?? 3) + 1), status: "published", tags: tags("catalunya", "mapa"),
     })) n++;
@@ -651,12 +682,20 @@ export async function seedWikidata(ctx: WikidataCtx): Promise<number> {
       if (await upsertQuestion({
         typeSlug: "map_guess", categoryId: cats.geografia, locale: "ca",
         prompt: `On és ${c.label}? Clica al mapa`,
-        payload: { center: r.center, zoom: r.zoom, maxZoom: r.zoom + 4 },
+        payload: { bounds: boundsOf(cities) ?? undefined, center: r.center, zoom: r.zoom, maxZoom: r.zoom + 4 },
         answer: { lat: c.lat, lng: c.lon, toleranceKm: r.km },
         difficulty: clampDiff((cityDiff.get(c.label) ?? 3) + 1),
         status: "published", topicSlug: r.slug, tags: tags("regio", r.slug, "mapa"),
       })) n++;
     }
+    const regionBounds = boundsOf(cities);
+    if (regionBounds) {
+      await prisma.question.updateMany({
+        where: { typeSlug: "map_guess", tags: { hasEvery: ["regio", r.slug] } },
+        data: { payload: { bounds: regionBounds, center: r.center, zoom: r.zoom, maxZoom: r.zoom + 4 } },
+      });
+    }
+
     await comparisons(
       rows, "població", (v) => `${Math.round(v).toLocaleString("ca")} habitants`,
       cats.geografia, `regio-${r.slug}`, 40, r.slug,

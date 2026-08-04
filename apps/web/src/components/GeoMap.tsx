@@ -22,6 +22,11 @@ export function GeoMap(props: {
   center?: [number, number];
   zoom?: number;
   maxZoom?: number;
+  /* Enquadrament per TERRITORI, [[sud,oest],[nord,est]]. Mana sobre `center`/`zoom` quan hi
+     és, i és el que cal de debò: un zoom fix no pot enquadrar bé una regió, perquè el que
+     hi cap depèn de la mida del marc. Amb `zoom: 8`, Catalunya sortia tallada pel sud en un
+     marc ample i baix, i al mòbil s'hauria tallat també pels costats. */
+  bounds?: [[number, number], [number, number]];
 }) {
   const divRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -33,11 +38,22 @@ export function GeoMap(props: {
 
   const [lat, lng] = props.center ?? [25, 10];
   const zoom = props.zoom ?? 1;
+  const b = props.bounds;
+  // Desats com a números perquè les dependències dels efectes no canviïn a cada render:
+  // un array literal és un objecte nou cada cop.
+  const [bS, bW, bN, bE] = b ? [b[0][0], b[0][1], b[1][0], b[1][1]] : [0, 0, 0, 0];
+  const hasBounds = !!b;
+
+  /** Enquadra el territori si en tenim, i si no, cau al centre i zoom de sempre. */
+  function frame(map: L.Map) {
+    if (hasBounds) map.fitBounds([[bS, bW], [bN, bE]], { padding: [18, 18] });
+    else map.setView([lat, lng], zoom);
+  }
 
   useEffect(() => {
     if (!divRef.current || mapRef.current) return;
-    const map = L.map(divRef.current, { worldCopyJump: true, minZoom: 1, maxZoom: props.maxZoom ?? 7 })
-      .setView([lat, lng], zoom);
+    const map = L.map(divRef.current, { worldCopyJump: true, minZoom: 1, maxZoom: props.maxZoom ?? 7 });
+    frame(map);
     // Variant FOSCA del mateix proveïdor: sobre l'escenari del plató, les tessel·les
     // clares cantaven com un llum encès. Mateixa llicència, mateixa absència d'etiquetes.
     L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}{r}.png", {
@@ -60,8 +76,10 @@ export function GeoMap(props: {
   // l'havia deixat la pregunta anterior. Les dependències són els números i no `props.center`,
   // que és un array nou a cada render i dispararia l'efecte sempre.
   useEffect(() => {
-    mapRef.current?.setView([lat, lng], zoom);
-  }, [lat, lng, zoom]);
+    const map = mapRef.current;
+    if (map) frame(map);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lat, lng, zoom, hasBounds, bS, bW, bN, bE]);
 
   useEffect(() => {
     const g = layerRef.current;

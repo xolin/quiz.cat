@@ -474,6 +474,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                 center={round.payload.center}
                 zoom={round.payload.zoom}
                 maxZoom={round.payload.maxZoom}
+                bounds={round.payload.bounds}
                 markers={[
                   ...(mapPick ? [{ ...mapPick, color: "#F0A044", label: feedback ? "tu" : undefined }] : []),
                   ...(feedback?.correctAnswer?.lat !== undefined
