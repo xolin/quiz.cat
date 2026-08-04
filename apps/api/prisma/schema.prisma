@@ -57,32 +57,37 @@ model MediaAsset {
 }
 
 model Question {
-  id         String                @id @default(uuid()) @db.Uuid
-  typeSlug   String                @map("type_slug")
-  type       QuestionType          @relation(fields: [typeSlug], references: [slug])
-  categoryId String?               @map("category_id") @db.Uuid
-  category   Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  locale     String                @default("ca")
-  prompt     String?
-  payload    Json                  @default("{}") // dades per RENDERITZAR
-  answer     Json // VERITAT — mai s'envia al client
-  difficulty Int                   @default(3) @db.SmallInt
-  status     String                @default("draft") // draft | review | published | retired
-  premiumPack String?              @map("premium_pack") // null = gratuït; si no, cal desbloquejar el pack
-  topicSlug  String?               @map("topic_slug") // temàtica (per al filtre de temes); null = general
-  source     String                @default("official") // official | community
-  authorId   String?               @map("author_id") @db.Uuid // qui l'ha proposada (community)
-  author     Profile?              @relation("AuthoredQuestions", fields: [authorId], references: [id], onDelete: SetNull)
-  likes      Int                   @default(0)
-  dislikes   Int                   @default(0)
-  tags       String[]              @default([])
-  createdAt  DateTime              @default(now()) @map("created_at")
-  updatedAt  DateTime              @updatedAt @map("updated_at")
-  media      QuestionMedia[]
-  rounds     MatchRound[]
-  stats      QuestionStats?
-  history    UserQuestionHistory[]
-  votes      QuestionVote[]
+  id                 String                @id @default(uuid()) @db.Uuid
+  typeSlug           String                @map("type_slug")
+  type               QuestionType          @relation(fields: [typeSlug], references: [slug])
+  categoryId         String?               @map("category_id") @db.Uuid
+  category           Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  locale             String                @default("ca")
+  prompt             String?
+  payload            Json                  @default("{}") // dades per RENDERITZAR
+  answer             Json // VERITAT — mai s'envia al client
+  difficulty         Int                   @default(3) @db.SmallInt
+  // Dificultat MESURADA a partir del joc real, encongida cap a `difficulty` mentre hi hagi
+  // poques respostes. No la sobreescriu: la declarada ha de sobreviure com a punt de partida
+  // —tota pregunta nova en necessita una— i com a xarxa si les dades resulten esbiaixades.
+  // La recalcula `pnpm quality:questions --apply`.
+  observedDifficulty Float?                @map("observed_difficulty")
+  status             String                @default("draft") // draft | review | published | retired
+  premiumPack        String?               @map("premium_pack") // null = gratuït; si no, cal desbloquejar el pack
+  topicSlug          String?               @map("topic_slug") // temàtica (per al filtre de temes); null = general
+  source             String                @default("official") // official | community
+  authorId           String?               @map("author_id") @db.Uuid // qui l'ha proposada (community)
+  author             Profile?              @relation("AuthoredQuestions", fields: [authorId], references: [id], onDelete: SetNull)
+  likes              Int                   @default(0)
+  dislikes           Int                   @default(0)
+  tags               String[]              @default([])
+  createdAt          DateTime              @default(now()) @map("created_at")
+  updatedAt          DateTime              @updatedAt @map("updated_at")
+  media              QuestionMedia[]
+  rounds             MatchRound[]
+  stats              QuestionStats?
+  history            UserQuestionHistory[]
+  votes              QuestionVote[]
 
   @@index([typeSlug])
   @@index([categoryId])
@@ -116,33 +121,34 @@ model User {
 }
 
 model Profile {
-  id              String                @id @db.Uuid
-  user            User                  @relation(fields: [id], references: [id], onDelete: Cascade)
-  displayName     String?               @map("display_name")
-  avatarUrl       String?               @map("avatar_url")
-  xp              BigInt                @default(0)
-  level           Int                   @default(1)
-  coins           Int                   @default(0)
-  lives           Int                   @default(5)
-  livesUpdatedAt  DateTime              @default(now()) @map("lives_updated_at")
-  energy          Int                   @default(60) // mesurador (0-100): es carrega jugant i amb el temps
-  energyUpdatedAt DateTime              @default(now()) @map("energy_updated_at") // àncora de regeneració
-  credits         Int                   @default(0) // moneda: es guanya als mini-jocs, es gasta en premium
-  skill           Float                 @default(2.5) // habilitat estimada (escala 1-5), estil Elo
-  skillAnswers    Int                   @default(0) @map("skill_answers") // per a l'escalfament del rating
-  region          String?               // regió deduïda/triada (per suggerir temàtiques): 'catalunya','espanya','mon'
-  topics          String[]              @default([]) // temàtiques on l'usuari es vol centrar (buit = totes)
-  currentStreak   Int                   @default(0) @map("current_streak")
-  minigames       MinigameSession[]
-  unlocks         UserUnlock[]
-  longestStreak   Int                   @default(0) @map("longest_streak")
-  lastPlayedOn    DateTime?             @map("last_played_on") @db.Date
-  createdAt       DateTime              @default(now()) @map("created_at")
-  participants       MatchParticipant[]
-  achievements       UserAchievement[]
-  questionHistory    UserQuestionHistory[]
-  authoredQuestions  Question[]            @relation("AuthoredQuestions")
-  questionVotes      QuestionVote[]
+  id                String                @id @db.Uuid
+  user              User                  @relation(fields: [id], references: [id], onDelete: Cascade)
+  displayName       String?               @map("display_name")
+  avatarUrl         String?               @map("avatar_url")
+  xp                BigInt                @default(0)
+  level             Int                   @default(1)
+  coins             Int                   @default(0)
+  lives             Int                   @default(5)
+  livesUpdatedAt    DateTime              @default(now()) @map("lives_updated_at")
+  energy            Int                   @default(60) // mesurador (0-100): es carrega jugant i amb el temps
+  energyUpdatedAt   DateTime              @default(now()) @map("energy_updated_at") // àncora de regeneració
+  credits           Int                   @default(0) // moneda: es guanya als mini-jocs, es gasta en premium
+  skill             Float                 @default(2.5) // habilitat estimada (escala 1-5), estil Elo
+  skillAnswers      Int                   @default(0) @map("skill_answers") // per a l'escalfament del rating
+  region            String? // regió deduïda/triada (per suggerir temàtiques): 'catalunya','espanya','mon'
+  topics            String[]              @default([]) // temàtiques on l'usuari es vol centrar (buit = totes)
+  currentStreak     Int                   @default(0) @map("current_streak")
+  minigames         MinigameSession[]
+  unlocks           UserUnlock[]
+  longestStreak     Int                   @default(0) @map("longest_streak")
+  lastPlayedOn      DateTime?             @map("last_played_on") @db.Date
+  createdAt         DateTime              @default(now()) @map("created_at")
+  participants      MatchParticipant[]
+  achievements      UserAchievement[]
+  questionHistory   UserQuestionHistory[]
+  authoredQuestions Question[]            @relation("AuthoredQuestions")
+  questionVotes     QuestionVote[]
+  topicSkills       TopicSkill[]
 
   @@map("profiles")
 }
@@ -364,7 +370,31 @@ model Topic {
   regions   String[] @default([]) // regions a qui es suggereix (buit = a tothom)
   sortOrder Int      @default(0) @map("sort_order")
 
+  skills TopicSkill[]
+
   @@map("topics")
+}
+
+/// Nivell de l'usuari EN UNA TEMÀTICA.
+///
+/// Un sol número d'habilitat no serveix: una pregunta de química és fàcil per a qui en sap
+/// i molt difícil per a qui no, i amb un rating global les dues persones reben el mateix.
+///
+/// `answers` no és decoratiu: mentre sigui baix, el nivell de la temàtica s'ha de llegir
+/// tibat cap al global (veure `effectiveTopicSkill`), perquè tres respostes de química no
+/// poden decidir que ets químic.
+model TopicSkill {
+  profileId String   @map("profile_id") @db.Uuid
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  topicSlug String   @map("topic_slug")
+  topic     Topic    @relation(fields: [topicSlug], references: [slug], onDelete: Cascade)
+  skill     Float    @default(2.5)
+  answers   Int      @default(0)
+  correct   Int      @default(0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([profileId, topicSlug])
+  @@map("topic_skills")
 }
 
 // NOTA: el rànquing (leaderboard_global) és una VISTA MATERIALITZADA, no un model Prisma.

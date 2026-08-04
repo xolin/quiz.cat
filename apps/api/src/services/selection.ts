@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { seededRandom, shuffle } from "../lib/rng.js";
-import type { Difficulty } from "./skill.js";
+import { effectiveTopicSkill, type Difficulty } from "./skill.js";
 
 // Selecció de preguntes per a una partida.
 // Tesi del producte: "variat per disseny" → evita repetir tipus o categoria en rondes
@@ -11,8 +11,16 @@ interface PoolItem {
   typeSlug: string;
   categoryId: string | null;
   difficulty: number;
+  observedDifficulty: number | null;
   topicSlug: string | null;
 }
+
+/**
+ * La dificultat que mana per triar preguntes: la MESURADA si ja n'hi ha, i si no la
+ * declarada. La declarada surt de la fama de l'entitat a Wikipedia, que és una suposició
+ * raonable sobre com de coneguda és una cosa i no una mesura de com costa la pregunta.
+ */
+const effDiff = (q: PoolItem) => q.observedDifficulty ?? q.difficulty;
 
 function pickVaried(pool: PoolItem[], n: number): PoolItem[] {
   const result: PoolItem[] = [];
@@ -55,8 +63,8 @@ function band(mode: Difficulty): [number, number] {
 }
 
 /** Ordena el pool per proximitat al rating: els més a prop, primer. */
-function bySkillProximity(pool: PoolItem[], skill: number): PoolItem[] {
-  return [...pool].sort((a, b) => Math.abs(a.difficulty - skill) - Math.abs(b.difficulty - skill));
+function bySkillProximity(pool: PoolItem[], skillOf: (q: PoolItem) => number): PoolItem[] {
+  return [...pool].sort((a, b) => Math.abs(effDiff(a) - skillOf(a)) - Math.abs(effDiff(b) - skillOf(b)));
 }
 
 /**
@@ -66,13 +74,15 @@ function bySkillProximity(pool: PoolItem[], skill: number): PoolItem[] {
  * dificultat exacta: la partida es feia plana i el rating no es movia fins a creuar el
  * mig punt. La barreja fa que es noti quan puges i deixa marge per fallar sense càstig.
  */
-function adaptiveCandidates(pool: PoolItem[], skill: number, count: number): PoolItem[] {
-  const dist = (q: PoolItem) => Math.abs(q.difficulty - skill);
+function adaptiveCandidates(pool: PoolItem[], skillOf: (q: PoolItem) => number, count: number): PoolItem[] {
+  // El nivell va PER PREGUNTA i no és un sol número: depèn de la temàtica. Una pregunta de
+  // química es compara amb el que sabem del jugador EN QUÍMICA, no amb la seva mitjana.
+  const dist = (q: PoolItem) => Math.abs(effDiff(q) - skillOf(q));
   const own = shuffle(pool.filter((q) => dist(q) <= 0.5));
   const neighbours = shuffle(pool.filter((q) => dist(q) > 0.5 && dist(q) <= 1.5));
   const mixed = [...own.slice(0, count * 3), ...neighbours.slice(0, Math.ceil(count * 1.2))];
   // Si en aquell nivell hi ha poc material, val més el criteri antic que quedar-se curt.
-  return mixed.length >= count * 2 ? shuffle(mixed) : bySkillProximity(shuffle(pool), skill).slice(0, Math.max(count * 4, 24));
+  return mixed.length >= count * 2 ? shuffle(mixed) : bySkillProximity(shuffle(pool), skillOf).slice(0, Math.max(count * 4, 24));
 }
 
 /**
@@ -100,7 +110,7 @@ export async function nextSurvivalQuestion(
 ): Promise<{ id: string; typeSlug: string } | null> {
   const raw = await prisma.question.findMany({
     where: { status: "published" },
-    select: { id: true, typeSlug: true, categoryId: true, difficulty: true, premiumPack: true, topicSlug: true },
+    select: { id: true, typeSlug: true, categoryId: true, difficulty: true, observedDifficulty: true, premiumPack: true, topicSlug: true },
   });
   const unlocks = await prisma.userUnlock.findMany({ where: { userId: opts.userId }, select: { packSlug: true } });
   const owned = new Set(unlocks.map((u) => u.packSlug));
@@ -117,12 +127,12 @@ export async function nextSurvivalQuestion(
   const rank = (q: PoolItem) => seenMap.get(q.id) ?? -1;
 
   let [lo, hi] = survivalBand(opts.streak);
-  let candidates = pool.filter((q) => q.difficulty >= lo && q.difficulty <= hi);
+  let candidates = pool.filter((q) => effDiff(q) >= lo && effDiff(q) <= hi);
   // Si la banda es queda curta, eixampla-la abans que rendir-se.
   while (candidates.length === 0 && (lo > 1 || hi < 5)) {
     lo = Math.max(1, lo - 1);
     hi = Math.min(5, hi + 1);
-    candidates = pool.filter((q) => q.difficulty >= lo && q.difficulty <= hi);
+    candidates = pool.filter((q) => effDiff(q) >= lo && effDiff(q) <= hi);
   }
   if (candidates.length === 0) candidates = pool;
 
@@ -143,7 +153,7 @@ export async function selectQuestions(
 ): Promise<string[]> {
   const raw = await prisma.question.findMany({
     where: { status: "published" },
-    select: { id: true, typeSlug: true, categoryId: true, difficulty: true, premiumPack: true, topicSlug: true },
+    select: { id: true, typeSlug: true, categoryId: true, difficulty: true, observedDifficulty: true, premiumPack: true, topicSlug: true },
   });
   // Exclou el premium bloquejat: gratuïtes sempre; premium només si l'usuari té el pack.
   // El diari mai serveix premium (justícia del rànquing).
@@ -159,7 +169,7 @@ export async function selectQuestions(
   if (opts.mode === "daily") {
     const rand = seededRandom(opts.seed ?? "daily");
     const [lo, hi] = band("normal");
-    const pool = all.filter((q) => q.difficulty >= lo && q.difficulty <= hi);
+    const pool = all.filter((q) => effDiff(q) >= lo && effDiff(q) <= hi);
     const sorted = [...pool].sort((a, b) => a.id.localeCompare(b.id));
     return pickVaried(shuffle(sorted, rand), opts.count).map((q) => q.id);
   }
@@ -176,6 +186,15 @@ export async function selectQuestions(
   // Els temes concrets pengen dels blocs grossos: qui tria "Cultura" ha de rebre també
   // cinema, literatura, art i música, que abans hi eren dins i ara són temes propis.
   const profile = await prisma.profile.findUniqueOrThrow({ where: { id: opts.userId }, select: { skill: true, topics: true } });
+  // Nivell PER TEMÀTICA. Una pregunta de química s'ha de comparar amb el que sabem del
+  // jugador en química, no amb la seva mitjana: si no, a qui en sap li surten fàcils i a
+  // qui no en sap li surten impossibles, i les dues persones reben exactament el mateix.
+  const topicSkills = await prisma.topicSkill.findMany({
+    where: { profileId: opts.userId },
+    select: { topicSlug: true, skill: true, answers: true },
+  });
+  const byTopic = new Map(topicSkills.map((t) => [t.topicSlug, t]));
+  const skillOf = (q: PoolItem) => effectiveTopicSkill(profile.skill, q.topicSlug ? byTopic.get(q.topicSlug) : null);
   let pool = all;
   if (profile.topics.length > 0) {
     const wanted = new Set(profile.topics.flatMap((t) => [t, ...(TOPIC_CHILDREN[t] ?? [])]));
@@ -186,15 +205,15 @@ export async function selectQuestions(
   let candidates: PoolItem[];
   if (opts.difficulty === "adaptive") {
     // Finestra ampla al voltant del rating; tria els més propers, barrejant una mica.
-    candidates = adaptiveCandidates(pool, profile.skill, opts.count);
+    candidates = adaptiveCandidates(pool, skillOf, opts.count);
   } else {
     let [lo, hi] = band(opts.difficulty);
-    let dpool = pool.filter((q) => q.difficulty >= lo && q.difficulty <= hi);
+    let dpool = pool.filter((q) => effDiff(q) >= lo && effDiff(q) <= hi);
     // Eixampla la banda si no hi ha prou varietat/quantitat.
     while (dpool.length < opts.count * 2 && (lo > 1 || hi < 5)) {
       lo = Math.max(1, lo - 1);
       hi = Math.min(5, hi + 1);
-      dpool = pool.filter((q) => q.difficulty >= lo && q.difficulty <= hi);
+      dpool = pool.filter((q) => effDiff(q) >= lo && effDiff(q) <= hi);
     }
     candidates = shuffle(dpool);
   }
