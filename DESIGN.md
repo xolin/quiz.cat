@@ -1,7 +1,9 @@
 ---
 name: quiz.cat
-description: El paquet de grafisme d'una retransmissió de concurs, dins un client web de mòbil.
+description: El paquet de grafisme d'una retransmissió en directe, tallat a antena dins un client web de mòbil.
 colors:
+  amber: "#f0a044"
+  amber-deep: "#d9822b"
   stage: "#0e1520"
   stage-2: "#182231"
   stage-3: "#223046"
@@ -9,11 +11,9 @@ colors:
   ink: "#f4f7fb"
   ink-dim: "#a9b6c7"
   ink-on-light: "#17202c"
-  amber: "#f0a044"
-  amber-deep: "#d9822b"
+  good: "#3fbf7f"
   live: "#ce3a2f"
   live-text: "#f08279"
-  good: "#3fbf7f"
   geo: "#2e8fe0"
   hist: "#c9803a"
   sci: "#34b8a8"
@@ -32,21 +32,22 @@ typography:
     fontSize: "clamp(2rem, 8vw, 3rem)"
     fontWeight: 700
     lineHeight: 1.05
-    letterSpacing: "0"
     fontVariation: "wdth 66"
     fontFeature: "tnum 1"
   headline:
     fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
-    lineHeight: 1.05
-    letterSpacing: "-0.01em"
     fontVariation: "wdth 74"
+  title:
+    fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
+    fontSize: "1.25rem"
+    fontWeight: 700
+    fontVariation: "wdth 78"
   lead:
     fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
-    lineHeight: 1.25
   body:
     fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
     fontSize: "1rem"
@@ -56,17 +57,16 @@ typography:
     fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: 1.15
   label:
     fontFamily: "Archivo, system-ui, -apple-system, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 700
-    lineHeight: 1.2
-    letterSpacing: "0.07em"
-    fontVariation: "wdth 74"
+    letterSpacing: "0.06em"
+    fontVariation: "wdth 70"
 rounded:
-  r: "3px"
-  r-2: "6px"
+  hair: "2px"
+  sharp: "3px"
+  block: "6px"
   pill: "999px"
 spacing:
   "1": "4px"
@@ -77,495 +77,340 @@ spacing:
   "6": "32px"
   "7": "48px"
 components:
-  option:
-    backgroundColor: "{colors.stage-2}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
-    height: "56px"
-  option-tab:
-    backgroundColor: "{colors.stage-3}"
-    textColor: "{colors.ink-dim}"
-    width: "46px"
-  option-picked:
-    backgroundColor: "color-mix(in srgb, #f0a044 16%, #182231)"
-    textColor: "{colors.ink}"
-  option-good:
-    backgroundColor: "{colors.good}"
-    textColor: "{colors.ink-on-light}"
-  option-bad:
-    backgroundColor: "{colors.live}"
-    textColor: "#ffffff"
   button:
     backgroundColor: "{colors.stage-2}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
+    rounded: "{rounded.sharp}"
     padding: "12px 24px"
     height: "46px"
-  button-hover:
-    backgroundColor: "{colors.stage-3}"
   button-primary:
     backgroundColor: "{colors.amber}"
     textColor: "{colors.ink-on-light}"
-    rounded: "{rounded.r}"
+    rounded: "{rounded.sharp}"
     padding: "12px 24px"
+    height: "46px"
   button-primary-hover:
     backgroundColor: "{colors.amber-deep}"
     textColor: "{colors.ink-on-light}"
   button-primary-disabled:
     backgroundColor: "{colors.stage-2}"
     textColor: "{colors.ink-dim}"
-  button-icon:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    size: "44px"
-  lower-third:
-    backgroundColor: "{colors.geo}"
-    textColor: "{colors.ink-on-light}"
-    rounded: "{rounded.r}"
-    padding: "8px 12px"
-  lower-third-plain:
+  option:
     backgroundColor: "{colors.stage-2}"
-    textColor: "{colors.ink-dim}"
+    textColor: "{colors.ink}"
+    typography: "{typography.lead}"
+    rounded: "{rounded.sharp}"
+    height: "56px"
+  option-good:
+    backgroundColor: "{colors.good}"
+    textColor: "{colors.ink-on-light}"
+  option-bad:
+    backgroundColor: "{colors.live}"
+    textColor: "{colors.ink}"
+  panel:
+    backgroundColor: "{colors.stage-2}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sharp}"
+    padding: "16px"
   counter:
     backgroundColor: "{colors.stage-2}"
     textColor: "{colors.ink}"
     typography: "{typography.score}"
-    rounded: "{rounded.r}"
-    padding: "0 12px"
+    rounded: "{rounded.sharp}"
     width: "92px"
-  counter-low:
-    backgroundColor: "color-mix(in srgb, #ce3a2f 14%, #182231)"
-    textColor: "{colors.live-text}"
-  media:
-    backgroundColor: "{colors.stage-2}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
-  media-caption:
-    backgroundColor: "{colors.stage}"
-    textColor: "{colors.ink-dim}"
-    typography: "{typography.label}"
-    padding: "8px 12px"
-  scoreboard:
-    backgroundColor: "{colors.stage-2}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
-    padding: "8px 12px"
-  mode:
-    backgroundColor: "{colors.amber}"
+  lower-third:
+    backgroundColor: "{colors.geo}"
     textColor: "{colors.ink-on-light}"
-    rounded: "{rounded.r-2}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sharp}"
+  mode-card:
+    textColor: "{colors.ink-on-light}"
+    rounded: "{rounded.block}"
     padding: "24px 16px"
-  panel:
-    backgroundColor: "{colors.stage-2}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
-    padding: "16px"
-  input:
-    backgroundColor: "{colors.stage}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.r}"
-    padding: "12px"
-  toast-good:
+  toast:
     backgroundColor: "{colors.good}"
     textColor: "{colors.ink-on-light}"
-    rounded: "{rounded.r-2}"
-    padding: "16px 24px"
-  toast-bad:
-    backgroundColor: "{colors.live}"
-    textColor: "#ffffff"
-    rounded: "{rounded.r-2}"
+    rounded: "{rounded.block}"
     padding: "16px 24px"
 ---
 
 # Design System: quiz.cat
 
-Aquest fitxer descriu el sistema **tal com està construït** a `apps/web`, no com es va
-plantejar. Font de veritat: `apps/web/src/styles.css` (tokens `--qc-*`, classes `.qc-*`),
-`apps/web/src/components/iconArt.ts`, `mascotArt.ts` i `scripts/design-sheet.mts`. Quan el
-contracte de direcció (capçalera de `styles.css` i d'`index.html`) i el codi no diuen el
-mateix, aquí manda el codi i la diferència queda anotada.
-
 ## Overview
 
-**Creative North Star: "El paquet de grafisme de retransmissió"**
+**Creative North Star: "La Realització"**
 
-El món no és el plató: és el **grafisme que s'hi sobreimprimeix**. Rètol de secció, panells
-que s'encenen, comptador amb marc propi, marcador de xifres condensades. Tot viu sobre un
-fons d'estudi blau pissarra (`--qc-stage`) amb un únic bany de llum radial darrere la
-pregunta. Res de plató físic: cap bisell, cap daurat, cap purpurina, cap scanline. El kitsch
-retro és l'anti-referència confirmada.
+Això no és una pàgina web amb preguntes a dins: és el **paquet de grafisme d'una
+retransmissió**, tallat a antena des d'una sala de realització. Cada element té l'ofici que
+tindria en directe — el rètol identifica el bloc, el comptador és el rellotge de plató, el
+marcador és un objecte amb entitat pròpia i l'escombrada entre rondes és un canvi de càmera. La
+conseqüència pràctica és dura i útil: si un element no faria feina en una retransmissió, no hi
+pinta res.
 
-La densitat és de mòbil primer, columna única de 680 px màxim, centrada, amb ritme
-d'espaiat de 4 px. La jerarquia de la pantalla de partida està fixada pel contracte i
-respectada pel codi: rètol + comptador, barra de temps, pregunta gran en condensada,
-panells de resposta, marcador a baix. La mascota (el gat) **no apareix mentre penses**: entra
-al toast del resultat i a les pantalles d'inici i de resum.
+El to és **de concurs**. Contrastos durs, color de secció ocupant regions senceres en comptes
+d'insígnies, i moviment decidit als moments que ho demanen. Però l'energia va per **color, llum
+i moviment**, mai per material. Aquesta distinció és el que separa aquest món del seu
+anti-referent: el kitsch retro de concurs —bisells, daurats, purpurina, scanlines— queda fora
+sense excepcions. Un grafisme de retransmissió modern és net i dur alhora, i és aquesta duresa
+la que fa l'energia, no la textura.
 
-El color de secció és estructural, no decoratiu: cada categoria té el seu to i el rètol de
-la partida s'hi pinta sencer. L'ambre és el **color d'antena** (pelatge del gat), i per això
-mai omple un camp fora d'un mode d'inici: marca acció primària, focus i xifra viva.
+El públic juga **al mòbil, en estones mortes, i es pot sentir avaluat**. Per això el sistema
+informa i no jutja: cap percentatge d'encert a la cara, cap comparació amb ningú, i el gat
+amfitrió no apareix mentre penses. Surt quan hi ha emoció, que és quan un presentador parlaria.
 
 **Key Characteristics:**
-- Fons d'estudi fosc únic (`color-scheme: dark`), sense mode clar.
-- Cantell viu: 3 px de radi per defecte, 6 px per als blocs grans.
-- Una sola família tipogràfica, amb l'eix d'amplada fent de segona veu.
-- Xifres sempre condensades i tabulars.
-- Cap senyal important que depengui només del color.
-- Contrast verificat per script, no a ull.
+- El grafisme de retransmissió com a món sencer, no com a decoració
+- Cantell viu de 3 px: cap pastilla, cap targeta arrodonida
+- Una sola família tipogràfica amb l'eix d'amplada fent de segona veu
+- L'ambre com a color d'antena, escàs per definició
+- Color de secció ocupant tota la regió, mai una insígnia
+- El color mai és l'únic indicador: sempre l'acompanya una forma o un glif
 
 ## Colors
 
-Paleta d'estudi fosc amb un únic accent càlid d'antena i cinc tons de secció que entren
-només per categoria.
+Una paleta de plató fosc amb un únic color càlid que mana, cinc colors de secció que
+identifiquen el bloc temàtic i dos colors d'estat que mai treballen sols.
 
 ### Primary
-- **Ambre d'antena** (`--qc-amber`): acció primària (`.qc-btn--primary`), anell de focus,
-  barra de temps i d'energia, xifres vives (ratxa ≥ 2, top 3 del rànquing), enllaços, camp
-  del mode «Partida ràpida». És el pelatge del gat portat a la interfície.
-- **Ambre profund** (`--qc-amber-deep`): només l'estat `:hover` del botó primari i les
-  ratlles/detalls foscos de la mascota.
+- **Ambre d'Antena** (`amber`): el color del que està **en directe** i del que crida a
+  l'acció. Botó primari, la teva marca al mapa, ompliment del mesurador, anell de focus. La seva
+  escassetat és el que el fa funcionar.
+- **Ambre Fondo** (`amber-deep`): només l'estat `hover` del primari. Cap altre ús.
 
 ### Secondary
-- **Verd d'encert** (`--qc-good`): panell correcte, toast d'encert, marcador de resposta bona
-  al mapa i a la cronologia, carta emparellada al Memory.
-- **Roig d'emissió** (`--qc-live`): panell erroni, toast d'error, estat de últims segons
-  (marc del comptador i barra de temps), camp del mode Survival.
-- **Roig de text** (`--qc-live-text`): existeix perquè `--qc-live` sobre l'escenari no arriba
-  a 4,5:1 com a text. Qualsevol xifra o text roig sobre fons fosc fa servir aquest, mai el
-  roig de fons.
+Els **colors de secció**, un per categoria, que pinten la banda sencera del rètol i el camp de
+la targeta de mode: `geo` Geografia, `hist` Història, `sci` Ciència, `cult` Cultura, `nat`
+Natura. Tots cinc estan escollits per arribar al mínim de contrast amb la tinta fosca al damunt.
 
-### Tertiary — colors de secció
-Cinc tons, un per categoria, mapats per slug a `CATEGORY_COLOR`: `--qc-geo` (geografia),
-`--qc-hist` (història), `--qc-sci` (ciència), `--qc-cult` (cultura), `--qc-nat` (natura).
-Tots estan calibrats per portar `--qc-ink-on-light` a sobre, i també aclarits un 22% amb
-blanc, que és el que fa la pestanya del rètol.
+### Tertiary
+- **Verd d'Encert** (`good`): inunda el panell de la resposta bona.
+- **Roig de Directe** (`live`): inunda el panell de la resposta fallada i el toast d'error.
+- **Roig Llegible** (`live-text`): el mateix roig **com a text sobre fons fosc**. Existeix
+  perquè el roig de camp no arriba al contrast mínim quan es fa servir com a lletra.
 
 ### Neutral
-- **Escenari** (`--qc-stage`): fons de `body` i del peu del marc de mèdia; també el fons dels
-  camps de formulari i el `theme-color` del document.
-- **Panell** (`--qc-stage-2`): tota superfície aixecada: panells, botons, comptador, marcador,
-  marc de mèdia, opcions en repòs.
-- **Pestanya** (`--qc-stage-3`): un pas més amunt: pestanya de lletra de les opcions, `:hover`
-  de botons i opcions, fila del rànquing on ets tu, dors de la carta del Memory.
-- **Fil** (`--qc-hairline`): tot contorn d'1 px i tot divisor. Aquest sistema separa amb fil,
-  no amb ombra.
-- **Tinta** (`--qc-ink`), **tinta apagada** (`--qc-ink-dim`), **tinta sobre clar**
-  (`--qc-ink-on-light`): text principal, secundari i text sobre qualsevol camp de color.
+- **Blau de Plató** (`stage`): el fons de tot. És blau pissarra, no negre — i el nom importa,
+  perquè tractar-lo com a negre porta a decisions equivocades.
+- **Blau de Plató · Panell** (`stage-2`): superfícies que reposen damunt del fons: panells,
+  botons, opcions, comptador, marcador.
+- **Blau de Plató · Relleu** (`stage-3`): el nivell més alt, per a `hover` i per a les pistes
+  dels mesuradors.
+- **Fil** (`hairline`): la vora d'un píxel que separa objectes. És l'eina de profunditat
+  principal del sistema.
+- **Tinta** (`ink`) i **Tinta Apagada** (`ink-dim`): text principal i secundari sobre fosc.
+- **Tinta sobre Clar** (`ink-on-light`): text damunt de qualsevol camp clar — ambre, color de
+  secció, verd d'encert.
 
 ### Named Rules
 
-**La Regla de la Porta de Contrast.** Cap color entra a la paleta sense passar per
-`pnpm design:sheet`. L'script (`scripts/design-sheet.mts`) calcula el ratio WCAG de les 22
-parelles que el disseny fa servir de debò, exigeix 4,5:1 (3:1 per a xifra gran, cas de
-l'ambre sobre escenari), imprimeix les que fallen i **surt amb codi d'error**. Canviar un to
-i no tornar a passar l'script no és una decisió de disseny, és una aposta. La fulla generada
-(`/_design.html`) també serveix de catàleg d'icones i d'expressions.
+**La Regla de l'Antena.** L'ambre no omple mai un camp gran. És per a un botó, un anell, una
+marca o una xifra. Si l'ambre és a tot arreu, deixa de voler dir «això».
 
-**La Regla del Camp de Secció.** El color de secció ocupa **tota** la banda del rètol només
-a la partida, on identifica la categoria de la pregunta. A la resta de pantalles
-(`--plain`) el camp es queda neutre i el color va només a la pestanya. Pintar la banda
-sencera d'ambre convertiria el color d'antena en un camp, que és exactament el que el món no
-vol.
+**La Regla del Camp Sencer.** Un color de secció ocupa **tota la regió** que identifica, no una
+pastilla dins d'una targeta. És el que separa un rètol de retransmissió d'una insígnia de
+formulari.
 
-**La Regla dels Tres Canals.** Els últims segons es diuen per tres vies alhora: camp roig
-(barra), marc i tint rojos al comptador, i **ratlles a 45°** sobre l'emplenat de la barra.
-La textura hi és perquè sota `prefers-reduced-motion` el pols desapareix i el color es
-quedaria sol; i és textura, i no un rètol de text, perquè a 390 px el rètol es menjava el nom
-de la mecànica — i en un joc on la gràcia és no saber quina ve, això era pitjor que el
-problema.
-
-**La Regla del Color Acompanyat.** Cap estat es comunica només amb color: la pestanya de
-l'opció passa a ✓ o ✗ en revelar-se, el resum posa glif a cada fila, i les icones sempre
-duen text o `aria-label`.
-
-**La Regla de l'Hex Literal.** El valor literal en hexadecimal només és admissible on la
-variable CSS no arriba: dades de dibuix SVG (`mascotArt.ts`: `FUR`, `FUR_DARK`, `INK`,
-`PINK`) i marcadors de Leaflet (`Game.tsx`: `#F0A044`, `#3FBF7F`). Quan hi apareix, ha de
-ser el mateix valor que el token; si canvies el token, tens dos llocs per tocar.
+**La Regla del Doble Senyal.** Cap estat es diu només amb color. L'encert i l'error porten glif
+(✓ / ✗); el temps baix porta ratlles a 45° a més del roig; la resposta descartada conserva
+contorn i opacitat plena i només se li apaga el text.
 
 ## Typography
 
-**Una sola família: Archivo** (OFL, Omnibus-Type), variable, eix d'amplada `62%–125%`,
-pesos `400–700`, auto-allotjada a `apps/web/public/fonts` en dos subconjunts
-(`archivo-latin.woff2` i `archivo-latin-ext.woff2`, amb `unicode-range`), amb `font-display:
-swap` i el subconjunt latin en `preload`. **Cap CDN.** Reserva:
-`system-ui, -apple-system, sans-serif`.
+**Família única:** Archivo (OFL, Omnibus-Type), variable amb **eix d'amplada**, auto-allotjada
+en dos fitxers `woff2` amb `unicode-range` per al llatí i el llatí estès.
 
-**Character:** l'eix d'amplada fa de segona família. La condensada (66%–82%) és la veu de
-retransmissió: xifres, títols, rètols, botons. L'amplada normal és la veu de lectura: text
-d'opcions i cos. Que sigui la mateixa família és el que evita que la pantalla sembli dos
-dissenys enganxats.
+**Character:** una sola veu que fa dues feines. L'eix d'amplada substitueix la segona família:
+la pregunta va condensada al 78%, el marcador al 66%, els rètols al 70% i el text corrent a
+l'amplada normal. És el que dona el so de retransmissió sense carregar cap tipografia més i
+sense dependre de cap CDN.
 
 ### Hierarchy
-- **Display** (700, `--qc-t-display` = `clamp(1.5rem, 7vw, 2.4rem)`, amplada 78%,
-  interlletra `-0.02em`, `text-wrap: balance`): la pregunta (`.qc-question`), sempre dins del
-  bany de llum. És l'element de text més gran de la partida.
-- **Score** (700, `--qc-t-score` = `clamp(2rem, 8vw, 3rem)`, amplada 66%, tabular): el
-  comptador de segons, la xifra de resultat del resum i el valor de l'slider d'estimació.
-- **Headline** (700, `1.5rem`, amplada 74%): títol de mode (`.qc-mode__title`) i salutació de
-  l'inici. `h1,h2,h3` per defecte van a 78% i pes 700.
-- **Lead** (`--qc-t-lead` = `1.0625rem`): text de l'opció de resposta i prou. És l'única
-  mesura de text de lectura per damunt del cos, perquè el panell de resposta és el que has de
-  llegir ràpid.
-- **Body** (`--qc-t-body` = `1rem`, interlineat 1,5): text general i camps de formulari.
-- **Small** (`--qc-t-small` = `0.875rem`): metadada del rètol, subtítols de mode, files de
-  llista, enllaços secundaris.
-- **Label** (700, `--qc-t-label` = `0.75rem`, amplada 70–74%, interlletra `0.06–0.08em`,
-  MAJÚSCULES): `.qc-label`, pestanya del rètol, etiquetes del marcador, peu del marc de
-  mèdia. La caixa alta viu només aquí.
+- **Display** (700, `clamp(1.5rem, 7vw, 2.4rem)`, amplada 78%, interlineat 1,08): la pregunta.
+  Porta `text-wrap: balance` perquè no li quedi una paraula òrfena a l'última línia.
+- **Score** (700, `clamp(2rem, 8vw, 3rem)`, amplada 66%, tabular): el comptador i les xifres del
+  marcador. Tabular perquè un número que canvia no ha de fer ballar la caixa.
+- **Headline** (700, `1.5rem`, amplada 74%): títol de mode i salutació d'inici.
+- **Title** (700, `1.25rem`, amplada 78%): capçalera de modal i xifres destacades dins d'un marc
+  de mèdia.
+- **Lead** (`1.0625rem`): el text de l'opció de resposta, i prou.
+- **Body** (`1rem`, interlineat 1,5): text corrent.
+- **Small** (`0.875rem`): notes al peu i text secundari.
+- **Label** (700, `0.75rem`, amplada 70%, `+0.06em`, majúscules): rètols, peus del marc de mèdia
+  i etiquetes del marcador.
 
 ### Named Rules
 
-**La Regla d'una Sola Família.** Una família per a tot; si et cal una altra veu, mou l'eix
-d'amplada, no la família. I res de CDN: la tipografia s'allotja al projecte perquè la
-pregunta no pugui aparèixer en una altra lletra al primer fotograma.
+**La Regla d'una Sola Veu.** Mai una segona família tipogràfica. Si cal contrast, es fa amb
+l'eix d'amplada. I mai des d'un CDN: tot va auto-allotjat.
 
-**La Regla de la Xifra Tabular.** Tota xifra que canvia sola porta `.qc-num`
-(amplada 66%, pes 700, `tabular-nums` + `tnum`). Sense això, un comptador que baixa de 10 a 9
-fa saltar el layout, i saltar és exactament el que un marcador no fa.
+**La Regla del Número Tabular.** Qualsevol xifra que canviï en viu —comptador, punts, ratxa—
+porta `tabular-nums`. Un marcador que salta d'amplada és un error de realització.
 
 ## Layout
 
-Columna única centrada: `.qc-screen` amb `max-width: 680px`, coixí de `--qc-5` a dalt,
-`--qc-4` als costats i `--qc-7` a baix. No hi ha graella de pàgina; el ritme el porten els set
-passos d'espaiat (4, 8, 12, 16, 24, 32, 48 px). Els passos de treball reals són `--qc-2`
-(dins d'un objecte), `--qc-3`/`--qc-4` (coixí de component) i `--qc-5` (separació entre blocs
-de la pantalla).
+Columna única de **680 px màxim**, centrada, amb coixí de 24 px a dalt, 16 px als costats i
+48 px a baix. Mòbil primer: tot està pensat perquè funcioni a 390 px i s'eixampli, no al revés.
 
-Els objectes de retransmissió es componen en tira: `.qc-strip` posa rètol i comptador a la
-mateixa línia, el rètol creixent (`flex: 1`) i el comptador fix (`min-width: 92px`), i just a
-sota hi va la barra de temps de 6 px.
+L'escala d'espai és de set passos (`4 · 8 · 12 · 16 · 24 · 32 · 48 px`) i no se'n fan servir
+valors intermedis.
 
-Dos punts de ruptura, tots dos existeixen per trencament observat a 390 px:
+**Dos punts de ruptura, tots dos amb motiu concret:**
+- **480 px** — la ronda i el nom de la mecànica tornen a la mateixa línia dins del rètol. Per
+  sota s'apilen, perquè a 390 px no hi caben i sortia «Ronda 1» partit en dues.
+- **560 px** — les respostes poden anar a dues columnes. És la porta d'amplada; la segona porta
+  és que **totes** les opcions siguin curtes, perquè hi ha respostes com «Castella-la Manxa» o
+  noms científics binomials que en una graella 2×2 es partirien en tres línies.
 
-- **480 px** — per sota, `.qc-lower-third__meta` apila ronda i nom de mecànica en dues línies;
-  a partir d'aquí tornen a la mateixa fila. Sense apilar, «Ronda 1» es partia i «Foto
-  misteriosa» quedava escapçat alhora.
-- **560 px** — l'única amplada on `.qc-options--split` passa a dues columnes. Per sota, els
-  panells de resposta sempre van a columna única: a 390 px «Castella-la Manxa» es partia en
-  tres línies dins de mitja pantalla.
-
-Cap element amb text pot confiar que hi cabrà: `.qc-option__label` porta
-`overflow-wrap: anywhere` + `hyphens: auto`, i tota cel·la de flex que conté text porta
-`min-width: 0` (i el·lipsi quan la línia és única, com al rètol o al rànquing).
-
-Àrea de toc mínima: 44 px (`.qc-btn--icon`, `input[type=range]`), 46 px per als botons
-normals, 56 px d'alçada mínima per als panells de resposta.
-
-**La Regla dels 390.** Cap decisió de layout es pren mirant una finestra d'escriptori. Si una
-regla no aguanta a 390 px d'amplada, la regla és falsa. El pas a dues columnes es guanya amb
-amplada de viewport (`@media`), no amb suposicions sobre el contingut.
-
-*Divergència registrada:* el comentari de `styles.css` diu que la doble columna «mai» depèn
-del nombre de caràcters, però `Game.tsx` sí que hi condiciona la **classe**
-(`options.length === 4 && text.length <= 18`), i el `@media` hi condiciona les **columnes**.
-El resultat efectiu són dues portes en sèrie: amb quatre opcions curtes i ≥560 px hi ha dues
-columnes; en qualsevol altre cas, una. Qui toqui això ha de saber que hi ha dos llocs.
+El bany de llum darrere la pregunta va **a sang** (`inset: -88px -50vw -76px`): la llum d'un
+plató no s'atura a la columna de text.
 
 ## Elevation & Depth
 
-Sistema **pla i estratificat**, sense ombres. La profunditat es fa amb tres nivells tonals
-(`--qc-stage` → `--qc-stage-2` → `--qc-stage-3`) i un fil d'1 px de `--qc-hairline` que
-dibuixa el cantell i els divisors. Un panell no s'aixeca: canvia de to.
+El sistema separa objectes amb **to i fil**: tres nivells de blau de plató i una vora d'un
+píxel. És el llenguatge principal i explica la immensa majoria de la pantalla.
 
-L'única profunditat atmosfèrica del món és el **bany de llum d'estudi**: `.qc-stagelight` posa
-un `radial-gradient` darrere la pregunta amb `z-index: -1` i `isolation: isolate`. Va a sang
-(`inset: -88px -50vw -76px`), perquè la llum d'un plató no s'atura a la columna de text; la
-caixa és més alta que el degradat perquè amb un radi vertical del 120% el traç transparent
-queia fora de la caixa i deixava una costura recta sobre i sota la pregunta.
+**Compromís d'agost de 2026: el món admet profunditat.** El to de concurs demana que el que
+**sura** ho sembli, i fins ara el sistema només tenia una ombra. S'obre un vocabulari curt, amb
+propòsit declarat a cada entrada. La condició que ho fa possible sense caure al kitsch és que
+**l'ombra descriu jerarquia, no material**: diu què hi ha per damunt de què, i mai simula un
+bisell, un vidre ni un metall.
 
 ### Shadow Vocabulary
-- **Ombra de toast** (`box-shadow: 0 18px 40px -12px rgba(0,0,0,0.7)`): l'única ombra del
-  sistema, i només al `.qc-toast`, que és l'únic element que flota per damunt de la pantalla.
+- **Ombra de flotant** (`box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.7)`): el toast de
+  resultat, l'únic element que sura per damunt de la pantalla. **Construïda i en ús.**
 - **Fil interior** (`box-shadow: inset 0 0 0 1px var(--qc-hairline)`): dors de la carta del
-  Memory, on un `border` desquadraria la cara girada.
+  Memory, on una vora desquadraria la cara girada. **Construïda i en ús.**
+- **Ombra d'alçat** (`box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.55)`): per a l'objecte que
+  l'usuari manipula ara mateix — la targeta de mode premuda, la carta del Memory girant-se.
+  **Compromís, encara no aplicat al codi.**
 
-**La Regla del Fil, no l'Ombra.** Les superfícies estan planes en repòs i se separen per to i
-per fil. Si et cal una ombra per fer entendre un objecte, l'objecte està al nivell tonal
-equivocat. L'excepció és el que sura de debò sobre tot: el toast.
+### Named Rules
+
+**La Regla del Fil Primer.** El fil i el to resolen la profunditat per defecte. L'ombra només
+entra quan un objecte **surt del pla** de debò: flota per damunt de la pantalla o l'usuari
+l'està movent. Una superfície en repòs no porta ombra mai.
+
+**La Regla de la Jerarquia, no el Material.** L'ombra diu «això és a sobre»; no diu «això és de
+vidre». Bisells, daurats, purpurina, scanlines i degradats que imiten metall queden fora del
+sistema sense excepció.
 
 ## Shapes
 
-Cantell viu. `--qc-r` = 3 px és el radi de gairebé tot (panells, botons, opcions, rètol,
-comptador, marc de mèdia, marcador, camps); `--qc-r-2` = 6 px queda per als blocs grans que
-es toquen amb el dit (camps de mode, toast). La forma de pastilla (`999px`) apareix a dos
-llocs i prou: les barres de mesura (`.qc-meter`) i les insígnies d'assoliment. Tota la resta
-és rectangle.
+**Cantell viu.** El radi per defecte és de **3 px** (`sharp`) i cobreix gairebé tot: panells,
+botons, opcions, rètol, comptador, marc de mèdia, marcador i camps. Els **6 px** (`block`)
+queden per als blocs grans que s'han de llegir com una sola peça: les targetes de mode de la
+pantalla d'inici i el toast. Els **2 px** (`hair`) són el cas rar de la barra del temps, on el
+radi ha de ser només un matís del gruix.
 
-La silueta que es repeteix és el **rectangle compost de dues regions**: una pestanya estreta
-de color amb un glif o una lletra, i el camp ample amb el text. És el rètol
-(`__section` + `__meta`), és el panell de resposta (`__tab` + `__label`) i és el marc de mèdia
-(cos + peu). Els objectes es tallen amb `overflow: hidden`, mai amb radis per cantonada.
+La **pastilla** (`pill`, 999 px) existeix per a una sola cosa: la pista dels mesuradors
+d'energia i progrés, que són barres i no objectes.
 
-El joc d'icones té la seva pròpia gramàtica: 39 icones de `24×24` en `viewBox`, traç de 2 px
-amb extrems i unions rodons, `currentColor`, `fill: none` per defecte i massís només on cal
-(pupil·les, banderes, triangle de `play`). És la mateixa línia que la mascota, i per això el
-gat i les icones semblen del mateix joc. Verificat també a 16 px a la fulla de disseny.
+Els objectes compostos —rètol, marc de mèdia, opció amb pestanya, marcador— es tallen amb
+`overflow: hidden` i **mai amb radis per cantonada**. Una peça que s'ha de llegir com una sola
+cosa no pot tenir les cantonades interiors arrodonides.
+
+### Named Rules
+
+**La Regla del Cantell Viu.** Cap pastilla i cap targeta arrodonida a la interfície. El radi
+generós és el llenguatge del programari de consum genèric; aquest món és de retolació.
 
 ## Components
 
-### Botons (`.qc-btn`)
-- **Forma:** cantell viu (3 px), contorn de fil, alçada mínima 46 px, coixí `12px 24px`.
-- **Per defecte:** camp de panell (`--qc-stage-2`), tinta clara, amplada 82%, pes 700.
-- **`:hover`:** puja un nivell tonal (`--qc-stage-3`), fons i contorn alhora. Transició de
-  150 ms sobre fons, color, contorn, ombra i opacitat.
-- **`--primary`:** camp ambre amb tinta fosca; `:hover` a ambre profund.
-- **`--ghost`:** fons transparent, conserva el fil. Per a accions d'icona i secundàries.
-- **`--block`:** amplada completa. **`--icon`:** quadrat de 44 px sense coixí.
-- **Desactivat:** `opacity: .45` en general, **però el primari desactivat no s'esvaeix**:
-  passa a neutre (camp de panell, tinta apagada). Un ambre al 45% sobre l'escenari es llegeix
-  com un marró trencat, i el que ha de comunicar és «encara no».
+### Buttons
+- **Shape:** cantell viu (3 px), alçada mínima de 46 px, coixí de 12×24 px, amplada de lletra 82%.
+- **Per defecte:** camp de panell amb fil i text de tinta; `hover` puja al to de relleu.
+- **Primari:** camp d'Ambre d'Antena amb text fosc; `hover` passa a Ambre Fondo.
+- **Fantasma:** fons transparent, mateix fil.
+- **Desactivat:** opacitat del 45%… **excepte el primari**, que en comptes d'esvair-se passa a
+  neutre amb text apagat. Un ambre al 45% sobre el plató es llegeix com un marró trencat, i el
+  que ha de comunicar és «encara no».
 
-### Panells de resposta (`.qc-option`)
-El component signatura. Rectangle de dues regions: pestanya de 46 px amb la lletra (A–F, o
-`+`/`−`, o el número d'ordre, o `·`) i camp amb el text a `--qc-t-lead`.
-- **Repòs:** camp de panell, fil, pestanya un to per damunt.
-- **`picked`:** contorn ambre i camp ambre al 16%; la pestanya s'omple d'ambre.
-- **`good` / `bad`:** el panell **s'inunda** de verd o de roig i la pestanya passa a ✓ o ✗
-  (pestanya un 18–20% més fosca que el camp). El `bad` afegeix `qc-shake`.
-- **`dim`** (les descartades al revelar): text apagat, **però contorn i opacitat plens**. Amb
-  `opacity: .45` el text queia a 4,26:1 i la graella parpellejava a cada enviament; amb el
-  contorn del color del fons les descartades es dissolien justament quan has de comparar les
-  quatre opcions.
-- **Entrada:** el contenidor porta `.qc-lit`, que encén els fills en cascada de 40 ms
-  (`qc-light-up`, delays de 0,02 a 0,14 s per als quatre primers).
+### Opció de resposta *(component de firma)*
+Un objecte compost: **pestanya de lletra** (A, B, C, D) enganxada a l'esquerra i **camp
+d'etiqueta** a la dreta, dins d'una sola peça de 56 px d'alçada tallada amb `overflow: hidden`.
 
-### Rètol (`.qc-lower-third`)
-Banda de dues regions que identifica on ets. Pestanya en majúscula estreta amb icona +
-`color-mix(in srgb, #fff 22%, var(--qc-section))`; camp amb la metadada. Amb `--qc-section`
-posat pel cridador (`CATEGORY_COLOR[slug]`) pinta la banda sencera; amb `--plain` el camp és
-neutre i el color queda a la pestanya. Vegeu la Regla del Camp de Secció.
+- **En repòs:** camp de panell amb fil.
+- **En revelar-se:** el panell bo **s'inunda** de verd i la pestanya passa a ✓; el fallat s'inunda
+  de roig, la pestanya passa a ✗ i l'objecte fa una sacsejada curta.
+- **Descartada:** conserva **fil i opacitat plena** i només se li apaga el text. Esvair-la amb
+  `opacity` baixava el text per sota del contrast mínim i feia parpellejar la graella a cada
+  enviament, just quan cal comparar les quatre.
+- **Entrada:** les opcions s'encenen escalonadament (`qc-light-up`), com un mur de plaques que
+  rep corrent.
 
-### Comptador i barra de temps (`.qc-counter`, `.qc-timer`)
-El comptador és un **objecte amb marc propi**, no una xifra dins la metadada: 92 px mínims,
-xifra a escala `score`, unitat «s» petita i apagada, dins la tira al costat del rètol. La
-barra és el senyal perifèric: 6 px d'alt, emplenat ambre, `transform: scaleX()` (mai `width`:
-es repinta cada 100 ms i animar l'amplada recalcularia el layout a cada tic) amb transició de
-**100 ms exactes**, que és el tic del rellotge — amb 120 ms la barra anava sempre endarrerida
-respecte de la xifra i, després d'un salt de rellotge amb la pestanya en segon pla, es veia
-clarament discrepant-hi. A `--low` (≤27% del temps) entra el pols de 900 ms i les ratlles a
-45°.
+### Rètol (lower third) *(component de firma)*
+Banda horitzontal partida en dues regions sense separació: **pestanya de secció** (icona i nom
+de categoria, en majúscules i amplada 70%, sobre el color de secció aclarit un 22%) i
+**metadada** (ronda i nom de la mecànica) sobre el color de secció sencer. El rètol creix
+(`flex: 1`) i el comptador es queda fix al costat.
 
-### Marc de mèdia (`.qc-media`)
-La gramàtica que unifica les nou mecàniques: caixa de panell amb fil, cos centrat i **peu
-d'instrucció** en etiqueta majúscula estreta, separat per fil, amb el fons de l'escenari. El
-peu pot portar un valor a la dreta (per exemple el valor real en revelar l'estimació).
-Tota mecànica que no sigui opció múltiple pura passa per aquí: mapa, foto amb blur, silueta,
-comparació, cronologia i slider. Una mecànica nova hereta el marc; no s'inventa contenidor.
+La variant **neutra** és per a les pantalles que no són de categoria: allà el color va només a
+la pestanya, perquè pintar la banda sencera d'ambre convertiria el color d'antena en un camp i
+trencaria la Regla de l'Antena.
 
-### Marcador (`.qc-scoreboard`)
-Cel·les de la mateixa amplada separades per fil, dins una caixa de panell: etiqueta en
-majúscula apagada a dalt, xifra tabular a `1.375rem` a sota. És la forma nativa d'aquest món
-per a qualsevol conjunt de xifres d'estat: 2 cel·les a la partida, 3 al resum, 5 a l'inici.
-La xifra que puja porta `.qc-bump` (escala 1,22 → 1).
+### Comptador *(component de firma)*
+Un **objecte amb marc propi**, no una xifra perduda dins la metadada: 92 px d'amplada mínima,
+fil, camp de panell, xifra en Score i unitat en Label. L'estat de temps baix es diu **per tres
+canals alhora** —camp roig, canvi de gruix del marc i ratlles a 45°— perquè sobrevisqui tant al
+daltonisme com a `prefers-reduced-motion`.
 
-### Camps de mode (`.qc-mode`)
-Blocs de color que ocupen regió, no targetes amb icona i text. Radi de 6 px, coixí
-`24px 16px`, camp injectat per `--qc-field`, títol a escala `headline` i subtítol petit.
-`:hover` és `filter: brightness(1.08)` — l'única superfície del sistema que es tracta com a
-llum. `--dark` per als camps foscos: elimina l'opacitat del subtítol i el passa a tinta
-clara, perquè el blanc al 82% sobre el roig quedava per sota de 4,5:1.
+### Marc de mèdia
+La gramàtica comuna de les nou mecàniques: cos amb el mèdia i **peu amb la instrucció** en
+Label. El peu és dinàmic i canvia quan hi ha resultat. També és on va l'atribució d'autoria quan
+una foto es revela, en to de nom propi —sense majúscules ni lletra espaiada— perquè és crèdit i
+no retolació.
 
-### Toast de resultat (`.qc-toast`)
-Fixat a dalt (`top: --qc-5`), centrat, amplada `min(340px, 100vw − 32px)`, radi 6 px, verd o
-roig, amb l'única ombra del sistema i entrada `qc-wipe-in` (escombrada amb `clip-path`).
-Porta el gat, la xifra de punts i, si has fallat, la resposta correcta. Es tanca sol
-(1,4–3 s segons mecànica), avança amb un clic i **atura el compte enrere de l'auto-avanç amb
-`mouseenter`/`focus`** perquè puguis llegir amb calma.
+### Cards / Containers
+- **Panell:** fil, camp de panell, radi de 3 px, coixí de 16 px.
+- **Targeta de mode:** bloc de 6 px amb el camp de la categoria ocupant-lo sencer, coixí de
+  24×16 px i text fosc. Són blocs de color que ocupen regió, no targetes amb icona i text.
+- **Marcador:** fila de cel·les dins d'una sola peça amb fil; cada cel·la porta etiqueta en Label
+  i valor en Score.
 
-### Camps de formulari
-Fons d'escenari (més fosc que el panell que els conté), fil, radi 3 px, coixí de 12 px,
-`placeholder` en tinta apagada. `input[type=range]` fa servir `accent-color: var(--qc-amber)`
-i 44 px d'alçada de toc.
+### Toast de resultat
+Va **al flux**, ocupant el lloc de la pregunta —que quan surt el resultat ja no has de llegir— i
+deixant el rètol i el comptador a la vista. Absolut vessava per sota de la seva caixa i tapava
+el contingut de la ronda. Verd d'encert o roig d'error, radi de 6 px, i **l'única ombra flotant
+del sistema**. Mentre és visible, tota la pantalla és una capa de salt: un clic a qualsevol lloc
+avança.
 
-### Mascota (`Mascot` + `mascotArt.ts`)
-Un gat, **una sola geometria de cap** i 7 expressions (`neutre`, `content`, `trist`,
-`sorpres`, `adormit`, `ko`, `pensant`) que només canvien ULLS i BOCA — és el que fa que
-semblin el mateix gat i no set dibuixos. `viewBox` de 100×100, sense degradats ni filtres,
-llegible de 128 px a 32 (la cara `neutre` és el favicon, generat per l'script). El taronja
-del pelatge és l'origen de l'ambre d'antena. Res folklòric (barretina i companyia):
-envelleix malament i és el recurs més gastat.
-Ús: amfitrió a l'inici (`adormit` si no queda energia), comentarista al toast i al resum.
-Mai durant la pregunta.
+### Inputs / Fields
+Camps amb fil sobre fons d'escenari (més fosc que el panell que els conté), radi de 3 px i coixí
+de 12 px. El focus és un anell d'ambre de 2 px amb 2 px de separació, sempre visible.
 
-### Icones (`Icon` + `iconArt.ts`)
-39 icones internes, `currentColor`, `display: block`, `flex-shrink: 0`. Si la icona és
-l'únic contingut d'un botó cal `label` (surt com a `aria-label`); si va acompanyada de text
-es marca `aria-hidden`. **Els emojis segueixen a la base de dades** (`Category.icon`,
-`Topic.icon`) i el client els **ignora**: mapa `slug → icona` a `CATEGORY_ICON` i
-`TOPIC_ICON`. Es va fer així per no migrar dades. Conseqüència operativa: qui afegeixi una
-categoria o una temàtica ha d'afegir-hi l'entrada al mapa (i, si és categoria, també a
-`CATEGORY_COLOR` i a les parelles de contrast de `design-sheet.mts`), o es quedarà sense
-icona i sense color de secció.
-
-### Moviment
-La motricitat nativa d'aquest món és l'**escombrada** (`qc-wipe-in`, i el mateix gest a la
-màscara de la silueta i al revelat de la foto). La resta: `qc-fade-in` a l'entrada de
-pantalla (0,2 s), `qc-light-up` en cascada als panells, `qc-pulse` al temps baix, `qc-bump` a
-les xifres que pugen, `qc-shake` a l'opció errònia, i el gir 3D de 0,35 s de la carta del
-Memory. Tot plegat es desactiva d'una sola regla global:
-`@media (prefers-reduced-motion: reduce) { *, .qc-memory-inner { animation: none !important;
-transition: none !important; } }`. Per això cap senyal pot dependre d'una animació.
-
-### Leaflet dins el marc de mèdia
-El mapa no porta el seu propi aspecte: fons d'escenari, controls i atribució amb els tokens
-del sistema, i `filter: brightness(1.45) saturate(0.95)` al pla de tessel·les, perquè les
-tessel·les fosques de Carto deixaven les costes gairebé negres i en una pregunta de mapa la
-geografia s'ha de poder reconèixer.
+### Perfil de radar *(component de firma)*
+Gràfic SVG del nivell per temàtica, a la configuració i mai destacat. Anelles i radis en fil,
+figura en ambre amb ompliment al 16%, punts de 4,5 px amb vora del color del panell. Porta
+sempre la **taula de valors a sota**: al radar l'àrea creix amb el quadrat del valor i els
+números són l'única lectura honesta. Només dibuixa temàtiques amb prou partides i mai amb menys
+de tres eixos.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** passar `pnpm design:sheet` sempre que toquis un color, i afegir-hi la parella nova a
-  `PAIRS` si has introduït una combinació text/fons que abans no existia. Si surt amb error,
-  el color no entra.
-- **Do** fer servir els tokens `--qc-*` per a tot: els valors literals dins de `style={{}}`
-  han de ser referències `var(--qc-…)`, com ja fan totes les pantalles.
-- **Do** posar `.qc-num` a qualsevol xifra que canviï sola.
-- **Do** encaixar tota mecànica nova dins `.qc-media` amb el peu d'instrucció; el marc és la
-  gramàtica que fa que les nou mecàniques semblin el mateix joc.
-- **Do** donar un segon canal (glif, textura, text per a lector de pantalla) a qualsevol
-  senyal que ara mateix es digui amb color.
-- **Do** animar amb `transform` (`scaleX`, `translate`) i no amb `width`, sobretot al que es
-  repinta cada 100 ms.
-- **Do** posar `min-width: 0` i, si el text pot ser llarg, `overflow-wrap: anywhere`, a tota
-  cel·la de flex amb text.
-- **Do** provar a 390 px abans de qualsevol altra amplada.
-- **Do** registrar la icona (i el color, si és categoria) quan afegeixis un slug nou a la
-  base de dades.
+- **Do** fer servir l'eix d'amplada d'Archivo per a la segona veu: 78% la pregunta, 66% les
+  xifres, 70% els rètols.
+- **Do** posar `tabular-nums` a qualsevol xifra que canviï en viu.
+- **Do** pintar el color de secció a la **regió sencera** del rètol.
+- **Do** acompanyar cada estat de color amb una forma: glif, ratllat o canvi de gruix.
+- **Do** tallar els objectes compostos amb `overflow: hidden`.
+- **Do** fer servir `--qc-live-text` quan el roig hagi de ser **text** sobre fosc.
+- **Do** deixar el primari desactivat en **neutre**, no esvaït.
+- **Do** comprovar el contrast amb `pnpm design:sheet`, que falla si un parell no arriba al mínim.
 
 ### Don't:
-- **Don't** pintar la banda sencera del rètol d'ambre ni de cap color que no sigui el de la
-  categoria de la pregunta: fora de la partida, `--plain` i color només a la pestanya.
-- **Don't** fer servir `--qc-live` com a color de text sobre fons fosc; per a això hi ha
-  `--qc-live-text`.
-- **Don't** esvair amb `opacity` res que hagi de continuar llegible: el primari desactivat
-  passa a neutre i les opcions descartades conserven contorn i opacitat plena.
-- **Don't** confiar cap informació a una animació ni a un color sols: sota
-  `prefers-reduced-motion` el moviment desapareix sencer.
-- **Don't** afegir una segona família tipogràfica ni carregar la tipografia des d'un CDN;
-  la segona veu es fa amb l'eix d'amplada.
-- **Don't** afegir ombres, bisells, daurats, purpurina ni scanlines: la profunditat es fa amb
-  els tres nivells tonals i el fil. L'única ombra del sistema és la del toast.
-- **Don't** ficar cap element nou dins la banda del rètol a l'amplada de mòbil: ja hi caben
-  justos la ronda i el nom de la mecànica, i el nom de la mecànica és part del joc.
+- **Don't** omplir un camp gran amb ambre: trenca la Regla de l'Antena.
+- **Don't** afegir una segona família tipogràfica ni carregar tipografia des d'un CDN.
+- **Don't** posar ombra a una superfície en repòs. L'ombra és per al que sura o per al que
+  s'està manipulant.
+- **Don't** simular material: ni bisells, ni daurats, ni purpurina, ni scanlines, ni degradats
+  metàl·lics. L'energia va per color, llum i moviment.
+- **Don't** arrodonir com una pastilla res que no sigui la pista d'un mesurador.
+- **Don't** esvair amb `opacity` res que hagi de continuar llegible.
+- **Don't** confiar cap informació només a una animació: sota `prefers-reduced-motion` el
+  moviment desapareix sencer.
+- **Don't** ficar cap element nou dins la banda del rètol a l'amplada de mòbil.
 - **Don't** posar el gat a la pantalla mentre l'usuari pensa la resposta.
-- **Don't** decidir el nombre de columnes de les respostes per la llargada del text sense
-  passar també per el punt de ruptura de 560 px.
-- **Don't** fer servir emojis com a icona a la interfície, encara que la base de dades en
-  tingui.
-
-## Open items
-
-Estat conegut i no resolt, registrat com a tal:
-
-1. **L'escombrada entre rondes no està implementada.** `qc-wipe-in` només s'aplica al toast, i
-   el `qc-fade-in` de `.qc-screen` corre un únic cop en muntar-se: ara mateix les rondes es
-   canvien sense cap transició. És el primer moviment pendent.
-2. **El toast tapa el rètol i el comptador** en revelar-se, just els dos objectes que el
-   contracte vol com a més visibles.
-3. **L'estat de temps baix del comptador encara es diu només amb color.** Les ratlles són a
-   la barra, no al comptador; el marc i el tint rojos són tots dos senyals de color.
-4. **Sostre no construït:** banda a sang a escriptori i el marcador com a tercer objecte de
-   retransmissió amb entitat pròpia.
-5. **Les imatges de «foto misteriosa» tenen la llicència sense verificar.**
+- **Don't** decidir el nombre de columnes de les respostes només per la llargada del text: hi ha
+  també el punt de ruptura de 560 px.
+- **Don't** fer servir emojis com a icona a la interfície, encara que la base de dades en tingui.
