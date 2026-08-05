@@ -312,6 +312,13 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                 {feedback.expired ? "Temps esgotat" : feedback.isCorrect ? `+${feedback.points.total}` : "Incorrecte"}
               </b>
             </div>
+            {/* Ordenació i cronologia perdonen un intercanvi de veïns i ho paguen amb menys
+                punts. Cal dir-ho: si no, el toast diria "correcte" mentre la tira ensenya
+                dues caselles vermelles i sembla que el joc s'equivoqui. */}
+            {feedback.isCorrect && feedback.points.base < 100
+              && (round.typeSlug === "ordering" || round.typeSlug === "timeline") && (
+              <div style={{ marginTop: "var(--qc-2)" }}>Gairebé: en tenies dos de canviats</div>
+            )}
             {feedback.isCorrect && (feedback.points.speedBonus > 0 || feedback.points.streakBonus > 0) && (
               <div style={{ fontSize: "var(--qc-t-small)", marginTop: "var(--qc-2)", opacity: 0.9 }}>
                 rapidesa +{feedback.points.speedBonus} · ratxa +{feedback.points.streakBonus}

@@ -8,6 +8,7 @@ import { applyMatchProgression } from "../services/progression.js";
 import { updateSkill, skillLabel, isDifficulty, type Difficulty } from "../services/skill.js";
 import { applyEnergy, ENERGY_PER_CORRECT } from "../services/energy.js";
 import { estimationBaseMultiplier } from "../questionValidators/estimation.js";
+import { orderingBaseMultiplier } from "../questionValidators/ordering.js";
 import { withMediaUrl } from "../services/media.js";
 
 const ROUNDS_PER_MATCH = 8;
@@ -230,8 +231,12 @@ export function matchRoutes(app: FastifyInstance, prisma: PrismaClient) {
       else break;
     }
 
-    const baseMultiplier = round.question.typeSlug === "estimation"
-      ? estimationBaseMultiplier(given, truth as any)
+    // Punts graduats. L'ordenació s'hi afegeix a l'estimació: encertar-ne tres de quatre no
+    // és el mateix que zero de quatre, i fins ara puntuaven igual.
+    const baseMultiplier =
+      round.question.typeSlug === "estimation" ? estimationBaseMultiplier(given, truth as any)
+      : round.question.typeSlug === "ordering" || round.question.typeSlug === "timeline"
+        ? orderingBaseMultiplier(given, truth as any)
       : 1;
     const breakdown = scoreRound({
       isCorrect: gradedCorrect,
