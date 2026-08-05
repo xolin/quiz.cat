@@ -7,6 +7,7 @@ colors:
   stage: "#0e1520"
   stage-2: "#182231"
   stage-3: "#223046"
+  stagelight: "#24374f"
   hairline: "#2c3c54"
   ink: "#f4f7fb"
   ink-dim: "#a9b6c7"
@@ -195,6 +196,8 @@ Natura. Tots cinc estan escollits per arribar al mínim de contrast amb la tinta
   botons, opcions, comptador, marcador.
 - **Blau de Plató · Relleu** (`stage-3`): el nivell més alt, per a `hover` i per a les pistes
   dels mesuradors.
+- **Llum de Plató** (`stagelight`): el blau del bany de llum radial darrere la pregunta. És
+  l'únic lloc on apareix, i és el que fa que la pregunta sembli il·luminada per un focus.
 - **Fil** (`hairline`): la vora d'un píxel que separa objectes. És l'eina de profunditat
   principal del sistema.
 - **Tinta** (`ink`) i **Tinta Apagada** (`ink-dim`): text principal i secundari sobre fosc.
@@ -209,6 +212,13 @@ marca o una xifra. Si l'ambre és a tot arreu, deixa de voler dir «això».
 **La Regla del Camp Sencer.** Un color de secció ocupa **tota la regió** que identifica, no una
 pastilla dins d'una targeta. És el que separa un rètol de retransmissió d'una insígnia de
 formulari.
+
+**La Regla de l'Operador.** El blanc i el negre purs no són colors de la paleta: només
+existeixen **dins d'un `color-mix`**, com a operació d'aclarir o enfosquir un color que sí que
+hi és — la pestanya del rètol és el color de secció amb un 22% de blanc; la pestanya d'una
+opció revelada és el seu verd o roig amb un 18-20% de negre. Fora d'un `color-mix`, un `#fff`
+o un `#000` és sempre deriva: el text sobre camp fosc és `ink` i el text sobre camp clar és
+`ink-on-light`.
 
 **La Regla del Doble Senyal.** Cap estat es diu només amb color. L'encert i l'error porten glif
 (✓ / ✗); el temps baix porta ratlles a 45° a més del roig; la resposta descartada conserva

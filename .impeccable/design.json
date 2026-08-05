@@ -79,6 +79,21 @@
           "#e7ecf3"
         ]
       },
+      "stagelight": {
+        "role": "neutral",
+        "displayName": "Llum de Plató",
+        "canonical": "#24374f",
+        "tonalRamp": [
+          "#182535",
+          "#2a3f5b",
+          "#3b5a82",
+          "#4d75a8",
+          "#6f92be",
+          "#96afcf",
+          "#c0cfe2",
+          "#e6ecf4"
+        ]
+      },
       "hairline": {
         "role": "neutral",
         "displayName": "Fil",
@@ -442,6 +457,11 @@
       {
         "name": "La Regla del Camp Sencer",
         "body": "Un color de secció ocupa tota la regió que identifica, no una pastilla dins d'una targeta. És el que separa un rètol de retransmissió d'una insígnia de formulari.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de l'Operador",
+        "body": "El blanc i el negre purs no són colors de la paleta: només existeixen dins d'un color-mix, com a operació d'aclarir o enfosquir un color que sí que hi és. Fora d'un color-mix, un #fff o un #000 és sempre deriva.",
         "section": "colors"
       },
       {
