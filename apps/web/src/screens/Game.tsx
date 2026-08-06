@@ -131,6 +131,10 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   // Un enviament que ha fallat per xarxa. Mentre hi sigui, la ronda ofereix reintentar.
   const [sendError, setSendError] = useState(false);
   const [confirmAbandon, setConfirmAbandon] = useState(false);
+  // El servidor només marca `expired` passats els 2 s de gràcia, i el client envia JUSTAMENT
+  // al límit: `feedback.expired` no és mai cert a la pràctica, i una caducitat arribava com
+  // una resposta errònia qualsevol. Però el client sí que sap per què ha enviat.
+  const [timedOut, setTimedOut] = useState(false);
   const timerRef = useRef<number | null>(null);
   const advanceRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
@@ -145,6 +149,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
     setFeedback(null);
     feedbackRef.current = null;
     setChosenId(null);
+    setTimedOut(false);
     setMapPick(null);
     setOrderPicks([]);
     setEstimate(null);
@@ -198,6 +203,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       const left = limit - (Date.now() - startedAt);
       setRemaining(Math.max(0, left));
       if (left <= 0 && !submittedRef.current) {
+        setTimedOut(true);
         submit(null);
       }
     }, 100);
@@ -389,7 +395,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
               {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}
               <Mascot size={56} mood={feedback.isCorrect ? "content" : survival ? "ko" : "trist"} />
               <b className="qc-num" style={{ fontSize: "var(--qc-t-score)", lineHeight: 1 }}>
-                {feedback.expired ? "S'ha acabat el temps" : feedback.isCorrect ? `+${feedback.points.total}` : "No hi era"}
+                {timedOut || feedback.expired ? "S'ha acabat el temps" : feedback.isCorrect ? `+${feedback.points.total}` : "No hi era"}
               </b>
             </div>
             {/* Ordenació i cronologia perdonen un intercanvi de veïns i ho paguen amb menys
