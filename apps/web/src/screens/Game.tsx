@@ -126,6 +126,10 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   const [orderPicks, setOrderPicks] = useState<string[]>([]);
   const [estimate, setEstimate] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  // Puja cada cop que la pestanya canvia de visibilitat: és el que rearrenca el compte enrere.
+  const [awake, setAwake] = useState(0);
+  // Un enviament que ha fallat per xarxa. Mentre hi sigui, la ronda ofereix reintentar.
+  const [sendError, setSendError] = useState(false);
   const timerRef = useRef<number | null>(null);
   const advanceRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
@@ -166,13 +170,21 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   }, [loadRound]);
 
   // Compte enrere del client (el servidor és l'àrbitre real, amb 2s de gràcia).
+  //
+  // Es PAUSA quan la pestanya s'amaga. Sense això el rellotge és de paret i segueix corrent
+  // mentre mires si arriba el bus o t'entra una notificació: tornaves a una ronda ja fallada
+  // sola. El públic d'aquest joc juga en estones mortes i s'interromp — la interrupció no és
+  // un cas extrem, és l'escena d'ús. I no obre cap forat: el servidor segueix sent l'àrbitre
+  // i ja dona 2 s de gràcia sobre un límit que el client no decideix.
   useEffect(() => {
     if (!round || feedback || loadingRef.current) return;
+    if (document.visibilityState === "hidden") return; // ja es rearrencarà en tornar
     const startedAt = Date.now();
     // El límit surt de la RONDA i no de `remaining`. En netejar el feedback per carregar la
     // següent, `remaining` encara valia 0 de la ronda caducada: el comptador arrencava ja
     // exhaurit i fallava tot sol una ronda que el jugador no havia arribat a veure.
-    const limit = round.timeLimitMs;
+    // En reprendre després d'una pausa, el que queda és `remaining`, no el límit sencer.
+    const limit = remaining > 0 ? remaining : round.timeLimitMs;
     timerRef.current = window.setInterval(() => {
       const left = limit - (Date.now() - startedAt);
       setRemaining(Math.max(0, left));
@@ -184,7 +196,20 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       if (timerRef.current) clearInterval(timerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, feedback]);
+  }, [round, feedback, awake]);
+
+  // En amagar-se, congela el temps restant; en tornar, `awake` canvia i l'efecte de dalt
+  // rearrenca el compte des d'on s'havia quedat.
+  useEffect(() => {
+    function onVisibility() {
+      if (document.visibilityState === "hidden") {
+        if (timerRef.current) clearInterval(timerRef.current);
+      }
+      setAwake((n) => n + 1);
+    }
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
 
   function advance() {
     if (advanceRef.current) clearTimeout(advanceRef.current);
@@ -194,10 +219,15 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
     else loadRound();
   }
 
+  /** L'última resposta enviada, per poder reintentar-la sense fer endevinar res al jugador. */
+  const lastGivenRef = useRef<unknown>(undefined);
+
   async function submit(given: unknown) {
     if (submittedRef.current || busy) return;
     submittedRef.current = true;
+    lastGivenRef.current = given;
     setBusy(true);
+    setSendError(false);
     if (timerRef.current) clearInterval(timerRef.current);
     try {
       const fb = await api<AnswerFeedback>(`/matches/${props.matchId}/answer`, {
@@ -210,9 +240,22 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       setCombo((c) => (fb.isCorrect ? c + 1 : 0));
       // Auto-avanç: res a clicar, el joc segueix sol.
       advanceRef.current = window.setTimeout(advance, toastMs(round!.typeSlug, fb));
+    } catch {
+      // Sense això, la ronda quedava MORTA: `api()` llança, no arribava cap feedback, per
+      // tant cap toast i cap auto-avanç, i com que `submittedRef` es quedava a cert el camí
+      // de caducitat tampoc reintentava. Pantalla congelada i muda, amb l'única sortida
+      // d'abandonar la partida. I passava justament a l'escena d'ús que el producte descriu:
+      // al transport, on els túnels i els canvis de cel·la són la norma.
+      submittedRef.current = false;
+      setSendError(true);
     } finally {
       setBusy(false);
     }
+  }
+
+  function retry() {
+    setSendError(false);
+    submit(lastGivenRef.current);
   }
 
   if (!round) return <p className="qc-screen">Carregant…</p>;
@@ -220,7 +263,10 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   const pct = Math.round((100 * remaining) / round.timeLimitMs);
   // Survival: el servidor no envia total; la ratxa és l'índex, perquè un error acaba la tirada.
   const survival = round.total === null;
-  const low = !feedback && pct <= 27;
+  // ABSOLUT i no percentual. Amb el 27% del límit, als 15 s saltava a 4,05 s —correcte— però
+  // als 6 s del survival saltava a 1,62 s, quan la decisió ja està perduda. Al mode construït
+  // sencer al voltant de la pressió del temps, el millor senyal de la pantalla no arribava.
+  const low = !feedback && remaining <= 4000;
   const correctId: string | null = feedback?.correctAnswer?.correctId ?? null;
   const catSlug = round.category?.slug ?? "";
   const seconds = Math.ceil(remaining / 1000);
@@ -287,6 +333,23 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
           no dins de `.qc-stagelight`: aquell té `isolation: isolate`, i des de dins cap
           `z-index` no pot superar el mapa de Leaflet, que és qui es quedava els clics. */}
       {feedback && <button type="button" className="qc-skip" aria-label="Continua" onClick={advance} />}
+
+      {/* Un enviament que no ha arribat. Ocupa el lloc del toast i el seu camp d'error, i
+          diu QUÈ ha passat i què pots fer: abans això era una pantalla congelada i muda. */}
+      {sendError && (
+        <div className="qc-stagelight">
+          <div className="qc-toast qc-toast--bad" role="alert" style={{ textAlign: "center" }}>
+            <div style={{ display: "flex", gap: "var(--qc-4)", alignItems: "center", justifyContent: "center" }}>
+              <Mascot size={56} mood="trist" />
+              <b className="qc-num" style={{ fontSize: "var(--qc-t-score)", lineHeight: 1 }}>Sense connexió</b>
+            </div>
+            <div style={{ marginTop: "var(--qc-2)" }}>La resposta no ha arribat. El temps està aturat.</div>
+            <button className="qc-btn qc-btn--block" style={{ marginTop: "var(--qc-3)" }} onClick={retry}>
+              <Icon name="replay" size={18} /> Torna-ho a provar
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="qc-stagelight">
         {/* TOAST de resultat: substitueix la pregunta, no s'hi posa a sobre.

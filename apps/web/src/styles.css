@@ -700,8 +700,8 @@ input[type="range"] {
 }
 /* Els panells s'encenen en cascada curta, com un plató que puja llums. */
 @keyframes qc-light-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(8px); }
+  to { transform: none; }
 }
 @keyframes qc-sweep {
   from { transform: translateX(-105%); }
@@ -716,7 +716,13 @@ input[type="range"] {
   40%, 60% { transform: translateX(4px); }
 }
 
-.qc-lit > * { animation: qc-light-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+/* SENSE `backwards`. Aquell mode manté l'estat inicial del keyframe durant el retard, i
+   l'estat inicial era `opacity: 0` — però els navegadors NO avancen les línies de temps
+   d'animació en una pestanya amagada, o sigui que el retard no s'esgotava mai i les opcions
+   es quedaven invisibles fins que tornaves. Amb el públic d'aquest joc, que juga en estones
+   mortes i s'interromp, això vol dir tornar a una ronda que no has arribat a veure.
+   Ara l'entrada és NOMÉS desplaçament: una animació aturada degrada a «sense animació». */
+.qc-lit > * { animation: qc-light-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .qc-lit > *:nth-child(1) { animation-delay: 0.02s; }
 .qc-lit > *:nth-child(2) { animation-delay: 0.06s; }
 .qc-lit > *:nth-child(3) { animation-delay: 0.1s; }
