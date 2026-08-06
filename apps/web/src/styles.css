@@ -621,6 +621,9 @@ input[type="range"] {
   font-size: 10px !important;
 }
 .leaflet-control-attribution a { color: var(--qc-ink-dim) !important; }
+/* Els controls de zoom venien a 30×30 px, per sota dels 44 que el projecte es marca com a
+   mida mínima que un dit encerta. Al mapa són l'única manera d'afinar la punteria. */
+.leaflet-bar a { width: 44px !important; height: 44px !important; line-height: 44px !important; }
 .leaflet-bar, .leaflet-bar a {
   background: var(--qc-stage-2) !important;
   color: var(--qc-ink) !important;
@@ -769,4 +772,31 @@ input[type="range"] {
   *, .qc-memory-inner { animation: none !important; transition: none !important; }
   /* Sense animació, l'escombrada es quedaria quieta tapant la pantalla. */
   .qc-sweep { display: none; }
+}
+
+/* ── Mapa: la creu del camí de teclat ──────────────────────────────────────
+   La capa cobreix el mapa però NO intercepta el punter: amb ratolí el clic ha de seguir
+   arribant a Leaflet igual que abans. Només existeix per rebre el focus i moure la creu. */
+.qc-map-aim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  pointer-events: none;
+}
+.qc-map-aim:focus-visible {
+  outline: 2px solid var(--qc-amber);
+  outline-offset: -2px;
+  pointer-events: auto; /* amb el focus posat, Enter ha de poder clavar la xinxeta */
+}
+/* Creu de mira: dues línies i prou. Un cercle es confondria amb els marcadors. */
+.qc-map-aim__cross {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background:
+    linear-gradient(var(--qc-amber), var(--qc-amber)) center / 2px 100% no-repeat,
+    linear-gradient(var(--qc-amber), var(--qc-amber)) center / 100% 2px no-repeat;
 }

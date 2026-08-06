@@ -130,6 +130,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   const [awake, setAwake] = useState(0);
   // Un enviament que ha fallat per xarxa. Mentre hi sigui, la ronda ofereix reintentar.
   const [sendError, setSendError] = useState(false);
+  const [confirmAbandon, setConfirmAbandon] = useState(false);
   const timerRef = useRef<number | null>(null);
   const advanceRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
@@ -137,6 +138,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
   // Hi ha una ronda demanada i encara no arribada. Mentre duri, el compte enrere no pot
   // córrer: el que es pinta és la ronda anterior i el temps encara no és de ningú.
   const loadingRef = useRef(false);
+  const questionRef = useRef<HTMLHeadingElement>(null);
 
   const loadRound = useCallback(async () => {
     loadingRef.current = true;
@@ -168,6 +170,13 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [loadRound]);
+
+  // El focus va a la pregunta a cada ronda nova. Només quan canvia la RONDA: fer-ho a cada
+  // repintat robaria el focus mentre el jugador navega les opcions.
+  useEffect(() => {
+    if (round && !feedback) questionRef.current?.focus({ preventScroll: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [round?.index]);
 
   // Compte enrere del client (el servidor és l'àrbitre real, amb 2s de gràcia).
   //
@@ -316,11 +325,19 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
             </span>
           </span>
         </div>
+        {/* `role="timer"` implica `aria-live: off`: l'etiqueta canviava cada 100 ms i no
+            s'anunciava mai res, o sigui que amb lector de pantalla no tenies CAP informació
+            de pressió temporal en un rellotge de 15 segons. Ara s'anuncia, però no a cada
+            segon —seria insuportable— sinó als llindars que canvien la decisió, via la
+            regió viva de sota. */}
         <div className={`qc-counter${low ? " qc-counter--low" : ""}`} role="timer"
           aria-label={feedback ? "temps aturat" : `${seconds} segons`}>
           <b className="qc-num qc-counter__value">{feedback ? "—" : String(seconds).padStart(2, "0")}</b>
           {!feedback && <span className="qc-counter__unit">s</span>}
         </div>
+        <span className="qc-sr" role="status" aria-live="assertive">
+          {!feedback && low ? "Últims segons" : ""}
+        </span>
       </div>
 
       <div className={`qc-timer${low ? " qc-timer--low" : ""}`}>
@@ -371,7 +388,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
             <div style={{ display: "flex", gap: "var(--qc-4)", alignItems: "center", justifyContent: "center" }}>
               {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}
               <Mascot size={56} mood={feedback.isCorrect ? "content" : survival ? "ko" : "trist"} />
-              <b className="qc-num" style={{ fontSize: "2rem", lineHeight: 1 }}>
+              <b className="qc-num" style={{ fontSize: "var(--qc-t-score)", lineHeight: 1 }}>
                 {feedback.expired ? "S'ha acabat el temps" : feedback.isCorrect ? `+${feedback.points.total}` : "No hi era"}
               </b>
             </div>
@@ -398,7 +415,14 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
             )}
           </div>
         ) : (
-          <h1 className="qc-question">{round.prompt}</h1>
+          /* `tabIndex={-1}` + focus programàtic: en canviar de ronda l'`h1` se substituïa
+             sense anunciar res i el botó enfocat es desmuntava, deixant el focus al `<body>`.
+             Amb lector de pantalla i teclat, cada ronda començava amb una cerca a cegues amb
+             `Tab` sota un rellotge de 15 segons. Ara el focus aterra a la pregunta, que és
+             on comença la lectura, i la regió viva l'anuncia. */
+          <h1 className="qc-question" ref={questionRef} tabIndex={-1} aria-live="polite">
+            {round.prompt}
+          </h1>
         )}
       </div>
 
@@ -546,9 +570,9 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                 maxZoom={round.payload.maxZoom}
                 bounds={round.payload.bounds}
                 markers={[
-                  ...(mapPick ? [{ ...mapPick, color: "#F0A044", label: feedback ? "tu" : undefined }] : []),
+                  ...(mapPick ? [{ ...mapPick, color: "var(--qc-amber)", label: feedback ? "tu" : undefined }] : []),
                   ...(feedback?.correctAnswer?.lat !== undefined
-                    ? [{ lat: feedback.correctAnswer.lat, lng: feedback.correctAnswer.lng, color: "#3FBF7F", label: "correcte" }]
+                    ? [{ lat: feedback.correctAnswer.lat, lng: feedback.correctAnswer.lng, color: "var(--qc-good)", label: "correcte" }]
                     : []),
                 ]}
               />
@@ -704,6 +728,11 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                 </div>
                 <input type="range" min={0} max={1000} step={1}
                   aria-label={`Estimació en ${unit}`}
+                  /* Sense això el lector canta la POSICIÓ de la pista (0-1000) i no el
+                     número que es veu a la pantalla: deia «463» mentre el jugador llegia
+                     «46». La pista té mil passos per tenir prou finor amb el dit i amb
+                     l'escala logarítmica; això és detall d'implementació, no la resposta. */
+                  aria-valuetext={`${val.toLocaleString("ca")} ${unit}`}
                   value={Math.round(valToPos(val) * 1000)} disabled={busy || !!feedback}
                   onChange={(e) => setEstimate(posToVal(Number(e.target.value) / 1000))}
                   style={{ width: "100%", marginTop: "var(--qc-3)" }} />
@@ -747,13 +776,34 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
         )}
       </div>
 
-      <p style={{ marginTop: "var(--qc-5)", textAlign: "center" }}>
-        <a href="#"
-          onClick={(e) => { e.preventDefault(); api(`/matches/${props.matchId}/abandon`, { method: "POST" }).then(props.onAbandon); }}
-          style={{ color: "var(--qc-ink-dim)", fontSize: "var(--qc-t-small)" }}>
-          Abandona la partida
-        </a>
-      </p>
+      {/* Abandonar era un enllaç pelat de 124 × 15,5 px mesurats —per sota dels 44 px que el
+          projecte declara i per sota fins i tot dels 24 de la norma—, aparcat permanentment
+          allà on descansa el polze, i que executava un POST irreversible d'un sol toc. A sobre
+          el botó de desfer de l'ordenació el desplaçava amunt i avall a cada tria. Ara és un
+          botó amb zona de toc de debò i demana confirmació. */}
+      <div style={{ marginTop: "var(--qc-5)", textAlign: "center" }}>
+        {!confirmAbandon ? (
+          <button className="qc-btn qc-btn--ghost" onClick={() => setConfirmAbandon(true)}
+            style={{ color: "var(--qc-ink-dim)", fontSize: "var(--qc-t-small)", border: 0 }}>
+            Abandona la partida
+          </button>
+        ) : (
+          <div className="qc-panel" style={{ maxWidth: 360, margin: "0 auto" }}>
+            <p style={{ margin: "0 0 var(--qc-3)", fontSize: "var(--qc-t-small)" }}>
+              Segur? Perdràs el que portes d'aquesta partida.
+            </p>
+            <div style={{ display: "flex", gap: "var(--qc-2)" }}>
+              <button className="qc-btn" style={{ flex: 1 }} onClick={() => setConfirmAbandon(false)}>
+                Segueix jugant
+              </button>
+              <button className="qc-btn" style={{ flex: 1, color: "var(--qc-live-text)" }}
+                onClick={() => { api(`/matches/${props.matchId}/abandon`, { method: "POST" }).then(props.onAbandon).catch(() => setConfirmAbandon(false)); }}>
+                Abandona
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

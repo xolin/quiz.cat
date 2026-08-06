@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -89,7 +89,7 @@ export function GeoMap(props: {
     for (const m of props.markers) {
       const cm = L.circleMarker([m.lat, m.lng], {
         radius: 8,
-        color: "#fff",
+        color: "var(--qc-ink)",
         weight: 2,
         fillColor: m.color,
         fillOpacity: 1,
@@ -99,7 +99,7 @@ export function GeoMap(props: {
     if (props.markers.length >= 2) {
       L.polyline(props.markers.map((m) => [m.lat, m.lng] as [number, number]), {
         dashArray: "6",
-        color: "#555",
+        color: "var(--qc-hairline)",
         weight: 2,
       }).addTo(g);
       map.fitBounds(L.latLngBounds(props.markers.map((m) => [m.lat, m.lng] as [number, number])), {
@@ -109,5 +109,71 @@ export function GeoMap(props: {
     }
   }, [props.markers]);
 
-  return <div ref={divRef} style={{ height: 340, borderRadius: 8, cursor: props.disabled ? "default" : "crosshair" }} />;
+  /**
+   * CAMÍ DE TECLAT.
+   *
+   * Fins ara l'única entrada era el `click` de Leaflet, i «Confirma la posició» es queda
+   * desactivat fins que hi ha punt: amb teclat només podies mirar com s'esgotaven els quinze
+   * segons. Una de cada nou rondes era literalment impossible de respondre, sense cap avís.
+   *
+   * La creu viu en píxels del contenidor perquè és el que `containerPointToLatLng` demana. Amb
+   * la fletxa mantinguda el pas creix: si no, travessar el mapa serien desenes de pulsacions.
+   */
+  const [aim, setAim] = useState<{ x: number; y: number } | null>(null);
+  const [aiming, setAiming] = useState(false);
+  const runRef = useRef({ dir: "", n: 0 });
+
+  function onAimKey(e: React.KeyboardEvent) {
+    const dir = ({ ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" } as Record<string, string>)[e.key];
+    const box = divRef.current?.getBoundingClientRect();
+    if (!dir || !box || props.disabled) return;
+    e.preventDefault();
+    const run = runRef.current;
+    run.n = run.dir === dir ? run.n + 1 : 0;
+    run.dir = dir;
+    const step = Math.min(6 * Math.pow(1.35, run.n), box.width / 10);
+    const from = aim ?? { x: box.width / 2, y: box.height / 2 };
+    setAim({
+      x: Math.min(box.width, Math.max(0, from.x + (dir === "right" ? step : dir === "left" ? -step : 0))),
+      y: Math.min(box.height, Math.max(0, from.y + (dir === "down" ? step : dir === "up" ? -step : 0))),
+    });
+  }
+
+  function place() {
+    const map = mapRef.current;
+    const box = divRef.current?.getBoundingClientRect();
+    if (!map || !box || props.disabled) return;
+    const p = aim ?? { x: box.width / 2, y: box.height / 2 };
+    setAim(p);
+    const ll = map.containerPointToLatLng(L.point(p.x, p.y));
+    pickRef.current?.(ll.lat, ll.lng);
+  }
+
+  const mapDiv = (
+    <div ref={divRef} style={{ height: 340, borderRadius: "var(--qc-r)", cursor: props.disabled ? "default" : "crosshair" }} />
+  );
+  if (props.disabled) return mapDiv;
+
+  return (
+    <div style={{ position: "relative" }}>
+      {mapDiv}
+      {/* La capa és el que rep el focus: el mapa de Leaflet no és un objecte enfocable i la
+          creu ha de viure en alguna cosa que el teclat sàpiga trobar. */}
+      <button
+        type="button"
+        className="qc-map-aim"
+        aria-label="Mou la creu amb les fletxes i prem Enter per marcar el punt al mapa"
+        onKeyDown={onAimKey}
+        onKeyUp={() => (runRef.current = { dir: "", n: 0 })}
+        onFocus={() => setAiming(true)}
+        onBlur={() => { setAiming(false); runRef.current = { dir: "", n: 0 }; }}
+        onClick={place}
+      >
+        {aiming && (
+          <span className="qc-map-aim__cross"
+            style={{ left: aim ? `${aim.x}px` : "50%", top: aim ? `${aim.y}px` : "50%" }} />
+        )}
+      </button>
+    </div>
+  );
 }
