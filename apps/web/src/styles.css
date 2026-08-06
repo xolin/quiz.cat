@@ -405,11 +405,11 @@ button:not(:disabled) { cursor: pointer; }
 .qc-option[data-state="bad"] {
   background: var(--qc-live);
   border-color: var(--qc-live);
-  color: #fff;
+  color: var(--qc-ink);
 }
 .qc-option[data-state="bad"] .qc-option__tab {
   background: color-mix(in srgb, #000 20%, var(--qc-live));
-  color: #fff;
+  color: var(--qc-ink);
 }
 .qc-option:disabled { opacity: 1; }
 /* Abans era `opacity: .45`, que deixava el text a 4,26:1 — i s'activava també durant
@@ -657,7 +657,7 @@ input[type="range"] {
   animation: qc-wipe-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .qc-toast--good { background: var(--qc-good); color: var(--qc-ink-on-light); }
-.qc-toast--bad { background: var(--qc-live); color: #fff; }
+.qc-toast--bad { background: var(--qc-live); color: var(--qc-ink); }
 
 /* Capa de salt del resultat.
    Mentre es veu el resultat, la pantalla sencera avança la ronda. Abans el clic només el

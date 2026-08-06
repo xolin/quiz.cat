@@ -220,6 +220,11 @@ opció revelada és el seu verd o roig amb un 18-20% de negre. Fora d'un `color-
 o un `#000` és sempre deriva: el text sobre camp fosc és `ink` i el text sobre camp clar és
 `ink-on-light`.
 
+Dues excepcions, i totes dues perquè allà el blanc i el negre **no són colors d'interfície**:
+les **parades d'una màscara SVG**, on `#fff` i `#000` volen dir opac i transparent (l'escombrada
+de la silueta), i el **matte fotogràfic** darrere una imatge de proporció desconeguda, que és
+convenció fotogràfica i no una superfície del sistema.
+
 **La Regla del Doble Senyal.** Cap estat es diu només amb color. L'encert i l'error porten glif
 (✓ / ✗); el temps baix porta ratlles a 45° a més del roig; la resposta descartada conserva
 contorn i opacitat plena i només se li apaga el text.

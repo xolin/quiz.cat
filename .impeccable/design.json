@@ -461,7 +461,7 @@
       },
       {
         "name": "La Regla de l'Operador",
-        "body": "El blanc i el negre purs no són colors de la paleta: només existeixen dins d'un color-mix, com a operació d'aclarir o enfosquir un color que sí que hi és. Fora d'un color-mix, un #fff o un #000 és sempre deriva.",
+        "body": "El blanc i el negre purs no són colors de la paleta: només existeixen dins d'un color-mix, com a operació d'aclarir o enfosquir un color que sí que hi és. Fora d'un color-mix, un #fff o un #000 és sempre deriva. Dues excepcions, on el blanc i el negre no són colors d'interfície: les parades d'una màscara SVG (opac i transparent) i el matte fotogràfic darrere una imatge de proporció desconeguda.",
         "section": "colors"
       },
       {
