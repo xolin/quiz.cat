@@ -372,7 +372,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
               {/* KO només al survival, on l'error acaba la tirada; si no, decebut i endavant. */}
               <Mascot size={56} mood={feedback.isCorrect ? "content" : survival ? "ko" : "trist"} />
               <b className="qc-num" style={{ fontSize: "2rem", lineHeight: 1 }}>
-                {feedback.expired ? "Temps esgotat" : feedback.isCorrect ? `+${feedback.points.total}` : "Incorrecte"}
+                {feedback.expired ? "S'ha acabat el temps" : feedback.isCorrect ? `+${feedback.points.total}` : "No hi era"}
               </b>
             </div>
             {/* Ordenació i cronologia perdonen un intercanvi de veïns i ho paguen amb menys
@@ -410,7 +410,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {/* ── Clip d'àudio: sona sol en començar la ronda i es pot repetir ── */}
       {round.typeSlug === "audio_clip" && (
         <>
-          <Media instruction="Clip de veu">
+          <Media instruction={feedback ? "El clip, sencer" : "Escolta i tria"}>
             <AudioClip src={round.payload.audioUrl ?? round.payload.imageUrl} />
           </Media>
           <OptionGrid options={options} feedback={!!feedback} correctId={correctId} chosenId={chosenId} busy={busy} onPick={pick} />
@@ -493,17 +493,17 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {/* ── Més alt o més baix ── */}
       {round.typeSlug === "higher_lower" && (
         <>
-          <Media instruction={`Compara la ${round.payload.metric}`}>
+          <Media instruction={feedback ? `Comparat amb ${round.payload.a.label}` : `${round.payload.b.label} contra ${round.payload.a.label}`}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%" }}>
               <div style={{ padding: "var(--qc-4)", textAlign: "center", borderRight: "1px solid var(--qc-hairline)" }}>
-                <div style={{ fontStretch: "80%", fontWeight: 700 }}>{round.payload.a.label}</div>
-                <div className="qc-num" style={{ marginTop: "var(--qc-1)", fontSize: "1.25rem", color: "var(--qc-ink-dim)" }}>
+                <div style={{ fontStretch: "78%", fontWeight: 700 }}>{round.payload.a.label}</div>
+                <div className="qc-num" style={{ marginTop: "var(--qc-1)", fontSize: "var(--qc-t-title)", color: "var(--qc-ink-dim)" }}>
                   {round.payload.a.display}
                 </div>
               </div>
               <div style={{ padding: "var(--qc-4)", textAlign: "center" }}>
-                <div style={{ fontStretch: "80%", fontWeight: 700 }}>{round.payload.b.label}</div>
-                <div className="qc-num" style={{ marginTop: "var(--qc-1)", fontSize: "1.25rem", color: feedback ? "var(--qc-amber)" : "var(--qc-ink-dim)" }}>
+                <div style={{ fontStretch: "78%", fontWeight: 700 }}>{round.payload.b.label}</div>
+                <div className="qc-num" style={{ marginTop: "var(--qc-1)", fontSize: "var(--qc-t-title)", color: feedback ? "var(--qc-amber)" : "var(--qc-ink-dim)" }}>
                   {feedback ? feedback.correctAnswer.bDisplay : "?"}
                 </div>
               </div>
@@ -513,7 +513,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
             {(["higher", "lower"] as const).map((choice) => {
               const isRight = feedback && (choice === "higher") === feedback.correctAnswer.bHigher;
               const isMine = chosenId === choice;
-              const state = !feedback ? (isMine ? "picked" : "idle") : isRight ? "good" : isMine ? "bad" : "idle";
+              const state = !feedback ? (isMine ? "picked" : "idle") : isRight ? "good" : isMine ? "bad" : "dim";
               return (
                 <button key={choice} className="qc-option" data-state={state}
                   disabled={busy || !!feedback}
@@ -524,7 +524,7 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                       : choice === "higher" ? "+" : "−"}
                   </span>
                   <span className="qc-option__label">
-                    {choice === "higher" ? `Més ${round.payload.metric}` : `Menys ${round.payload.metric}`}
+                    {`${round.payload.b.label} té ${choice === "higher" ? "més" : "menys"} ${round.payload.metric}`}
                   </span>
                 </button>
               );
@@ -565,6 +565,9 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
       {/* ── Ordena-ho: clica els elements en ordre ── */}
       {round.typeSlug === "ordering" && (
         <>
+          <p className="qc-label" style={{ margin: "0 0 var(--qc-3)" }}>
+            {round.payload.criterion ? `Ordre: ${round.payload.criterion}` : "Clica'ls en ordre"}
+          </p>
           <div className="qc-options qc-lit">
             {items.map((it) => {
               const pos = orderPicks.indexOf(it.id);
@@ -586,9 +589,6 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
               );
             })}
           </div>
-          <p className="qc-label" style={{ marginTop: "var(--qc-3)" }}>
-            {round.payload.criterion ? `Ordre: ${round.payload.criterion}` : "Clica'ls en ordre"}
-          </p>
           {orderPicks.length > 0 && !feedback && (
             <button className="qc-btn" onClick={() => setOrderPicks(orderPicks.slice(0, -1))}>
               <Icon name="undo" size={18} /> Desfés
@@ -619,9 +619,21 @@ export function Game(props: { matchId: string; onFinished: (progression: any) =>
                   return (
                     <div key={i} style={{
                       flex: "1 1 0", minWidth: 0, padding: "var(--qc-2)", background: bg, textAlign: "center",
-                      fontSize: "var(--qc-t-small)", color: feedback ? (ok ? "var(--qc-ink-on-light)" : "#fff") : "var(--qc-ink)",
+                      fontSize: "var(--qc-t-small)",
+                      color: feedback ? (ok ? "var(--qc-ink-on-light)" : "var(--qc-ink)") : "var(--qc-ink)",
                     }}>
-                      <div className="qc-num" style={{ fontSize: "var(--qc-t-label)", opacity: 0.7 }}>{i + 1}</div>
+                      {/* El número de posició porta el GLIF al costat quan hi ha resultat.
+                          Fins ara aquesta era l'única mecànica que deia encert i error només
+                          amb color, i justament on el veredicte per casella ÉS tot el
+                          feedback: qui no distingeix el verd del roig no en llegia res. El
+                          component d'opció, del mateix autor, ja porta ✓ i ✗ a la pestanya. */}
+                      <div className="qc-num" style={{
+                        fontSize: "var(--qc-t-label)", opacity: 0.85,
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--qc-1)",
+                      }}>
+                        {feedback && <Icon name={ok ? "check" : "cross"} size={12} />}
+                        {i + 1}
+                      </div>
                       <div style={{ lineHeight: 1.2 }}>{ev ? ev.text : "—"}</div>
                       {feedback && placedId && (
                         <div className="qc-num" style={{ marginTop: "var(--qc-1)" }}>{fmtYear(years[placedId])}</div>

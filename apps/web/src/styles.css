@@ -89,6 +89,7 @@
   --qc-font: "Archivo", system-ui, -apple-system, sans-serif;
   --qc-t-display: clamp(1.5rem, 7vw, 2.4rem);
   --qc-t-score: clamp(2rem, 8vw, 3rem);
+  --qc-t-title: 1.25rem;
   --qc-t-lead: 1.0625rem;
   --qc-t-body: 1rem;
   --qc-t-small: 0.875rem;
